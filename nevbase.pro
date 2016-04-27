@@ -10,41 +10,7 @@ function nevbase, flightDay, airspeedType, level
 
 common t,t
   ;-----------------------------------------SET FILE PATH----------------------------------------------------------------------------------------------------------------------
-  ;----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-;if !version.OS_FAMILY eq 'Windows' then begin
-;  if flightDay eq '0709' then nclPath='Z:\research\nevzorov\data\070913\20130709.c1.nc'
-;  if flightDay eq '0710' then nclPath='Z:\research\nevzorov\data\20130710.c1.nc'
-;  if flightDay eq '0725' then nclPath='Z:\research\nevzorov\data\072513\20130725.c1.nc' ;tons of level ca
-;  if flightDay eq '0727' then nclPath='Z:\research\nevzorov\data\072713\20130727.c1.nc'
-;  if flightDay eq '0728' then nclPath='Z:\research\nevzorov\data\072813\20130728.c1.nc'
-;  if flightDay eq '0729' then nclPath='Z:\research\nevzorov\data\072913\20130729.c1.nc'
-;  if flightDay eq '0807' then nclPath='Z:\research\nevzorov\data\080713\20130807.c1.nc'
-;  if flightDay eq '0814' then nclPath='Z:\research\nevzorov\data\081413\20130814.c1.nc'
-;  if flightDay eq '0815' then nclPath='Z:\research\nevzorov\data\081513\20130815.c1.nc'
-;  if flightDay eq '0803' then nclPath='Z:\research\nevzorov\data\080313\20130803.c1.nc'
-;  if flightDay eq '0307' then nclPath='Z:\research\nevzorov\data\030716\20160307.c1.nc'
-;  if flightDay eq '0304' then nclPath='Z:\research\nevzorov\data\030416\20160304.c1.nc'
-;  if flightDay eq '1217' then nclPath='Z:\research\nevzorov\data\121715\20151217.c1.nc'
-;  if flightDay eq '1124' then nclPath='Z:\research\nevzorov\data\112415\20151124.c1.nc'
-;  if flightDay eq '0806' then nclPath='Z:\research\nevzorov\data\080613\20130806.c1.nc'
-;endif else begin
-;  if flightDay eq '0709' then nclPath='../data/070913/20130709.c1.nc'
-;  if flightDay eq '0710' then nclPath='../data/20130710.c1.nc'
-;  if flightDay eq '0725' then nclPath='../data/072513/20130725.c1.nc' ;tons of level ca
-;  if flightDay eq '0727' then nclPath='../data/072713/20130727.c1.nc'
-;  if flightDay eq '0728' then nclPath='../data/072813/20130728.c1.nc'
-;  if flightDay eq '0729' then nclPath='../data/072913/20130729.c1.nc'
-;  if flightDay eq '0807' then nclPath='../data/080713/20130807.c1.nc'
-;  if flightDay eq '0814' then nclPath='../data/081413/20130814.c1.nc'
-;  if flightDay eq '0815' then nclPath='../data/081513/20130815.c1.nc'
-;  if flightDay eq '0803' then nclPath='../data/080313/20130803.c1.nc'
-;  if flightDay eq '0304' then nclPath='../data/030416/20160304.c1.nc'
-;  if flightDay eq '0307' then nclPath='../data/030716/20160307.c1.nc'
-;  if flightDay eq '1217' then nclPath='../data/121715/20151217.c1.nc'
-;  if flightDay eq '1124' then nclPath='../data/112415/20151124.c1.nc'
-;  if flightDay eq '0806' then nclPath='../data/080613/20130806.c1.nc'
-;endelse
+  ;----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 if !version.OS_FAMILY eq 'Windows' then begin

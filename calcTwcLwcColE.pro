@@ -6,11 +6,11 @@ pro calcTwcLwcColE
   plots=2
 
   ;STARTING LEFT VALUE
-  binint=7.
+  binint=4.2
   binintstart=binint
 
   ;WIDTH OF BINS
-  binsize=.25
+  binsize=.04
   binsizestart=binsize
 
   ;LIQUID ONLY POINTS OR ALL
@@ -55,7 +55,7 @@ pro calcTwcLwcColE
 
   restore,'loopdata.sav'
 
-  liqOnly=where(trf gt -3. and lwcfixede lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0 and twcfixede gt 0 and cdpMassMean lt 30.)
+  liqOnly=where(trf gt -3. and lwcfixede lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0 and twcfixede gt 0 and cdpMassMean lt 40.)
  
 
 
@@ -200,7 +200,7 @@ pro calcTwcLwcColE
     bins=binindex[binistarti[i]:biniendi[i]]
     binscon=[binscon,bins]
     countscon=[countscon,n_elements(bins)]
-    print, n_elements(bins)
+    
     ;p1=scatterplot(twcfixede[bins],lwcFixede[bins],/overplot,sym_color=color[i],sym_size=.5,dimensions=[1200,1200])
     cole1=ladfit([zeros,lwcfixede[bins]],[zeros,twcfixede[bins]])
     cole2=ladfit([zeros,twcfixede[bins]],[zeros,lwcFixede[bins]])
@@ -252,7 +252,7 @@ pro calcTwcLwcColE
 
 
 
-    print,((binsizestart*(i+1.))/38.)*100.
+    print,binintstart+binsizestart*(i+1.),'-',n_elements(bins)
   endfor
   
 

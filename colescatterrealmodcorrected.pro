@@ -109,10 +109,10 @@ pro colescatterrealModCorrected
 
   restore,'colesavefile.sav'
   restore,'colesavefileB.sav'
-  coleB=colevartwc
+  coleB=colecontrollwc
   coleC=colecontrollwcB
 
-  type='twc'
+  type='twc2'
 
   if type eq 'twc' then begin
     var1=colevarlwc
@@ -150,7 +150,7 @@ pro colescatterrealModCorrected
   p5.ytitle='LWC/TWC'
 
   p5.xrange=[0,42]
-  p5.yrange=[.2,1.2]
+  p5.yrange=[0,2.]
 
 
   liqonly2=where(trf gt -3. and lwc lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and cdpconc gt 5)
@@ -180,7 +180,7 @@ pro colescatterrealModCorrected
   
   
   ;p10=plot(vmdGeoMeanB,.5*vmdGeoMeanB^.2+.04,/overplot)
-  p10=plot([vmdGeoMean,fif],[yfit,nin],/overplot)
+  ;p10=plot([vmdGeoMean,fif],[yfit,nin],/overplot)
   
   
   
