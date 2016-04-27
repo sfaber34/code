@@ -109,24 +109,14 @@ pro colescatterrealModCorrected
 
   restore,'colesavefile.sav'
   restore,'colesavefileB.sav'
+  
+  
+  
+  
   coleB=colecontrollwc
-  coleC=colecontrollwcB
+  coleC=colecontroltwc
 
-  type='twc2'
-
-  if type eq 'twc' then begin
-    var1=colevarlwc
-    var2=colevartwc
-    ;var3=colevarbothlwc
-  endif else if type eq 'twc2' then begin
-    var1=colevarlwc
-    var2=colevarLwc2
-    ;var3=colevarbothtwc
-  endif else if type eq 'lwc' then begin
-    var1=colevarcontroltwc
-    var2=colevartwc
-    ;var3=colevarbothtwc
-  endif
+  type='lwc'
 
 
 
@@ -142,8 +132,8 @@ pro colescatterrealModCorrected
   yErr=dindgen(n_elements(coleB),start=0,increment=0)
 
 
-  p5=scatterplot(vmdGeoMean,coleB,sym_thick=2,sym_color='blue',name=type+' Eq. Coll. E',dimensions=[1500,1200])
-  ;p6=scatterplot(coleCx,ColeC,sym_thick=2,sym_color='red',/overplot,name=type+' Eq. Coll. E')
+  p5=scatterplot(vmdGeoMean,coleB,sym_thick=2,sym_color='black',name=type+' Eq. Coll. E',dimensions=[1500,1200],sym_transparency=40)
+  p6=scatterplot(vmdGeoMean,ColeC,sym_thick=2,sym_color='red',/overplot,name=type+' Eq. Coll. E')
 
   p5=plot([0,50],[1,1],color='grey',/overplot,linestyle=2, thick=2)
   p5.xtitle='VMD um'
@@ -159,13 +149,13 @@ pro colescatterrealModCorrected
 
 
   ;for LWC
-  ;if type eq 'lwc' then p2=plot(massmeansorted,coleliqsorted,color='green',thick=2,linestyle=2,dimensions=[1200,1200],margin=[110,70,30,20],/device,/overplot)
+  if type eq 'lwc' then p2=plot(massmeansorted,coleliqsorted,color='green',thick=2,linestyle=2,dimensions=[1200,1200],margin=[110,70,30,20],/device,/overplot)
 
   ;for TWC
-  if type eq 'twc' then p3=plot(massmeansorted,coletotsorted,color='green',thick=2,linestyle=2,dimensions=[1200,1200],margin=[110,70,30,20],/device,/overplot)
+  if type eq 'twc' then p3=plot(massmeansorted,coletotsorted,color='red',thick=2,linestyle=2,dimensions=[1200,1200],margin=[110,70,30,20],/device,/overplot)
 
   ;for TWC2
-  if type eq 'twc2' then p4=plot(massmeansorted,coleliqsorted/coletotsorted,color='green',thick=2,linestyle=2,dimensions=[1200,1200],margin=[110,70,30,20],/device,/overplot)
+  if type eq 'twc2' then p4=plot(massmeansorted,coleliqsorted/coletotsorted,color='red',thick=2,linestyle=2,dimensions=[1200,1200],margin=[110,70,30,20],/device,/overplot)
 
 
 
