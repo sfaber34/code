@@ -14,45 +14,53 @@ common t,t
 
 
 if !version.OS_FAMILY eq 'Windows' then begin
-  if flightDay eq '0709' then nclPath='Z:\research\nevzorov\data\070913\20130709.c1.nc'
-  if flightDay eq '0710' then nclPath='Z:\research\nevzorov\data\071013\20130710.c1.nc'
-  if flightDay eq '0725' then nclPath='Z:\research\nevzorov\data\072513\20130725.c1.nc'
-  if flightDay eq '0727' then nclPath='Z:\research\nevzorov\data\072713\20130727.c1.nc'
-  if flightDay eq '0728' then nclPath='Z:\research\nevzorov\data\072813\20130728.c1.nc'
-  if flightDay eq '0729' then nclPath='Z:\research\nevzorov\data\072913\20130729.c1.nc'
-  if flightDay eq '0807' then nclPath='Z:\research\nevzorov\data\080713\20130807.c1.nc'
-  if flightDay eq '0814' then nclPath='Z:\research\nevzorov\data\081413\20130814.c1.nc'
-  if flightDay eq '0815' then nclPath='Z:\research\nevzorov\data\081513\20130815.c1.nc'
-  if flightDay eq '0803' then nclPath='Z:\research\nevzorov\data\080313\20130803.c1.nc'
-  if flightDay eq '0307' then nclPath='Z:\research\nevzorov\data\030716\20160307.c1.nc'
-  if flightDay eq '0304' then nclPath='Z:\research\nevzorov\data\030416\20160304.c1.nc'
-  if flightDay eq '1217' then nclPath='Z:\research\nevzorov\data\121715\20151217.c1.nc'
-  if flightDay eq '1124' then nclPath='Z:\research\nevzorov\data\112415\20151124.c1.nc'
-  if flightDay eq '0806' then nclPath='Z:\research\nevzorov\data\080613\20130806.c1.nc'
+  if flightDay eq '0709' then nclPath='..\data\20130709.c1.nc'
+  if flightDay eq '0710' then nclPath='..\data\20130710.c1.nc'
+  if flightDay eq '0725' then nclPath='..\data\20130725.c1.nc'
+  if flightDay eq '0727' then nclPath='..\data\20130727.c1.nc'
+  if flightDay eq '0728' then nclPath='..\data\20130728.c1.nc'
+  if flightDay eq '0729' then nclPath='..\data\20130729.c1.nc'
+  if flightDay eq '0807' then nclPath='..\data\20130807.c1.nc'
+  if flightDay eq '0814' then nclPath='..\data\20130814.c1.nc'
+  if flightDay eq '0815' then nclPath='..\data\20130815.c1.nc'
+  if flightDay eq '0802' then nclPath='..\data\20130802.c1.nc'
+  if flightDay eq '0803' then nclPath='..\data\20130803.c1.nc'
+  if flightDay eq '0304' then nclPath='..\data\030416\20160304.c1.nc'
+  if flightDay eq '0307' then nclPath='..\data\030716\20160307.c1.nc'
+  if flightDay eq '1217' then nclPath='..\data\121715\20151217.c1.nc'
+  if flightDay eq '1124' then nclPath='..\data\112415\20151124.c1.nc'
+  if flightDay eq '0806' then nclPath='..\data\20130806.c1.nc'  
+  if flightDay eq '0813' then nclPath='..\data\20130813.c1.nc'
+  if flightDay eq '0817' then nclPath='..\data\20130817.c1.nc'
+  if flightDay eq '0722' then nclPath='..\data\20130722.c1.nc'
+  if flightDay eq '0718' then nclPath='..\data\20130718.c1.nc'
+  if flightDay eq '0125' then nclPath='..\data\012513\20160125.c1.nc'
+  if flightDay eq '0817a' then nclPath='..\data\20130817a.c1.nc'
+  if flightDay eq '0817b' then nclPath='..\data\20130817b.c1.nc'
 endif else begin
-  if flightDay eq '0709' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130709.c1.nc'
-  if flightDay eq '0710' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130710.c1.nc'
-  if flightDay eq '0725' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130725.c1.nc'
-  if flightDay eq '0727' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130727.c1.nc'
-  if flightDay eq '0728' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130728.c1.nc'
-  if flightDay eq '0729' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130729.c1.nc'
-  if flightDay eq '0807' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130807.c1.nc'
-  if flightDay eq '0814' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130814.c1.nc'
-  if flightDay eq '0815' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130815.c1.nc'
-  if flightDay eq '0802' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130802.c1.nc'
-  if flightDay eq '0803' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130803.c1.nc'
-  if flightDay eq '0304' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/030416/20160304.c1.nc'
-  if flightDay eq '0307' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/030716/20160307.c1.nc'
-  if flightDay eq '1217' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/121715/20151217.c1.nc'
-  if flightDay eq '1124' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/112415/20151124.c1.nc'
-  if flightDay eq '0806' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130806.c1.nc'  
-  if flightDay eq '0813' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130813.c1.nc'
-  if flightDay eq '0817' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130817.c1.nc'
-  if flightDay eq '0722' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130722.c1.nc'
-  if flightDay eq '0718' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130718.c1.nc'
-  if flightDay eq '0125' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/012513/20160125.c1.nc'
-  if flightDay eq '0817a' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130817a.c1.nc'
-  if flightDay eq '0817b' then nclPath='/Users/spencerfaber/batBackup/Research/nevzorov/data/20130817b.c1.nc'
+  if flightDay eq '0709' then nclPath='../data/20130709.c1.nc'
+  if flightDay eq '0710' then nclPath='../data/20130710.c1.nc'
+  if flightDay eq '0725' then nclPath='../data/20130725.c1.nc'
+  if flightDay eq '0727' then nclPath='../data/20130727.c1.nc'
+  if flightDay eq '0728' then nclPath='../data/20130728.c1.nc'
+  if flightDay eq '0729' then nclPath='../data/20130729.c1.nc'
+  if flightDay eq '0807' then nclPath='../data/20130807.c1.nc'
+  if flightDay eq '0814' then nclPath='../data/20130814.c1.nc'
+  if flightDay eq '0815' then nclPath='../data/20130815.c1.nc'
+  if flightDay eq '0802' then nclPath='../data/20130802.c1.nc'
+  if flightDay eq '0803' then nclPath='../data/20130803.c1.nc'
+  if flightDay eq '0304' then nclPath='../data/030416/20160304.c1.nc'
+  if flightDay eq '0307' then nclPath='../data/030716/20160307.c1.nc'
+  if flightDay eq '1217' then nclPath='../data/121715/20151217.c1.nc'
+  if flightDay eq '1124' then nclPath='../data/112415/20151124.c1.nc'
+  if flightDay eq '0806' then nclPath='../data/20130806.c1.nc'  
+  if flightDay eq '0813' then nclPath='../data/20130813.c1.nc'
+  if flightDay eq '0817' then nclPath='../data/20130817.c1.nc'
+  if flightDay eq '0722' then nclPath='../data/20130722.c1.nc'
+  if flightDay eq '0718' then nclPath='../data/20130718.c1.nc'
+  if flightDay eq '0125' then nclPath='../data/012513/20160125.c1.nc'
+  if flightDay eq '0817a' then nclPath='../data/20130817a.c1.nc'
+  if flightDay eq '0817b' then nclPath='../data/20130817b.c1.nc'
   
 endelse
 
@@ -861,10 +869,10 @@ lwcFixedE=pLiq/(1.*tas*aLiq*lLiqStar)
 
 
 ;WATER CONTENT TOTAL
-twc=pTot/(colETot*tas*aTot*lIceStar)
-twc2=pTot/(colETot2*tas*aTot*lIceStar)
-twcolde=pTot/(colETot3*tas*aTot*lIceStar)
-twcFixedE=pTot/(1.*tas*aTot*lIceStar)
+twc=pTot/(colETot*tas*aTot*lLiqStar)
+twc2=pTot/(colETot2*tas*aTot*lLiqStar)
+twcolde=pTot/(colETot3*tas*aTot*lLiqStar)
+twcFixedE=pTot/(1.*tas*aTot*lLiqStar)
 
 
 

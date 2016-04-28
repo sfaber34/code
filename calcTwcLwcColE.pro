@@ -10,7 +10,7 @@ pro calcTwcLwcColE
   binintstart=binint
 
   ;WIDTH OF BINS
-  binsize=.04
+  binsize=.05
   binsizestart=binsize
 
   ;LIQUID ONLY POINTS OR ALL
@@ -134,6 +134,8 @@ pro calcTwcLwcColE
   lwcDtwcFixedE=[]
   lwcDtwc=[]
   vmdGeoMean=[]
+  colevarTwcB=[]
+  colevarLwcB=[]
   
 
   starti=0
@@ -206,8 +208,10 @@ pro calcTwcLwcColE
     cole2=ladfit([zeros,twcfixede[bins]],[zeros,lwcFixede[bins]])
     cole3=ladfit([zeros,lwc[bins]],[zeros,twcfixede[bins]])
     cole4=ladfit([zeros,twc[bins]],[zeros,lwcfixede[bins]])
-    cole5=ladfit([zeros,lwcfixede[bins]],[zeros,twc[bins]])
-    cole6=ladfit([zeros,twcfixede[bins]],[zeros,lwc[bins]])
+    cole19=ladfit([zeros,lwcfixede[bins]],[zeros,twc[bins]])
+    cole20=ladfit([zeros,twcfixede[bins]],[zeros,lwc[bins]])
+    cole5=ladfit([zeros,lwc[bins]],[zeros,twc[bins]])
+    cole6=ladfit([zeros,twc[bins]],[zeros,lwc[bins]])
     cole7=ladfit([zeros,cdplwc[bins]],[zeros,lwcfixede[bins]])
     cole8=ladfit([zeros,cdplwc[bins]],[zeros,twcfixede[bins]])
     cole9=ladfit([zeros,cdplwc[bins]],[zeros,lwc[bins]])
@@ -230,6 +234,8 @@ pro calcTwcLwcColE
     coleControlLwc=[coleControlLwc,cole2[1]]
     colevarTwc=[colevarTwc,cole3[1]]
     colevarLwc=[colevarLwc,cole4[1]]
+    colevarTwcB=[colevarTwcB,cole19[1]]
+    colevarLwcB=[colevarLwcB,cole20[1]]
     colevarbothTwc=[colevarbothTwc,cole5[1]]
     colevarbothLwc=[colevarbothLwc,cole6[1]]
     cdpVLwcFixedE=[cdpVLwcFixedE,cole7[1]]
@@ -273,20 +279,23 @@ pro calcTwcLwcColE
       lwctwcB=lwctwc
       lwctwc2B=lwctwc2
       vmdGeoMeanB=vmdGeoMean
+      colevarTwcBB=colevartwc
+      colevarLwcBB=colevarlwc
   
       save,filename='colesavefileB.sav',coleControlLwcB,coleControlTwcB,$
       colevarLwcB,colevarTwcB,colevarbothLwcB,colevarbothTwcB,binsizestartB,$
       binintstartB,cdpVLwcFixedEB,cdpVTwcFixedEB,cdpVLwcCorB,cdpVTwcCorB,colevarLwc2B,$
-      colevarbothTwc2B,lwctwcB,lwctwc2B,minbin,vmdGeoMeanB,/verbose
+      colevarbothTwc2B,lwctwcB,lwctwc2B,minbin,vmdGeoMeanB,colevarTwcBB, colevarLwcBB,/verbose
     endif
 
 
     if saveV eq 0 then begin
-      save,filename='colesavefile.sav',coleControlLwc,coleControlTwc,vmdGeoMean,$
+      save,filename='colesavefilehighres.sav',coleControlLwc,coleControlTwc,vmdGeoMean,$
         colevarLwc,colevarTwc,colevarbothLwc,colevarbothTwc,binsizestart,$
         binintstart,cdpVLwcFixedE,cdpVTwcFixedE,cdpVLwcCor,cdpVTwcCor,colevarLwc2,$
         colevarbothTwc2,lwctwc,lwctwc2,binRFixedE,binR,minbin,lwc100Vlwc,$
-        lwc100Vtwc,lwc100VlwcFixedE,lwc100VtwcFixedE,lwcDtwcFixedE,lwcDtwc,/verbose
+        lwc100Vtwc,lwc100VlwcFixedE,lwc100VtwcFixedE,lwcDtwcFixedE,lwcDtwc,$
+        colevarTwcB, colevarLwcB,/verbose
     endif
     
 

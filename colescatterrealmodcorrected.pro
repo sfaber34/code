@@ -14,7 +14,7 @@ pro colescatterrealModCorrected
   ;LIQUID ONLY POINTS OR ALL
   liq=1
 
-
+  highRes=1
 
 
 
@@ -108,15 +108,15 @@ pro colescatterrealModCorrected
 
 
   restore,'colesavefile.sav'
-  restore,'colesavefileB.sav'
+  ;restore,'colesavefileB.sav'
+  if highres eq 1 then restore,'colesavefilehighres.sav'
   
   
   
-  
-  coleB=colecontrollwc
-  coleC=colecontroltwc
+  coleB=colevarTwc
+  coleC=colevarbothTwc
 
-  type='lwc'
+  type='twc2'
 
 
 
