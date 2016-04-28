@@ -14,7 +14,7 @@ pro colescatterrealModCorrected
   ;LIQUID ONLY POINTS OR ALL
   liq=1
 
-  highRes=1
+  highRes=0
 
 
 

@@ -295,7 +295,7 @@ pro calcTwcLwcColE
         binintstart,cdpVLwcFixedE,cdpVTwcFixedE,cdpVLwcCor,cdpVTwcCor,colevarLwc2,$
         colevarbothTwc2,lwctwc,lwctwc2,binRFixedE,binR,minbin,lwc100Vlwc,$
         lwc100Vtwc,lwc100VlwcFixedE,lwc100VtwcFixedE,lwcDtwcFixedE,lwcDtwc,$
-        colevarTwcB, colevarLwcB,/verbose
+        colevarTwcBB, colevarLwcBB,/verbose
     endif
     
 

@@ -758,27 +758,6 @@ endfor
 
 
 
-;colETot=dindgen(n_elements(pmb),start=1,increment=0)
-;
-;for c=0,n_elements(pmb)-1 do begin
-;  if cdpmassmean[c] le 9.700 then begin
-;    colETot[c]=0.0020551916397479886+0.016052370757165590*cdpmassmean[c]+0.011329962438253460*cdpmassmean[c]^2.-0.0011349352917058297*cdpmassmean[c]^3.+3.6106506979327602e-05*cdpmassmean[c]^4.
-;  endif
-;  if cdpmassmean[c] gt 9.700 and cdpmassmean[c] le 20.694 then begin
-;    colETot[c]=-0.31009168818127364+0.13503333847620524*cdpmassmean[c]-0.0068382863937586080*cdpmassmean[c]^2.+0.00018645650254711654*cdpmassmean[c]^3.-2.1789772617353265e-06*cdpmassmean[c]^4.
-;  endif
-;  if cdpmassmean[c] gt 20.694 and cdpmassmean[c] le 90.537 then begin
-;    colETot[c]=xxxxxxxx+xxxxxxx*cdpmassmean[c]+xxxxxxx*cdpmassmean[c]^2.+xxxxxxx*cdpmassmean[c]^3.+xxxxxxx*cdpmassmean[c]^4.+xxxxxxx*cdpmassmean[c]^5.+xxxxxxx*cdpmassmean[c]^6.
-;  endif
-;  if cdpmassmean[c] gt 90.537 then begin
-;    colETot[c]=1.
-;  endif
-;endfor
-
-
-
-
-
 
 
 ;-----LIQUID-----

@@ -159,8 +159,8 @@ pro lwctwc10011
   fixedtwcerror=[]
   maxx=2.5
   
-  xvar=lwc100
-  yvar1=lwc
+  xvar=lwc
+  yvar1=twcfixede
   yvar2=twc
   
 
