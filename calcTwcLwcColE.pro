@@ -56,7 +56,7 @@ pro calcTwcLwcColE
   restore,'loopdata.sav'
 
   liqOnly=where(trf gt -3. and lwcfixede lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0 and twcfixede gt 0 and cdpMassMean lt 40.)
- 
+
 
 
   if liq eq 1 then begin
@@ -70,11 +70,11 @@ pro calcTwcLwcColE
     cdplwc=cdplwc[liqonly]
     trf=trf[liqonly]
     lwcfixede=lwcfixede[liqonly]
-    twcfixede=twcfixede[liqonly] 
-    twc2=twc2[liqonly] 
-    cipmodconc0=cipmodconc0[liqonly] 
-    cipmodconc1=cipmodconc1[liqonly] 
-    cipmodconc2=cipmodconc2[liqonly]  
+    twcfixede=twcfixede[liqonly]
+    twc2=twc2[liqonly]
+    cipmodconc0=cipmodconc0[liqonly]
+    cipmodconc1=cipmodconc1[liqonly]
+    cipmodconc2=cipmodconc2[liqonly]
     lwc100=lwc100[liqonly]
   endif
 
@@ -136,7 +136,7 @@ pro calcTwcLwcColE
   vmdGeoMean=[]
   colevarTwcB=[]
   colevarLwcB=[]
-  
+
 
   starti=0
   endi=0
@@ -148,7 +148,7 @@ pro calcTwcLwcColE
     if selectinds[0] ne -1 then begin
 
       vmdGeoMean=[vmdGeoMean,(min(cdpmassmean[selectinds])+max(cdpmassmean[selectinds]))/2.]
-      
+
       binindex=[binindex,selectinds]
       binistarti=[binistarti,starti]
 
@@ -158,7 +158,7 @@ pro calcTwcLwcColE
     endif
     starti=endi
 
-   
+
 
     binint=binint+binsize
     binint2=binint2+binsize
@@ -202,7 +202,7 @@ pro calcTwcLwcColE
     bins=binindex[binistarti[i]:biniendi[i]]
     binscon=[binscon,bins]
     countscon=[countscon,n_elements(bins)]
-    
+
     ;p1=scatterplot(twcfixede[bins],lwcFixede[bins],/overplot,sym_color=color[i],sym_size=.5,dimensions=[1200,1200])
     cole1=ladfit([zeros,lwcfixede[bins]],[zeros,twcfixede[bins]])
     cole2=ladfit([zeros,twcfixede[bins]],[zeros,lwcFixede[bins]])
@@ -225,8 +225,8 @@ pro calcTwcLwcColE
     cole17=ladfit([zeros,lwc100[bins]],[zeros,lwc[bins]])
     cole18=ladfit([zeros,lwc100[bins]],[zeros,twc[bins]])
 
-    
-    
+
+
 
 
     cole0=[cole0,cole1[0]]
@@ -254,13 +254,13 @@ pro calcTwcLwcColE
     lwc100VtwcFixedE=[lwc100VtwcFixedE,cole16[1]]
     lwcDtwcFixedE=[lwcDtwcFixedE,mean(lwcFixedE[bins])/mean(twcFixedE[bins])]
     lwcDtwc=[lwcDtwc,mean(lwc[bins])/mean(twc[bins])]
-    
+
 
 
 
     print,binintstart+binsizestart*(i+1.),'-',n_elements(bins)
   endfor
-  
+
 
     if saveV eq 1 then begin
       cole0B=cole0
@@ -281,7 +281,7 @@ pro calcTwcLwcColE
       vmdGeoMeanB=vmdGeoMean
       colevarTwcBB=colevartwc
       colevarLwcBB=colevarlwc
-  
+
       save,filename='colesavefileB.sav',coleControlLwcB,coleControlTwcB,$
       colevarLwcB,colevarTwcB,colevarbothLwcB,colevarbothTwcB,binsizestartB,$
       binintstartB,cdpVLwcFixedEB,cdpVTwcFixedEB,cdpVLwcCorB,cdpVTwcCorB,colevarLwc2B,$
@@ -297,7 +297,7 @@ pro calcTwcLwcColE
         lwc100Vtwc,lwc100VlwcFixedE,lwc100VtwcFixedE,lwcDtwcFixedE,lwcDtwc,$
         colevarTwcBB, colevarLwcBB,/verbose
     endif
-    
+
 
 
 
