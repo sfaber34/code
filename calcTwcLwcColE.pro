@@ -10,7 +10,7 @@ pro calcTwcLwcColE
   binintstart=binint
 
   ;WIDTH OF BINS
-  binsize=.2
+  binsize=1.
   binsizestart=binsize
 
   ;LIQUID ONLY POINTS OR ALL
@@ -102,7 +102,6 @@ pro calcTwcLwcColE
   binscon=[]
   countscon=[]
   ncountscon=[0]
-  cole0=[]
   coleControlLwc=[]
   coleControlTwc=[]
   colevarLwc=[]
@@ -125,7 +124,6 @@ pro calcTwcLwcColE
   colevarbothTwc2=[]
   lwctwc=[]
   lwctwc2=[]
-  binRFixedE=[]
   binR=[]
   lwc100Vlwc=[]
   lwc100Vtwc=[]
@@ -203,57 +201,31 @@ pro calcTwcLwcColE
     binscon=[binscon,bins]
     countscon=[countscon,n_elements(bins)]
 
-    ;p1=scatterplot(twcfixede[bins],lwcFixede[bins],/overplot,sym_color=color[i],sym_size=.5,dimensions=[1200,1200])
-    cole1=ladfit([zeros,lwcfixede[bins]],[zeros,twcfixede[bins]])
-    cole2=ladfit([zeros,twcfixede[bins]],[zeros,lwcFixede[bins]])
-    cole3=ladfit([zeros,lwc[bins]],[zeros,twcfixede[bins]])
-    cole4=ladfit([zeros,twc[bins]],[zeros,lwcfixede[bins]])
-    cole19=ladfit([zeros,lwcfixede[bins]],[zeros,twc[bins]])
-    cole20=ladfit([zeros,twcfixede[bins]],[zeros,lwc[bins]])
-    cole5=ladfit([zeros,lwc[bins]],[zeros,twc[bins]])
-    cole6=ladfit([zeros,twc[bins]],[zeros,lwc[bins]])
-    cole7=ladfit([zeros,cdplwc[bins]],[zeros,lwcfixede[bins]])
-    cole8=ladfit([zeros,cdplwc[bins]],[zeros,twcfixede[bins]])
-    cole9=ladfit([zeros,cdplwc[bins]],[zeros,lwc[bins]])
-    cole10=ladfit([zeros,cdplwc[bins]],[zeros,twc[bins]])
-    cole11=ladfit([zeros,twc2[bins]],[zeros,lwcfixede[bins]])
-    cole12=ladfit([zeros,lwcfixede[bins]],[zeros,twc2[bins]])
-    cole13=ladfit([zeros,lwc[bins]],[zeros,twc[bins]])
-    cole14=ladfit([zeros,lwc[bins]],[zeros,twc2[bins]])
-    cole15=ladfit([zeros,lwc100[bins]],[zeros,lwcFixedE[bins]])
-    cole16=ladfit([zeros,lwc100[bins]],[zeros,twcFixedE[bins]])
-    cole17=ladfit([zeros,lwc100[bins]],[zeros,lwc[bins]])
-    cole18=ladfit([zeros,lwc100[bins]],[zeros,twc[bins]])
 
 
 
 
+    coleControlTwc=[coleControlTwc,median(lwcfixede[bins])/median(twcfixede[bins])]
+    coleControlLwc=[coleControlLwc,median(twcfixede[bins])/median(lwcFixede[bins])]
+    colevarTwc=[colevarTwc,median(lwc[bins])/median(twcfixede[bins])]
+    colevarLwc=[colevarLwc,median(twc[bins])/median(lwcfixede[bins])]
+    colevarTwcB=[colevarTwcB,median(lwcfixede[bins])/median(twc[bins])]
+    colevarLwcB=[colevarLwcB,median(twcfixede[bins])/median(lwc[bins])]
+    colevarbothTwc=[colevarbothTwc,median(lwc[bins])/median(twc[bins])]
+    colevarbothLwc=[colevarbothLwc,median(twc[bins])/median(lwc[bins])]
+    cdpVLwcFixedE=[cdpVLwcFixedE,median(cdplwc[bins])/median(lwcfixede[bins])]
+    cdpVTwcFixedE=[cdpVTwcFixedE,median(cdplwc[bins])/median(twcfixede[bins])]
+    cdpVLwc=[cdpVLwcCor,median(cdplwc[bins])/median(lwc[bins])]
+    cdpVTwcCor=[cdpVTwcCor,median(cdplwc[bins])/median(twc[bins])]
+    colevarLwc2=[colevarLwc2,median(twc2[bins])/median(lwcfixede[bins])]
+    colevarbothTwc2=[colevarbothTwc2,median(lwcfixede[bins])/median(twc2[bins])]
+    lwctwc=[lwctwc,median(lwc[bins])/median(twc[bins])]
+    lwctwc2=[lwctwc2,median(lwc[bins])/median(twc2[bins])]
+    lwc100Vlwc=[lwc100Vlwc,median(lwc100[bins])/median(lwc[bins])]
+    lwc100Vtwc=[lwc100Vtwc,median(lwc100[bins])/median(twc[bins])]
+    lwc100VlwcFixedE=[lwc100VlwcFixedE,median(lwc100[bins])/median(lwcFixedE[bins])]
+    lwc100VtwcFixedE=[lwc100VtwcFixedE,median(lwc100[bins])/median(twcFixedE[bins])]
 
-    cole0=[cole0,cole1[0]]
-    coleControlTwc=[coleControlTwc,cole1[1]]
-    coleControlLwc=[coleControlLwc,cole2[1]]
-    colevarTwc=[colevarTwc,cole3[1]]
-    colevarLwc=[colevarLwc,cole4[1]]
-    colevarTwcB=[colevarTwcB,cole19[1]]
-    colevarLwcB=[colevarLwcB,cole20[1]]
-    colevarbothTwc=[colevarbothTwc,cole5[1]]
-    colevarbothLwc=[colevarbothLwc,cole6[1]]
-    cdpVLwcFixedE=[cdpVLwcFixedE,cole7[1]]
-    cdpVTwcFixedE=[cdpVTwcFixedE,cole8[1]]
-    cdpVLwcCor=[cdpVLwcCor,cole9[1]]
-    cdpVTwcCor=[cdpVTwcCor,cole10[1]]
-    colevarLwc2=[colevarLwc2,cole11[1]]
-    colevarbothTwc2=[colevarbothTwc2,cole12[1]]
-    lwctwc=[lwctwc,cole13[1]]
-    lwctwc2=[lwctwc2,cole14[1]]
-    binRFixedE=[binRFixedE,mean(lwcfixede[bins]/twcfixede[bins])]
-    binR=[binR,mean(lwc[bins]/twc[bins])]
-    lwc100Vlwc=[lwc100Vlwc,cole17[1]]
-    lwc100Vtwc=[lwc100Vtwc,cole18[1]]
-    lwc100VlwcFixedE=[lwc100VlwcFixedE,cole15[1]]
-    lwc100VtwcFixedE=[lwc100VtwcFixedE,cole16[1]]
-    lwcDtwcFixedE=[lwcDtwcFixedE,mean(lwcFixedE[bins])/mean(twcFixedE[bins])]
-    lwcDtwc=[lwcDtwc,mean(lwc[bins])/mean(twc[bins])]
 
 
 
@@ -262,41 +234,39 @@ pro calcTwcLwcColE
   endfor
 
 
-    if saveV eq 1 then begin
-      cole0B=cole0
-      coleControlTwcB=coleControlTwc
-      coleControlLwcB=coleControlLwc
-      colevarTwcB=colevarTwc
-      colevarLwcB=colevarLwc
-      colevarbothTwcB=colevarbothTwc
-      colevarbothLwcB=colevarbothLwc
-      cdpVLwcFixedEB=cdpVLwcFixedE
-      cdpVTwcFixedEB=cdpVTwcFixedE
-      cdpVLwcCorB=cdpVLwcCor
-      cdpVTwcCorB=cdpVTwcCor
-      colevarLwc2B=colevarLwc2
-      colevarbothTwc2B=colevarbothTwc2
-      lwctwcB=lwctwc
-      lwctwc2B=lwctwc2
-      vmdGeoMeanB=vmdGeoMean
-      colevarTwcBB=colevartwc
-      colevarLwcBB=colevarlwc
+  if saveV eq 1 then begin
+    coleControlTwcB=coleControlTwc
+    coleControlLwcB=coleControlLwc
+    colevarTwcB=colevarTwc
+    colevarLwcB=colevarLwc
+    colevarbothTwcB=colevarbothTwc
+    colevarbothLwcB=colevarbothLwc
+    cdpVLwcFixedEB=cdpVLwcFixedE
+    cdpVTwcFixedEB=cdpVTwcFixedE
+    cdpVLwcB=cdpVLwc
+    cdpVTwcB=cdpVTwc
+    colevarLwc2B=colevarLwc2
+    colevarbothTwc2B=colevarbothTwc2
+    lwctwcB=lwctwc
+    lwctwc2B=lwctwc2
+    vmdGeoMeanB=vmdGeoMean
+    colevarTwcBB=colevartwc
+    colevarLwcBB=colevarlwc
 
-      save,filename='colesavefileB.sav',coleControlLwcB,coleControlTwcB,$
+    save,filename='colesavefileB.sav',coleControlLwcB,coleControlTwcB,$
       colevarLwcB,colevarTwcB,colevarbothLwcB,colevarbothTwcB,binsizestartB,$
-      binintstartB,cdpVLwcFixedEB,cdpVTwcFixedEB,cdpVLwcCorB,cdpVTwcCorB,colevarLwc2B,$
+      binintstartB,cdpVLwcFixedEB,cdpVTwcFixedEB,cdpVLwcB,cdpVTwcB,colevarLwc2B,$
       colevarbothTwc2B,lwctwcB,lwctwc2B,minbin,vmdGeoMeanB,colevarTwcBB, colevarLwcBB,/verbose
-    endif
+  endif
 
 
-    if saveV eq 0 then begin
-      save,filename='colesavefilehighres.sav',coleControlLwc,coleControlTwc,vmdGeoMean,$
-        colevarLwc,colevarTwc,colevarbothLwc,colevarbothTwc,binsizestart,$
-        binintstart,cdpVLwcFixedE,cdpVTwcFixedE,cdpVLwcCor,cdpVTwcCor,colevarLwc2,$
-        colevarbothTwc2,lwctwc,lwctwc2,binRFixedE,binR,minbin,lwc100Vlwc,$
-        lwc100Vtwc,lwc100VlwcFixedE,lwc100VtwcFixedE,lwcDtwcFixedE,lwcDtwc,$
-        colevarTwcBB, colevarLwcBB,/verbose
-    endif
+  if saveV eq 0 then begin
+    save,filename='colesavefilehighres.sav',coleControlLwc,coleControlTwc,vmdGeoMean,$
+      colevarLwc,colevarTwc,colevarbothLwc,colevarbothTwc,binsizestart,$
+      binintstart,cdpVLwcFixedE,cdpVTwcFixedE,cdpVLwc,cdpVTwc,colevarLwc2,$
+      colevarbothTwc2,lwctwc,lwctwc2,minbin,lwc100Vlwc,$
+      lwc100Vtwc,lwc100VlwcFixedE,lwc100VtwcFixedE,/verbose
+  endif
 
 
 

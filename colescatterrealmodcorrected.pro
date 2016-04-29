@@ -17,20 +17,6 @@ pro colescatterrealModCorrected
   highRes=1
 
 
-
-
-  bincount=60/binsize
-  ticks=string(dindgen(bincount,start=binint,increment=binsize))
-  ticks=strsplit(ticks,'.',/extract)
-
-  ticks2=make_array(n_elements(ticks),/string)
-  for u=0,n_elements(ticks)-1 do begin
-    ticks2[u]=ticks[u,0]
-  endfor
-
-  ticks=[strcompress(ticks2),' ',' ']
-
-
   ;---------------------------------------------------------------------------------------------------
   ;---------------------------------------------------------------------------------------------------
   ;---------------------------------------------------------------------------------------------------
@@ -114,7 +100,7 @@ pro colescatterrealModCorrected
   
   
   coleB=colecontrollwc
-  coleC=lwcDtwcFixedE
+  coleC=colevarbothlwc
 
   type='twc2'
 
