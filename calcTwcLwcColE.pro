@@ -3,10 +3,10 @@ pro calcTwcLwcColE
 
 
 
-  plots=2
+  plots=1
 
   ;STARTING LEFT VALUE
-  binint=4.2
+  binint=7.
   binintstart=binint
 
   ;WIDTH OF BINS
@@ -37,19 +37,6 @@ pro calcTwcLwcColE
   ;---------------------------------------------------------------------------------------------------
   ;---------------------------------------------------------------------------------------------------
 
-
-
-  color=['black','deep sky blue','green','firebrick','purple','dark orange','sienna',$
-    'midnight blue','dark olive green','firebrick','dark slate grey','dark khaki','black',$
-    'deep sky blue','green','firebrick','purple','dark orange','sienna','midnight blue',$
-    'dark olive green','firebrick','dark slate grey','dark khaki','black','deep sky blue',$
-    'green','firebrick','purple','dark orange',$
-    'midnight blue','dark olive green','firebrick','dark slate grey','dark khaki','black',$
-    'midnight blue','dark olive green','firebrick','dark slate grey','dark khaki','black',$
-    'midnight blue','dark olive green','firebrick','dark slate grey','dark khaki','black',$
-    'midnight blue','dark olive green','firebrick','dark slate grey','dark khaki','black',$
-    'midnight blue','dark olive green','firebrick','dark slate grey','dark khaki','black',$
-    'midnight blue','dark olive green','firebrick','dark slate grey','dark khaki','black']
 
 
 
@@ -134,6 +121,10 @@ pro calcTwcLwcColE
   vmdGeoMean=[]
   colevarTwcB=[]
   colevarLwcB=[]
+  lwcfixedeq1=[]
+  lwcfixedeq3=[]
+  twcfixedeq1=[]
+  twcfixedeq3=[]
 
 
   starti=0
@@ -223,10 +214,39 @@ pro calcTwcLwcColE
     lwctwc2=[lwctwc2,mean(lwc[bins])/mean(twc2[bins])]
     lwc100Vlwc=[lwc100Vlwc,mean(lwc100[bins])/mean(lwc[bins])]
     lwc100Vtwc=[lwc100Vtwc,mean(lwc100[bins])/mean(twc[bins])]
-    lwc100VlwcFixedE=[lwc100VlwcFixedE,mean(lwc100[bins])/mean(lwcFixedE[bins])]
-    lwc100VtwcFixedE=[lwc100VtwcFixedE,mean(lwc100[bins])/mean(twcFixedE[bins])]
+    lwc100VlwcFixedE=[lwc100VlwcFixedE,abs(mean(lwc100[bins])-mean(lwcFixedE[bins]))/((mean(lwcFixedE[bins])+mean(lwc100[bins]))/2.)]
+    lwc100VtwcFixedE=[lwc100VtwcFixedE,abs(mean(lwc100[bins])-mean(twcFixedE[bins]))/((mean(twcFixedE[bins])+mean(lwc100[bins]))/2.)]
 
 
+    
+    twcfixedeK=lwcfixede[bins]/twcfixede[bins]
+    lwcfixedeK=twcfixede[bins]/lwcfixede[bins]
+    
+    lwcfixedsort=sort(twcfixedeK)
+    lwcfixedesorted=twcfixedeK[lwcfixedsort]
+    
+    twcfixedsort=sort(lwcfixedeK)
+    twcfixedesorted=lwcfixedeK[twcfixedsort]
+    
+    
+    lwcRatio=lwcFixedE[bins]/lwc100[bins]
+    twcRatio=twcFixedE[bins]/lwc100[bins]
+    
+    lwcRatiosort=sort(lwcRatio)
+    lwcRatiosorted=lwcRatio[lwcRatiosort]
+    
+    twcRatiosort=sort(twcRatio)
+    twcRatiosorted=twcRatio[twcRatiosort]
+    
+    
+    
+    
+    
+    
+    lwcfixedeq1=[lwcfixedeq1,mean(lwcfixede[bins])/mean(twcfixede[bins])-lwcfixedesorted[n_elements(lwcfixedesorted)*.25]]
+    lwcfixedeq3=[lwcfixedeq3,lwcfixedesorted[n_elements(lwcfixedesorted)*.75]-mean(lwcfixede[bins])/mean(twcfixede[bins])]
+    twcfixedeq1=[twcfixedeq1,mean(twcfixede[bins])/mean(lwcFixede[bins])-twcfixedesorted[n_elements(twcfixedesorted)*.25]]
+    twcfixedeq3=[twcfixedeq3,twcfixedesorted[n_elements(twcfixedesorted)*.75]-mean(twcfixede[bins])/mean(lwcFixede[bins])]
 
 
 
@@ -252,11 +272,16 @@ pro calcTwcLwcColE
     vmdGeoMeanB=vmdGeoMean
     colevarTwcBB=colevartwc
     colevarLwcBB=colevarlwc
+    lwcfixedeq1B=lwcfixedeq1
+    lwcfixedeq3B=lwcfixedeq3
+    twcfixedeq1B=twcfixedeq1
+    twcfixedeq3B=twcfixedeq3
 
     save,filename='colesavefileB.sav',coleControlLwcB,coleControlTwcB,$
       colevarLwcB,colevarTwcB,colevarbothLwcB,colevarbothTwcB,binsizestartB,$
       binintstartB,cdpVLwcFixedEB,cdpVTwcFixedEB,cdpVLwcB,cdpVTwcB,colevarLwc2B,$
-      colevarbothTwc2B,lwctwcB,lwctwc2B,minbin,vmdGeoMeanB,colevarTwcBB, colevarLwcBB,/verbose
+      colevarbothTwc2B,lwctwcB,lwctwc2B,minbin,vmdGeoMeanB,colevarTwcBB, colevarLwcBB,$
+      lwcfixedeq1B,lwcfixedeq3B,twcfixedeq1B,twcfixedeq3B,color,/verbose
   endif
 
 
@@ -265,7 +290,8 @@ pro calcTwcLwcColE
       colevarLwc,colevarTwc,colevarbothLwc,colevarbothTwc,binsizestart,$
       binintstart,cdpVLwcFixedE,cdpVTwcFixedE,cdpVLwc,cdpVTwc,colevarLwc2,$
       colevarbothTwc2,lwctwc,lwctwc2,minbin,lwc100Vlwc,$
-      lwc100Vtwc,lwc100VlwcFixedE,lwc100VtwcFixedE,/verbose
+      lwc100Vtwc,lwc100VlwcFixedE,lwc100VtwcFixedE,$
+      lwcfixedeq1,lwcfixedeq3,twcfixedeq1,twcfixedeq3,color,/verbose
   endif
 
 

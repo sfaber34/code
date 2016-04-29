@@ -857,6 +857,9 @@ twcFixedE=pTot/(1.*tas*aTot*lLiqStar)
 
 
 
+color=['black','navy','firebrick','dark green','magenta','coral','dodger blue','indian red','orange','olive drab','medium violet red']
+
+
 
 g  = {as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch, $
   pLiq:pLiq, lwc:lwc, lwcnev1:lwcnev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twc:twc,$
@@ -873,7 +876,7 @@ g  = {as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpit
   cdpDEff:cdpDEff,cdpVolMean:cdpVolMean,cdpMassMean:cdpMassMean,coleliq:coleliq,$
   twcFixedE:twcFixedE,colETot:colETot,cdpdbar2:cdpdbar2,twc2:twc2,colEtot2:colEtot2,coletot3:coletot3,$
   twcolde:twcolde,colELiq3:colELiq3,lwcolde:lwcolde,cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,$
-  cipmodconc2:cipmodconc2}
+  cipmodconc2:cipmodconc2,color:color}
 
   
 return,g
@@ -915,7 +918,7 @@ print,'.............'
 print,'endelse'
 print,''
 print,''
-print,'margin=[110,70,30,20]'
+print,',margin=[110,70,30,20],/device'
 end
 
 

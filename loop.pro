@@ -92,16 +92,7 @@ pro loop
       cipmodconc2=[cipmodconc2,g.cipmodconc2]
       lwc100=[lwc100,g.lwc100]
 
-      
-
-
-
-
-      
-      ;p1=plot(dindgen(n_elements(g.pmb)),g.cdpThirdM-g.cdpdbar,dimensions=[1100,1100],thick=4)
-      ;p1.yrange=[-1,1]
-
-
+      color=g.color
     endfor
     
     
@@ -120,15 +111,13 @@ pro loop
     p3=scatterplot(x,cipmodconc2,sym_color='red',/overplot)
 
 
-    stop
-    
 
     save,filename='loopdata.sav',lwc,twc,cdpdbar,trf,twcFixedE,colETot,$
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
       signalTot,cdpconc,ltdiff,tldiff,dbar3m,cdpacc,lwcFixedE,cdpdbar2,$
       dBarBI,cdpSecondM,cdpThirdM,cdpFourthM,cdpDEff,cdpVolMean,cdpMassMean,$
       twc2,coletot2,colEtot3,twcolde,colELiq3,lwcolde,$
-      cipmodconc0,cipmodconc1,cipmodconc2,lwc100,/verbose
+      cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,/verbose
 
 
 
