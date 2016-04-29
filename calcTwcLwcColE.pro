@@ -205,26 +205,26 @@ pro calcTwcLwcColE
 
 
 
-    coleControlTwc=[coleControlTwc,median(lwcfixede[bins])/median(twcfixede[bins])]
-    coleControlLwc=[coleControlLwc,median(twcfixede[bins])/median(lwcFixede[bins])]
-    colevarTwc=[colevarTwc,median(lwc[bins])/median(twcfixede[bins])]
-    colevarLwc=[colevarLwc,median(twc[bins])/median(lwcfixede[bins])]
-    colevarTwcB=[colevarTwcB,median(lwcfixede[bins])/median(twc[bins])]
-    colevarLwcB=[colevarLwcB,median(twcfixede[bins])/median(lwc[bins])]
-    colevarbothTwc=[colevarbothTwc,median(lwc[bins])/median(twc[bins])]
-    colevarbothLwc=[colevarbothLwc,median(twc[bins])/median(lwc[bins])]
-    cdpVLwcFixedE=[cdpVLwcFixedE,median(cdplwc[bins])/median(lwcfixede[bins])]
-    cdpVTwcFixedE=[cdpVTwcFixedE,median(cdplwc[bins])/median(twcfixede[bins])]
-    cdpVLwc=[cdpVLwcCor,median(cdplwc[bins])/median(lwc[bins])]
-    cdpVTwcCor=[cdpVTwcCor,median(cdplwc[bins])/median(twc[bins])]
-    colevarLwc2=[colevarLwc2,median(twc2[bins])/median(lwcfixede[bins])]
-    colevarbothTwc2=[colevarbothTwc2,median(lwcfixede[bins])/median(twc2[bins])]
-    lwctwc=[lwctwc,median(lwc[bins])/median(twc[bins])]
-    lwctwc2=[lwctwc2,median(lwc[bins])/median(twc2[bins])]
-    lwc100Vlwc=[lwc100Vlwc,median(lwc100[bins])/median(lwc[bins])]
-    lwc100Vtwc=[lwc100Vtwc,median(lwc100[bins])/median(twc[bins])]
-    lwc100VlwcFixedE=[lwc100VlwcFixedE,median(lwc100[bins])/median(lwcFixedE[bins])]
-    lwc100VtwcFixedE=[lwc100VtwcFixedE,median(lwc100[bins])/median(twcFixedE[bins])]
+    coleControlTwc=[coleControlTwc,mean(lwcfixede[bins])/mean(twcfixede[bins])]
+    coleControlLwc=[coleControlLwc,mean(twcfixede[bins])/mean(lwcFixede[bins])]
+    colevarTwc=[colevarTwc,mean(lwc[bins])/mean(twcfixede[bins])]
+    colevarLwc=[colevarLwc,mean(twc[bins])/mean(lwcfixede[bins])]
+    colevarTwcB=[colevarTwcB,mean(lwcfixede[bins])/mean(twc[bins])]
+    colevarLwcB=[colevarLwcB,mean(twcfixede[bins])/mean(lwc[bins])]
+    colevarbothTwc=[colevarbothTwc,mean(lwc[bins])/mean(twc[bins])]
+    colevarbothLwc=[colevarbothLwc,mean(twc[bins])/mean(lwc[bins])]
+    cdpVLwcFixedE=[cdpVLwcFixedE,mean(cdplwc[bins])/mean(lwcfixede[bins])]
+    cdpVTwcFixedE=[cdpVTwcFixedE,mean(cdplwc[bins])/mean(twcfixede[bins])]
+    cdpVLwc=[cdpVLwcCor,mean(cdplwc[bins])/mean(lwc[bins])]
+    cdpVTwcCor=[cdpVTwcCor,mean(cdplwc[bins])/mean(twc[bins])]
+    colevarLwc2=[colevarLwc2,mean(twc2[bins])/mean(lwcfixede[bins])]
+    colevarbothTwc2=[colevarbothTwc2,mean(lwcfixede[bins])/mean(twc2[bins])]
+    lwctwc=[lwctwc,mean(lwc[bins])/mean(twc[bins])]
+    lwctwc2=[lwctwc2,mean(lwc[bins])/mean(twc2[bins])]
+    lwc100Vlwc=[lwc100Vlwc,mean(lwc100[bins])/mean(lwc[bins])]
+    lwc100Vtwc=[lwc100Vtwc,mean(lwc100[bins])/mean(twc[bins])]
+    lwc100VlwcFixedE=[lwc100VlwcFixedE,mean(lwc100[bins])/mean(lwcFixedE[bins])]
+    lwc100VtwcFixedE=[lwc100VtwcFixedE,mean(lwc100[bins])/mean(twcFixedE[bins])]
 
 
 
@@ -261,7 +261,7 @@ pro calcTwcLwcColE
 
 
   if saveV eq 0 then begin
-    save,filename='colesavefilehighres.sav',coleControlLwc,coleControlTwc,vmdGeoMean,$
+    save,filename='colesavefile.sav',coleControlLwc,coleControlTwc,vmdGeoMean,$
       colevarLwc,colevarTwc,colevarbothLwc,colevarbothTwc,binsizestart,$
       binintstart,cdpVLwcFixedE,cdpVTwcFixedE,cdpVLwc,cdpVTwc,colevarLwc2,$
       colevarbothTwc2,lwctwc,lwctwc2,minbin,lwc100Vlwc,$

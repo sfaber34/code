@@ -14,7 +14,6 @@ pro colescatterrealModCorrected
   ;LIQUID ONLY POINTS OR ALL
   liq=1
 
-  highRes=1
 
 
   ;---------------------------------------------------------------------------------------------------
@@ -95,12 +94,11 @@ pro colescatterrealModCorrected
 
   restore,'colesavefile.sav'
   ;restore,'colesavefileB.sav'
-  if highres eq 1 then restore,'colesavefilehighres.sav'
   
+  ;-----PLOT OPTIONS------
   
-  
-  coleB=colecontrollwc
-  coleC=colevarbothlwc
+  varA=colecontroltwc
+  varB=''
 
   type='twc2'
 
@@ -112,14 +110,14 @@ pro colescatterrealModCorrected
 
   x=where(h1 lt 10.)
 
-  coleBx=dindgen(n_elements(coleB),start=binintstart,increment=.25)
-  coleCx=dindgen(n_elements(coleC),start=minbin,increment=.5)
-  hErr=dindgen(n_elements(coleB),start=2.,increment=0)
-  yErr=dindgen(n_elements(coleB),start=0,increment=0)
+  varAx=dindgen(n_elements(varA),start=binintstart,increment=.25)
+  varBx=dindgen(n_elements(varB),start=minbin,increment=.5)
+  hErr=dindgen(n_elements(varA),start=2.,increment=0)
+  yErr=dindgen(n_elements(varA),start=0,increment=0)
 
 
-  p5=scatterplot(vmdGeoMean,coleB,sym_thick=2,sym_color='black',name=type+' Eq. Coll. E',dimensions=[1500,1200],sym_transparency=40)
-  p6=scatterplot(vmdGeoMean,ColeC,sym_thick=2,sym_color='blue',/overplot,name=type+' Eq. Coll. E')
+  p5=scatterplot(vmdGeoMean,varA,sym_thick=2,sym_color='black',name=type+' Eq. Coll. E',dimensions=[1500,1200],sym_transparency=40)
+  if varB ne '' then p6=scatterplot(vmdGeoMean,varB,sym_thick=2,sym_color='blue',/overplot,name=type+' Eq. Coll. E')
 
   p5=plot([0,50],[1,1],color='grey',/overplot,linestyle=2, thick=2)
   p5.xtitle='VMD um'
@@ -146,28 +144,6 @@ pro colescatterrealModCorrected
 
 
   p5.font_size=22
-  
-;  fif=dindgen(1000,start=150.,increment=0)
-;  nin=dindgen(1000,start=.99,increment=0)
-;  
-;  
-;  f1=poly_fit(vmdGeoMean,coleB,2,yfit=yfit)
-;  f2=comfit([vmdGeoMean,fif],[coleB,nin],[.5,.2,.04],/geometric,yfit=yfit2)
-  
-  
-  
-  
-  
-
-  ;p10=plot(vmdGeoMeanB,.5*vmdGeoMeanB^.2+.04,/overplot)
-  ;p10=plot([vmdGeoMean,fif],[yfit,nin],/overplot)
-  
-  
-  
-  
-  
-
-
 
 
 end
