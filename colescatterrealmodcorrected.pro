@@ -14,7 +14,7 @@ pro colescatterrealModCorrected
   ;LIQUID ONLY POINTS OR ALL
   liq=1
 
-  highRes=0
+  highRes=1
 
 
 
@@ -53,7 +53,7 @@ pro colescatterrealModCorrected
 
   restore,'loopdata.sav'
 
-  liqOnly=where(trf gt -3. and lwcfixede lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0 and twcfixede gt 0 and cdpMassMean lt 40.)
+  liqOnly=where(trf gt -3. and lwcfixede lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0.05 and twcfixede gt 0.05)
   ;liqOnly=where(trf gt -3. and lwc lt 1.1 and lwc gt .05 and twc gt .05)
 
 
@@ -113,8 +113,8 @@ pro colescatterrealModCorrected
   
   
   
-  coleB=colevarTwc
-  coleC=colevarbothTwc
+  coleB=colecontrollwc
+  coleC=lwcDtwcFixedE
 
   type='twc2'
 
@@ -133,7 +133,7 @@ pro colescatterrealModCorrected
 
 
   p5=scatterplot(vmdGeoMean,coleB,sym_thick=2,sym_color='black',name=type+' Eq. Coll. E',dimensions=[1500,1200],sym_transparency=40)
-  p6=scatterplot(vmdGeoMean,ColeC,sym_thick=2,sym_color='red',/overplot,name=type+' Eq. Coll. E')
+  p6=scatterplot(vmdGeoMean,ColeC,sym_thick=2,sym_color='blue',/overplot,name=type+' Eq. Coll. E')
 
   p5=plot([0,50],[1,1],color='grey',/overplot,linestyle=2, thick=2)
   p5.xtitle='VMD um'
@@ -161,14 +161,18 @@ pro colescatterrealModCorrected
 
   p5.font_size=22
   
-  fif=dindgen(1000,start=150.,increment=0)
-  nin=dindgen(1000,start=.99,increment=0)
+;  fif=dindgen(1000,start=150.,increment=0)
+;  nin=dindgen(1000,start=.99,increment=0)
+;  
+;  
+;  f1=poly_fit(vmdGeoMean,coleB,2,yfit=yfit)
+;  f2=comfit([vmdGeoMean,fif],[coleB,nin],[.5,.2,.04],/geometric,yfit=yfit2)
   
   
-  f1=poly_fit(vmdGeoMean,coleB,2,yfit=yfit)
-  f2=comfit([vmdGeoMean,fif],[coleB,nin],[.5,.2,.04],/geometric,yfit=yfit2)
   
   
+  
+
   ;p10=plot(vmdGeoMeanB,.5*vmdGeoMeanB^.2+.04,/overplot)
   ;p10=plot([vmdGeoMean,fif],[yfit,nin],/overplot)
   

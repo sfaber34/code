@@ -10,7 +10,7 @@ pro calcTwcLwcColE
   binintstart=binint
 
   ;WIDTH OF BINS
-  binsize=.05
+  binsize=.2
   binsizestart=binsize
 
   ;LIQUID ONLY POINTS OR ALL
@@ -55,7 +55,7 @@ pro calcTwcLwcColE
 
   restore,'loopdata.sav'
 
-  liqOnly=where(trf gt -3. and lwcfixede lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0 and twcfixede gt 0 and cdpMassMean lt 40.)
+  liqOnly=where(trf gt -3. and lwcfixede lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0.05 and twcfixede gt 0.05 and cdpMassMean lt 40.)
 
 
 
