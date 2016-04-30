@@ -8,7 +8,7 @@ pro newScattersB
 
   restore,'loopdata.sav'
 
-  liqOnly=where(trf gt -3. and lwc lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05)
+  liqOnly=where(trf gt -3. and lwcfixede lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0.05 and twcfixede gt 0.05)
 
 
 
@@ -22,8 +22,9 @@ pro newScattersB
     cdpMassMean=cdpMassMean[liqonly]
     cdplwc=cdplwc[liqonly]
     trf=trf[liqonly]
-    lwcExE=lwcExE[liqonly]
-    twcExE=twcExE[liqonly]
+    lwcfixede=lwcfixede[liqonly]
+    twcfixede=twcfixede[liqonly]
+    twc2=twc2[liqonly]
     cipmodconc0=cipmodconc0[liqonly]
     cipmodconc1=cipmodconc1[liqonly]
     cipmodconc2=cipmodconc2[liqonly]
@@ -35,9 +36,9 @@ pro newScattersB
 
   ;------PLOT VARS------
 
-  varA=lwc/twc
+  varA=lwcfixede/twcfixede
   varB=''
-  varX=lwc
+  varX=lwcfixede
   type='ratio'
 
   lwcInc=[0,5,10,15,20,25,30,40,50]
@@ -86,6 +87,16 @@ pro newScattersB
   colelwcsorted3=colELiq3[massmeansort]
   colelwcsorted=colELiq[massmeansort]
 
+
+
+  ;for LWC
+  ;if type eq 'lwc' then p2=plot(massmeansorted,coleliqsorted,color='green',thick=2,linestyle=2,dimensions=[1200,1200],margin=[110,70,30,20],/device,/overplot)
+
+  ;for TWC
+  ;if type eq 'twc' then p3=plot(massmeansorted,coletotsorted,color='red',thick=2,linestyle=2,dimensions=[1200,1200],margin=[110,70,30,20],/device,/overplot)
+
+
+  ;if type eq 'ratio' then p3=plot(massmeansorted,coleliqsorted/coletotsorted,color='red',thick=2,linestyle=2,dimensions=[1200,1200],margin=[110,70,30,20],/device,/overplot)
 
   stop
 

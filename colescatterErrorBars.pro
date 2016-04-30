@@ -17,7 +17,7 @@ pro colescatterErrorBars
 
   restore,'loopdata.sav'
 
-  liqOnly=where(trf gt -3. and lwc lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05)
+  liqOnly=where(trf gt -3. and lwcfixede lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0.05 and twcfixede gt 0.05)
   ;liqOnly=where(trf gt -3. and lwc lt 1.1 and lwc gt .05 and twc gt .05)
 
 
@@ -31,8 +31,9 @@ pro colescatterErrorBars
     cdpMassMean=cdpMassMean[liqonly]
     cdplwc=cdplwc[liqonly]
     trf=trf[liqonly]
-    lwcExE=lwcExE[liqonly]
-    twcExE=twcExE[liqonly]
+    lwcfixede=lwcfixede[liqonly]
+    twcfixede=twcfixede[liqonly]
+    twc2=twc2[liqonly]
     cipmodconc0=cipmodconc0[liqonly]
     cipmodconc1=cipmodconc1[liqonly]
     cipmodconc2=cipmodconc2[liqonly]
@@ -63,6 +64,10 @@ pro colescatterErrorBars
   massmeansorted=cdpmassmean[massmeansort]
   coleliqsorted=coleliq[massmeansort]
   coletotsorted=coletot[massmeansort]
+  coletotsorted2=coletot2[massmeansort]
+  twcoldesorted=twcolde[massmeansort]
+  coletotsorted3=coletot3[massmeansort]
+  colelwcsorted3=colELiq3[massmeansort]
   colelwcsorted=colELiq[massmeansort]
 
 
@@ -72,8 +77,8 @@ pro colescatterErrorBars
   ;-----PLOT OPTIONS------
   
   varA=coleControlTwc
-  varAErrLow=lwcq1
-  varAErrUp=lwcq3
+  varAErrLow=lwcfixedeq1
+  varAErrUp=lwcfixedeq3
   varB=""
 
   type='twc2'

@@ -36,8 +36,8 @@ pro histogram
   k=1
   ;liqOnly=where(trf gt -3. and lwc lt 1.1 and cdpconc gt 5)
   ;liqOnly=where(cdpconc gt 5)
-  if k eq 0 then liqOnly=where(trf gt -3. and lwcExE lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and cdpconc gt 5)
-  if k eq 1 then liqOnly=where(trf gt -3. and lwcExE lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and cdpconc gt 5)
+  if k eq 0 then liqOnly=where(trf gt -3. and lwc lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and cdpconc gt 5)
+  if k eq 1 then liqOnly=where(trf gt -3. and lwc lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and cdpconc gt 5)
  
   print, n_elements(liqonly)
 
@@ -52,8 +52,6 @@ pro histogram
     cdplwc=cdplwc[liqonly]
     trf=trf[liqonly]
     cdpdbar2=cdpdbar2[liqonly]
-    lwcExE=lwcExE[liqonly]
-    twcExE=twcExE[liqonly]
   endif
 
 

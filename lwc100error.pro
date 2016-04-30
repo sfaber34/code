@@ -38,7 +38,7 @@ pro lwc100error
 
   restore,'loopdata.sav'
 
-  liqOnly=where(trf gt -3. and lwc lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05)
+  liqOnly=where(trf gt -3. and lwcfixede lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0.05 and twcfixede gt 0.05)
   ;liqOnly=where(trf gt -3. and lwc lt 1.1 and lwc gt .05 and twc gt .05)
 
 
@@ -52,8 +52,9 @@ pro lwc100error
     cdpMassMean=cdpMassMean[liqonly]
     cdplwc=cdplwc[liqonly]
     trf=trf[liqonly]
-    lwcExE=lwcExE[liqonly]
-    twcExE=twcExE[liqonly]
+    lwcfixede=lwcfixede[liqonly]
+    twcfixede=twcfixede[liqonly]
+    twc2=twc2[liqonly]
     cipmodconc0=cipmodconc0[liqonly]
     cipmodconc1=cipmodconc1[liqonly]
     cipmodconc2=cipmodconc2[liqonly]
@@ -84,6 +85,10 @@ pro lwc100error
   massmeansorted=cdpmassmean[massmeansort]
   coleliqsorted=coleliq[massmeansort]
   coletotsorted=coletot[massmeansort]
+  coletotsorted2=coletot2[massmeansort]
+  twcoldesorted=twcolde[massmeansort]
+  coletotsorted3=coletot3[massmeansort]
+  colelwcsorted3=colELiq3[massmeansort]
   colelwcsorted=colELiq[massmeansort]
 
 
@@ -92,8 +97,8 @@ pro lwc100error
 
   ;-----PLOT OPTIONS------
 
-  varA=lwc100Vlwc
-  varB=lwc100Vtwc
+  varA=lwc100VlwcFixedE
+  varB=lwc100VtwcFixedE
 
   type='twc2'
 
@@ -127,7 +132,7 @@ pro lwc100error
 
 
 
-  liqonly2=where(trf gt -3. and lwcExE lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and cdpconc gt 5)
+  liqonly2=where(trf gt -3. and lwc lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and cdpconc gt 5)
 
 
 

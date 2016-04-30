@@ -6,10 +6,11 @@ pro loop
     as=[]
     pmb=[]
     cdplwc=[]
-    twcExE=[]
+    twc=[]
     lwcx=[]
     cdplwcx=[]
     twcx=[]
+    colETotTest=[]
     cdpdbar=[]
     twcnocolecor=[]
     trf=[]
@@ -28,11 +29,17 @@ pro loop
     cdpDEff=[]
     cdpVolMean=[]
     cdpMassMean=[]
-    lwcExE=[]
+    lwcFixedE=[]
     coleliq=[]
     coletot=[]
-    twc=[]
+    twcfixede=[]
     cdpdbar2=[]
+    twc2=[]
+    colEtot2=[]
+    colEtot3=[]
+    twcolde=[]
+    colELiq3=[]
+    lwcolde=[]
     cipmodconc0=[]
     cipmodconc1=[]
     cipmodconc2=[]
@@ -53,10 +60,11 @@ pro loop
       print,flight[i]
 
       
+      lwc=[lwc,g.lwc]
       as=[as,g.as]
       pmb=[pmb,g.pmb]
       cdplwc=[cdplwc,g.cdplwc]
-      twcExE=[twcExE,g.twcExE]
+      twc=[twc,g.twc]
       cdpdbar=[cdpdbar,g.cdpdbar]
       trf=[trf,g.trf]
       signalLiq=[signalLiq,g.signalLiq]
@@ -68,17 +76,21 @@ pro loop
       cdpMassMean=[cdpMassMean,g.cdpMassMean]
       cdpconc=[cdpconc,g.cdpconc]
       cdpacc=[cdpacc,g.cdpacc]
-      lwc=[lwc,g.lwc]
+      lwcFixedE=[lwcFixedE,g.lwcFixedE]
       coleliq=[coleliq,g.coleliq]
       coletot=[coletot,g.coletot]
-      twc=[twc,g.twc]
+      twcfixede=[twcfixede,g.twcfixede]
       cdpdbar2=[cdpdbar2,g.cdpdbar2]
+      twc2=[twc2,g.twc2]
+      colEtot2=[coleTot2,g.coletot2]
+      colEtot3=[colEtot3,g.colEtot3]
+      twcolde=[twcolde,g.twcolde]
+      colELiq3=[colELiq3,g.colELiq3]
+      lwcolde=[lwcolde,g.lwcolde]
       cipmodconc0=[cipmodconc0,g.cipmodconc0]
       cipmodconc1=[cipmodconc1,g.cipmodconc1]
       cipmodconc2=[cipmodconc2,g.cipmodconc2]
       lwc100=[lwc100,g.lwc100]
-      lwcExE=[lwcExE,g.lwcExE]
-      twcExE=[twcExE,g.twcExE]
 
       color=g.color
     endfor
@@ -100,11 +112,11 @@ pro loop
 
 
 
-    save,filename='loopdata.sav',lwcExE,twcExE,cdpdbar,trf,twc,colETot,$
+    save,filename='loopdata.sav',lwc,twc,cdpdbar,trf,twcFixedE,colETot,$
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
-      signalTot,cdpconc,ltdiff,tldiff,dbar3m,cdpacc,lwc,cdpdbar2,$
+      signalTot,cdpconc,ltdiff,tldiff,dbar3m,cdpacc,lwcFixedE,cdpdbar2,$
       dBarBI,cdpSecondM,cdpThirdM,cdpFourthM,cdpDEff,cdpVolMean,cdpMassMean,$
-      coletot2,colEtot3,colELiq3,$
+      twc2,coletot2,colEtot3,twcolde,colELiq3,lwcolde,$
       cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,/verbose
 
 

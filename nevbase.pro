@@ -693,6 +693,46 @@ endfor
 
 
 
+
+
+
+
+
+
+
+colETot2=dindgen(n_elements(pmb),start=1,increment=0)
+
+for r=0,n_elements(pmb)-1 do begin
+  if cdpmassmean[r] le 10.05 then colETot2[r]=(-0.0187892454)+0.2023209*cdpmassmean[r]-0.01937650*$
+    cdpmassmean[r]^2.+0.00090900815025*cdpmassmean[r]^3.-2.0036900614417430e-05*cdpmassmean[r]^4.+1.6638675680649695e-07*cdpmassmean[r]^5.
+  if cdpmassmean[r] gt 10.05 and cdpmassmean[r] le 33 then colETot2[r]=0.43729845*cdpmassmean[r]^(0.19240421)+0.11114933
+  if cdpmassmean[r] gt 33 then colETot2[r]=0.0010409079*cdpmassmean[r]+0.93375003
+endfor
+
+
+
+
+
+
+
+colETot3=dindgen(n_elements(pmb),start=1,increment=0)
+
+for c=0,n_elements(pmb)-1 do begin
+  if cdpmassmean[c] le 50. then begin
+    colETot3[c]=-0.0576565+0.0324626*cdpmassmean[c]+0.0105399*cdpmassmean[c]^2.-0.00118195*cdpmassmean[c]^3.+5.50338e-05*cdpmassmean[c]^4.$
+      -1.32812e-06*cdpmassmean[c]^5.+1.63224e-08*cdpmassmean[c]^6.-8.08554e-11*cdpmassmean[c]^7.
+  endif    
+  if cdpmassmean[c] gt 50. and cdpmassmean[c] le 150. then begin
+     colETot3[c]=0.907000+0.00164001*cdpmassmean[c]-9.20008e-06*cdpmassmean[c]^2.+1.60003e-08*cdpmassmean[c]^3.  
+  endif
+  if cdpmassmean[c] gt 150. then colETot3[c]=1.
+endfor
+
+
+
+
+
+
 colETot=dindgen(n_elements(pmb),start=1,increment=0)
 
 for c=0,n_elements(pmb)-1 do begin
@@ -802,14 +842,16 @@ pTot=pTotNoPresCor - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
 
 ;WATER CONTENT LIQUID
 lwcolde=pLiq/(colELiq3*tas*aLiq*lLiqStar)
-lwcExE=pLiq/(colELiq*tas*aLiq*lLiqStar)
-lwc=pLiq/(1.*tas*aLiq*lLiqStar)
+lwc=pLiq/(colELiq*tas*aLiq*lLiqStar)
+lwcFixedE=pLiq/(1.*tas*aLiq*lLiqStar)
 
 
 
 ;WATER CONTENT TOTAL
-twcExE=pTot/(colETot*tas*aTot*lLiqStar)
-twc=pTot/(1.*tas*aTot*lLiqStar)
+twc=pTot/(colETot*tas*aTot*lLiqStar)
+twc2=pTot/(colETot2*tas*aTot*lLiqStar)
+twcolde=pTot/(colETot3*tas*aTot*lLiqStar)
+twcFixedE=pTot/(1.*tas*aTot*lLiqStar)
 
 
 
@@ -820,7 +862,7 @@ color=['black','navy','firebrick','dark green','magenta','coral','dodger blue','
 
 
 g  = {as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch, $
-  pLiq:pLiq, lwcExE:lwcExE, lwcnev1:lwcnev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcExE:twcExE,$
+  pLiq:pLiq, lwc:lwc, lwcnev1:lwcnev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twc:twc,$
   clearairLiq:clearairLiq, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
   flightString:flightString, kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,$
   aiasMs:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNoPresCor:twcNoPresCor,$
@@ -830,10 +872,10 @@ g  = {as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpit
   rawSignalLiq:rawSignalLiq, smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,$
   rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNoPresCor:pTotNoPresCor,$
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,lIceStar:lIceStar,$
-  signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,$
+  signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwcFixedE:lwcFixedE,$
   cdpDEff:cdpDEff,cdpVolMean:cdpVolMean,cdpMassMean:cdpMassMean,coleliq:coleliq,$
-  twc:twc,colETot:colETot,cdpdbar2:cdpdbar2,$
-  colELiq3:colELiq3,lwcolde:lwcolde,cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,$
+  twcFixedE:twcFixedE,colETot:colETot,cdpdbar2:cdpdbar2,twc2:twc2,colEtot2:colEtot2,coletot3:coletot3,$
+  twcolde:twcolde,colELiq3:colELiq3,lwcolde:lwcolde,cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,$
   cipmodconc2:cipmodconc2,color:color}
 
   
