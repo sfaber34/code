@@ -54,7 +54,7 @@ pro lwctwc10011
   restore,'loopdata.sav'
 
 
-  liqOnly=where(trf gt -3. and lwcfixede lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt .02 and twcfixede gt .02 and lwc100 gt .02)
+  liqOnly=where(trf gt -3. and lwc lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt .02 and twc gt .02 and lwc100 gt .02)
 
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -66,8 +66,8 @@ pro lwctwc10011
     cdpMassMean=cdpMassMean[liqonly]
     cdplwc=cdplwc[liqonly]
     trf=trf[liqonly]
-    lwcfixede=lwcfixede[liqonly]
-    twcfixede=twcfixede[liqonly]
+    lwcExE=lwcExE[liqonly]
+    twcExE=twcExE[liqonly]
     lwc100=lwc100[liqonly]
   endif
 
@@ -160,7 +160,7 @@ pro lwctwc10011
   maxx=2.5
   
   xvar=lwc
-  yvar1=twcfixede
+  yvar1=twc
   yvar2=twc
   
 

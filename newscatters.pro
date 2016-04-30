@@ -11,7 +11,7 @@ pro newScatters
 
   restore,'loopdata.sav'
 
-  liqOnly=where(trf gt -3. and lwcfixede lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0.05 and twcfixede gt 0.05 and cdpMassMean lt 40.)
+  liqOnly=where(trf gt -3. and lwc lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05 and cdpMassMean lt 40.)
 
 
 
@@ -25,9 +25,8 @@ pro newScatters
     cdpMassMean=cdpMassMean[liqonly]
     cdplwc=cdplwc[liqonly]
     trf=trf[liqonly]
-    lwcfixede=lwcfixede[liqonly]
-    twcfixede=twcfixede[liqonly]
-    twc2=twc2[liqonly]
+    lwcExE=lwcExE[liqonly]
+    twc=twc[liqonly]
     cipmodconc0=cipmodconc0[liqonly]
     cipmodconc1=cipmodconc1[liqonly]
     cipmodconc2=cipmodconc2[liqonly]
@@ -39,7 +38,7 @@ pro newScatters
 
   ;------PLOT VARS------
 
-  varA=lwcfixede/twcfixede
+  varA=lwc/twc
   varB=''
   varX=cdpmassmean
   type='ratio'
@@ -85,10 +84,6 @@ pro newScatters
   massmeansorted=cdpmassmean[massmeansort]
   coleliqsorted=coleliq[massmeansort]
   coletotsorted=coletot[massmeansort]
-  coletotsorted2=coletot2[massmeansort]
-  twcoldesorted=twcolde[massmeansort]
-  coletotsorted3=coletot3[massmeansort]
-  colelwcsorted3=colELiq3[massmeansort]
   colelwcsorted=colELiq[massmeansort]
   
   
