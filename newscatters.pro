@@ -12,7 +12,7 @@ pro newScatters
   restore,'loopdata.sav'
 
   liqOnly=where(trf gt -3. and lwcfixede lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0.05 and twcfixede gt 0.05 and cdpMassMean lt 40.)
-
+  liqOnly=where(trf gt -3. and lwcfixede lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0.05 and twcfixede gt 0.05)
 
 
   if liq eq 1 then begin
