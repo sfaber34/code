@@ -93,11 +93,13 @@ pro colescatterErrorBars
   if type eq 'lwc' then p2=plot(massmeansorted,coleliqsorted,color='green',thick=2,linestyle=2,dimensions=[1500,1200],margin=[110,70,30,20],/device,/overplot)
 
   ;for TWC
-  if type eq 'twc' then p3=plot(massmeansorted,coletotsorted,color='red',thick=2,linestyle=2,dimensions=[1500,1200],margin=[110,70,30,20],/device,/overplot)
+  if type eq 'twc' then p2=plot(massmeansorted,coletotsorted,color='red',thick=2,linestyle=2,dimensions=[1500,1200],margin=[110,70,30,20],/device,/overplot)
 
   ;for TWC2
-  if type eq 'twc2' then p4=plot(massmeansorted,coleliqsorted/coletotsorted,color='red',thick=2,linestyle=2,dimensions=[1500,1200],margin=[110,70,30,20],/device,/overplot)
+  if type eq 'twc2' then p2=plot(massmeansorted,coleliqsorted/coletotsorted,color='red',thick=2,linestyle=2,dimensions=[1500,1200],margin=[110,70,30,20],/device,/overplot)
 
+  p2.xrange=[5,42]
+  p2.yrange=[.5,1.5]
 
 
   varAx=dindgen(n_elements(varA),start=binintstart,increment=.25)
@@ -125,9 +127,6 @@ pro colescatterErrorBars
   
   p5.xtitle='VMD um'
   p5.ytitle='LWC/TWC'
-
-  p5.xrange=[5,42]
-  p5.yrange=[.5,1.5]
 
 
   liqonly2=where(trf gt -3. and lwc lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and cdpconc gt 5)
