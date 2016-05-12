@@ -42,13 +42,13 @@ pro calcTwcLwcColE
 
   restore,'loopdata.sav'
 
-  liqOnly=where(trf gt -3. and lwcfixede lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0.05 and twcfixede gt 0.05 and cdpMassMean lt 40.)
+  liqOnly=where(trf gt -3. and lwc lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05 and cdpMassMean lt 40.)
 
 
 
   if liq eq 1 then begin
-    lwc=lwc[liqonly]
-    twc=twc[liqonly]
+    lwcVarE=lwcVarE[liqonly]
+    twcVarE=twcVarE[liqonly]
     cdpdbar=cdpdbar[liqonly]
     cdpconc=cdpconc[liqonly]
     cdpDEff=cdpDEff[liqonly]
@@ -56,9 +56,9 @@ pro calcTwcLwcColE
     cdpMassMean=cdpMassMean[liqonly]
     cdplwc=cdplwc[liqonly]
     trf=trf[liqonly]
-    lwcfixede=lwcfixede[liqonly]
-    twcfixede=twcfixede[liqonly]
-    twc2=twc2[liqonly]
+    lwc=lwc[liqonly]
+    twc=twc[liqonly]
+    twcVarE2=twcVarE2[liqonly]
     cipmodconc0=cipmodconc0[liqonly]
     cipmodconc1=cipmodconc1[liqonly]
     cipmodconc2=cipmodconc2[liqonly]
@@ -95,12 +95,12 @@ pro calcTwcLwcColE
   colevarTwc=[]
   colevarbothLwc=[]
   colevarbothTwc=[]
-  cdpVLwcFixedE=[]
-  cdpVTwcFixedE=[]
+  cdpVlwc=[]
+  cdpVtwc=[]
   cdpVLwcCor=[]
   cdpVTwcCor=[]
-  cdpVLwcFixedESD=[]
-  cdpVTwcFixedESD=[]
+  cdpVlwcSD=[]
+  cdpVtwcSD=[]
   cdpVLwcCorSD=[]
   cdpVTwcCorSD=[]
   cole11con=[]
@@ -114,17 +114,17 @@ pro calcTwcLwcColE
   binR=[]
   lwc100Vlwc=[]
   lwc100Vtwc=[]
-  lwc100VlwcFixedE=[]
-  lwc100VtwcFixedE=[]
-  lwcDtwcFixedE=[]
+  lwc100Vlwc=[]
+  lwc100Vtwc=[]
+  lwcDtwc=[]
   lwcDtwc=[]
   vmdGeoMean=[]
   colevarTwcB=[]
   colevarLwcB=[]
-  lwcfixedeq1=[]
-  lwcfixedeq3=[]
-  twcfixedeq1=[]
-  twcfixedeq3=[]
+  lwcq1=[]
+  lwcq3=[]
+  twcq1=[]
+  twcq3=[]
 
 
   starti=0
@@ -196,41 +196,41 @@ pro calcTwcLwcColE
 
 
 
-    coleControlTwc=[coleControlTwc,mean(lwcfixede[bins])/mean(twcfixede[bins])]
-    coleControlLwc=[coleControlLwc,mean(twcfixede[bins])/mean(lwcFixede[bins])]
-    colevarTwc=[colevarTwc,mean(lwc[bins])/mean(twcfixede[bins])]
-    colevarLwc=[colevarLwc,mean(twc[bins])/mean(lwcfixede[bins])]
-    colevarTwcB=[colevarTwcB,mean(lwcfixede[bins])/mean(twc[bins])]
-    colevarLwcB=[colevarLwcB,mean(twcfixede[bins])/mean(lwc[bins])]
-    colevarbothTwc=[colevarbothTwc,mean(lwc[bins])/mean(twc[bins])]
-    colevarbothLwc=[colevarbothLwc,mean(twc[bins])/mean(lwc[bins])]
-    cdpVLwcFixedE=[cdpVLwcFixedE,mean(cdplwc[bins])/mean(lwcfixede[bins])]
-    cdpVTwcFixedE=[cdpVTwcFixedE,mean(cdplwc[bins])/mean(twcfixede[bins])]
-    cdpVLwc=[cdpVLwcCor,mean(cdplwc[bins])/mean(lwc[bins])]
-    cdpVTwcCor=[cdpVTwcCor,mean(cdplwc[bins])/mean(twc[bins])]
-    colevarLwc2=[colevarLwc2,mean(twc2[bins])/mean(lwcfixede[bins])]
-    colevarbothTwc2=[colevarbothTwc2,mean(lwcfixede[bins])/mean(twc2[bins])]
-    lwctwc=[lwctwc,mean(lwc[bins])/mean(twc[bins])]
-    lwctwc2=[lwctwc2,mean(lwc[bins])/mean(twc2[bins])]
-    lwc100Vlwc=[lwc100Vlwc,mean(lwc100[bins])/mean(lwc[bins])]
-    lwc100Vtwc=[lwc100Vtwc,mean(lwc100[bins])/mean(twc[bins])]
-    lwc100VlwcFixedE=[lwc100VlwcFixedE,abs(mean(lwc100[bins])-mean(lwcFixedE[bins]))/((mean(lwcFixedE[bins])+mean(lwc100[bins]))/2.)]
-    lwc100VtwcFixedE=[lwc100VtwcFixedE,abs(mean(lwc100[bins])-mean(twcFixedE[bins]))/((mean(twcFixedE[bins])+mean(lwc100[bins]))/2.)]
+    coleControlTwc=[coleControlTwc,mean(lwc[bins])/mean(twc[bins])]
+    coleControlLwc=[coleControlLwc,mean(twc[bins])/mean(lwc[bins])]
+    colevarTwc=[colevarTwc,mean(lwcVarE[bins])/mean(twc[bins])]
+    colevarLwc=[colevarLwc,mean(twcVarE[bins])/mean(lwc[bins])]
+    colevarTwcB=[colevarTwcB,mean(lwc[bins])/mean(twcVarE[bins])]
+    colevarLwcB=[colevarLwcB,mean(twc[bins])/mean(lwcVarE[bins])]
+    colevarbothTwc=[colevarbothTwc,mean(lwcVarE[bins])/mean(twcVarE[bins])]
+    colevarbothLwc=[colevarbothLwc,mean(twcVarE[bins])/mean(lwcVarE[bins])]
+    cdpVlwc=[cdpVlwc,mean(cdplwc[bins])/mean(lwc[bins])]
+    cdpVtwc=[cdpVtwc,mean(cdplwc[bins])/mean(twc[bins])]
+    cdpVLwcCor=[cdpVLwcCor,mean(cdplwc[bins])/mean(lwcVarE[bins])]
+    cdpVTwcCor=[cdpVTwcCor,mean(cdplwc[bins])/mean(twcVarE[bins])]
+    colevarLwc2=[colevarLwc2,mean(twcVarE2[bins])/mean(lwc[bins])]
+    colevarbothTwc2=[colevarbothTwc2,mean(lwc[bins])/mean(twcVarE2[bins])]
+    lwctwc=[lwctwc,mean(lwcVarE[bins])/mean(twcVarE[bins])]
+    lwctwc2=[lwctwc2,mean(lwcVarE[bins])/mean(twcVarE2[bins])]
+    lwc100Vlwc=[lwc100Vlwc,mean(lwc100[bins])/mean(lwcVarE[bins])]
+    lwc100Vtwc=[lwc100Vtwc,mean(lwc100[bins])/mean(twcVarE[bins])]
+    lwc100Vlwc=[lwc100Vlwc,abs(mean(lwc100[bins])-mean(lwc[bins]))/((mean(lwc[bins])+mean(lwc100[bins]))/2.)]
+    lwc100Vtwc=[lwc100Vtwc,abs(mean(lwc100[bins])-mean(twc[bins]))/((mean(twc[bins])+mean(lwc100[bins]))/2.)]
 
 
     
-    twcfixedeK=lwcfixede[bins]/twcfixede[bins]
-    lwcfixedeK=twcfixede[bins]/lwcfixede[bins]
+    twcK=lwc[bins]/twc[bins]
+    lwcK=twc[bins]/lwc[bins]
     
-    lwcfixedsort=sort(twcfixedeK)
-    lwcfixedesorted=twcfixedeK[lwcfixedsort]
+    lwcfixedsort=sort(twcK)
+    lwcsorted=twcK[lwcfixedsort]
     
-    twcfixedsort=sort(lwcfixedeK)
-    twcfixedesorted=lwcfixedeK[twcfixedsort]
+    twcfixedsort=sort(lwcK)
+    twcsorted=lwcK[twcfixedsort]
     
     
-    lwcRatio=lwcFixedE[bins]/lwc100[bins]
-    twcRatio=twcFixedE[bins]/lwc100[bins]
+    lwcRatio=lwc[bins]/lwc100[bins]
+    twcRatio=twc[bins]/lwc100[bins]
     
     lwcRatiosort=sort(lwcRatio)
     lwcRatiosorted=lwcRatio[lwcRatiosort]
@@ -243,10 +243,10 @@ pro calcTwcLwcColE
     
     
     
-    lwcfixedeq1=[lwcfixedeq1,mean(lwcfixede[bins])/mean(twcfixede[bins])-lwcfixedesorted[n_elements(lwcfixedesorted)*.25]]
-    lwcfixedeq3=[lwcfixedeq3,lwcfixedesorted[n_elements(lwcfixedesorted)*.75]-mean(lwcfixede[bins])/mean(twcfixede[bins])]
-    twcfixedeq1=[twcfixedeq1,mean(twcfixede[bins])/mean(lwcFixede[bins])-twcfixedesorted[n_elements(twcfixedesorted)*.25]]
-    twcfixedeq3=[twcfixedeq3,twcfixedesorted[n_elements(twcfixedesorted)*.75]-mean(twcfixede[bins])/mean(lwcFixede[bins])]
+    lwcq1=[lwcq1,mean(lwc[bins])/mean(twc[bins])-lwcsorted[n_elements(lwcsorted)*.25]]
+    lwcq3=[lwcq3,lwcsorted[n_elements(lwcsorted)*.75]-mean(lwc[bins])/mean(twc[bins])]
+    twcq1=[twcq1,mean(twc[bins])/mean(lwc[bins])-twcsorted[n_elements(twcsorted)*.25]]
+    twcq3=[twcq3,twcsorted[n_elements(twcsorted)*.75]-mean(twc[bins])/mean(lwc[bins])]
 
 
 
@@ -261,8 +261,8 @@ pro calcTwcLwcColE
     colevarLwcB=colevarLwc
     colevarbothTwcB=colevarbothTwc
     colevarbothLwcB=colevarbothLwc
-    cdpVLwcFixedEB=cdpVLwcFixedE
-    cdpVTwcFixedEB=cdpVTwcFixedE
+    cdpVlwcB=cdpVlwc
+    cdpVtwcB=cdpVtwc
     cdpVLwcB=cdpVLwc
     cdpVTwcB=cdpVTwc
     colevarLwc2B=colevarLwc2
@@ -272,26 +272,26 @@ pro calcTwcLwcColE
     vmdGeoMeanB=vmdGeoMean
     colevarTwcBB=colevartwc
     colevarLwcBB=colevarlwc
-    lwcfixedeq1B=lwcfixedeq1
-    lwcfixedeq3B=lwcfixedeq3
-    twcfixedeq1B=twcfixedeq1
-    twcfixedeq3B=twcfixedeq3
+    lwcq1B=lwcq1
+    lwcq3B=lwcq3
+    twcq1B=twcq1
+    twcq3B=twcq3
 
     save,filename='colesavefileB.sav',coleControlLwcB,coleControlTwcB,$
       colevarLwcB,colevarTwcB,colevarbothLwcB,colevarbothTwcB,binsizestartB,$
-      binintstartB,cdpVLwcFixedEB,cdpVTwcFixedEB,cdpVLwcB,cdpVTwcB,colevarLwc2B,$
+      binintstartB,cdpVlwcB,cdpVtwcB,cdpVLwcB,cdpVTwcB,colevarLwc2B,$
       colevarbothTwc2B,lwctwcB,lwctwc2B,minbin,vmdGeoMeanB,colevarTwcBB, colevarLwcBB,$
-      lwcfixedeq1B,lwcfixedeq3B,twcfixedeq1B,twcfixedeq3B,color,/verbose
+      lwcq1B,lwcq3B,twcq1B,twcq3B,color,/verbose
   endif
 
 
   if saveV eq 0 then begin
     save,filename='colesavefile.sav',coleControlLwc,coleControlTwc,vmdGeoMean,$
       colevarLwc,colevarTwc,colevarbothLwc,colevarbothTwc,binsizestart,$
-      binintstart,cdpVLwcFixedE,cdpVTwcFixedE,cdpVLwc,cdpVTwc,colevarLwc2,$
+      binintstart,cdpVlwc,cdpVtwc,cdpVLwc,cdpVTwc,colevarLwc2,$
       colevarbothTwc2,lwctwc,lwctwc2,minbin,lwc100Vlwc,$
-      lwc100Vtwc,lwc100VlwcFixedE,lwc100VtwcFixedE,$
-      lwcfixedeq1,lwcfixedeq3,twcfixedeq1,twcfixedeq3,color,/verbose
+      lwc100Vtwc,lwc100Vlwc,lwc100Vtwc,$
+      lwcq1,lwcq3,twcq1,twcq3,color,/verbose
   endif
 
 

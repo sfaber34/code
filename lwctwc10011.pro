@@ -54,7 +54,7 @@ pro lwctwc10011
   restore,'loopdata.sav'
 
 
-  liqOnly=where(trf gt -3. and lwcfixede lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt .02 and twcfixede gt .02 and lwc100 gt .02)
+  liqOnly=where(trf gt -3. and lwc lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt .02 and twc gt .02 and lwc100 gt .02)
 
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -66,8 +66,8 @@ pro lwctwc10011
     cdpMassMean=cdpMassMean[liqonly]
     cdplwc=cdplwc[liqonly]
     trf=trf[liqonly]
-    lwcfixede=lwcfixede[liqonly]
-    twcfixede=twcfixede[liqonly]
+    lwcVarE=lwcVarE[liqonly]
+    twcVarE=twcVarE[liqonly]
     lwc100=lwc100[liqonly]
   endif
 
@@ -160,7 +160,7 @@ pro lwctwc10011
   maxx=2.5
   
   xvar=lwc
-  yvar1=twcfixede
+  yvar1=twc
   yvar2=twc
   
 
@@ -187,8 +187,8 @@ pro lwctwc10011
 
 
     
-    p5=scatterplot(lwc100[bins],yvar2[bins],sym_color='dark orange',symbol='+',dimensions=[1000,1000],/overplot)
-    cole2=ladfit([zeros,lwc100[bins]],[zeros,yvar2[bins]])
+    p5=scatterplot(xvar[bins],yvar2[bins],sym_color='dark orange',symbol='+',dimensions=[1000,1000],/overplot)
+    cole2=ladfit([zeros,xvar[bins]],[zeros,yvar2[bins]])
     
     p8=plot([0,maxx],[cole2[0],maxx*cole2[1]+cole2[0]],/overplot,thick=2,color='orange red')
     p9=plot([0,maxx],[0,maxx],/overplot,color='green',thick=2,linestyle=2)
@@ -203,10 +203,6 @@ pro lwctwc10011
 
     p2.xrange=[0,maxx]
     p2.yrange=[0,maxx]
-
-
-stop
-
 
   endfor
 

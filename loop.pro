@@ -29,15 +29,15 @@ pro loop
     cdpDEff=[]
     cdpVolMean=[]
     cdpMassMean=[]
-    lwcFixedE=[]
+    lwcVarE=[]
     coleliq=[]
     coletot=[]
-    twcfixede=[]
+    twcVarE=[]
     cdpdbar2=[]
-    twc2=[]
+    twcVarE2=[]
     colEtot2=[]
     colEtot3=[]
-    twcolde=[]
+    lwcVarEolde=[]
     colELiq3=[]
     lwcolde=[]
     cipmodconc0=[]
@@ -76,17 +76,16 @@ pro loop
       cdpMassMean=[cdpMassMean,g.cdpMassMean]
       cdpconc=[cdpconc,g.cdpconc]
       cdpacc=[cdpacc,g.cdpacc]
-      lwcFixedE=[lwcFixedE,g.lwcFixedE]
+      lwcVarE=[lwcVarE,g.lwcVarE]
       coleliq=[coleliq,g.coleliq]
       coletot=[coletot,g.coletot]
-      twcfixede=[twcfixede,g.twcfixede]
+      twcVarE=[twcVarE,g.twcVarE]
       cdpdbar2=[cdpdbar2,g.cdpdbar2]
-      twc2=[twc2,g.twc2]
+      twcVarE2=[twcVarE2,g.twcVarE2]
       colEtot2=[coleTot2,g.coletot2]
       colEtot3=[colEtot3,g.colEtot3]
-      twcolde=[twcolde,g.twcolde]
+      lwcVarEolde=[lwcVarEolde,g.lwcVarEolde]
       colELiq3=[colELiq3,g.colELiq3]
-      lwcolde=[lwcolde,g.lwcolde]
       cipmodconc0=[cipmodconc0,g.cipmodconc0]
       cipmodconc1=[cipmodconc1,g.cipmodconc1]
       cipmodconc2=[cipmodconc2,g.cipmodconc2]
@@ -112,11 +111,11 @@ pro loop
 
 
 
-    save,filename='loopdata.sav',lwc,twc,cdpdbar,trf,twcFixedE,colETot,$
+    save,filename='loopdata.sav',lwc,twc,cdpdbar,trf,twcVarE,colETot,$
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
-      signalTot,cdpconc,ltdiff,tldiff,dbar3m,cdpacc,lwcFixedE,cdpdbar2,$
+      signalTot,cdpconc,ltdiff,tldiff,dbar3m,cdpacc,lwcVarE,cdpdbar2,$
       dBarBI,cdpSecondM,cdpThirdM,cdpFourthM,cdpDEff,cdpVolMean,cdpMassMean,$
-      twc2,coletot2,colEtot3,twcolde,colELiq3,lwcolde,$
+      twcVarE2,coletot2,colEtot3,lwcVarEolde,colELiq3,lwcolde,$
       cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,/verbose
 
 

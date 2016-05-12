@@ -841,17 +841,17 @@ pTot=pTotNoPresCor - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
 
 
 ;WATER CONTENT LIQUID
-lwcolde=pLiq/(colELiq3*tas*aLiq*lLiqStar)
-lwc=pLiq/(colELiq*tas*aLiq*lLiqStar)
-lwcFixedE=pLiq/(1.*tas*aLiq*lLiqStar)
+lwcVarEolde=pLiq/(colELiq3*tas*aLiq*lLiqStar)
+lwcVarE=pLiq/(colELiq*tas*aLiq*lLiqStar)
+lwc=pLiq/(1.*tas*aLiq*lLiqStar)
 
 
 
 ;WATER CONTENT TOTAL
-twc=pTot/(colETot*tas*aTot*lLiqStar)
-twc2=pTot/(colETot2*tas*aTot*lLiqStar)
-twcolde=pTot/(colETot3*tas*aTot*lLiqStar)
-twcFixedE=pTot/(1.*tas*aTot*lLiqStar)
+twcVarE=pTot/(colETot*tas*aTot*lLiqStar)
+twcVarE2=pTot/(colETot2*tas*aTot*lLiqStar)
+twcVarEolde=pTot/(colETot3*tas*aTot*lLiqStar)
+twc=pTot/(1.*tas*aTot*lLiqStar)
 
 
 
@@ -862,7 +862,7 @@ color=['black','navy','firebrick','dark green','magenta','coral','dodger blue','
 
 
 g  = {as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch, $
-  pLiq:pLiq, lwc:lwc, lwcnev1:lwcnev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twc:twc,$
+  pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcVarE:twcVarE,$
   clearairLiq:clearairLiq, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
   flightString:flightString, kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,$
   aiasMs:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNoPresCor:twcNoPresCor,$
@@ -872,10 +872,10 @@ g  = {as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpit
   rawSignalLiq:rawSignalLiq, smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,$
   rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNoPresCor:pTotNoPresCor,$
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,lIceStar:lIceStar,$
-  signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwcFixedE:lwcFixedE,$
+  signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,$
   cdpDEff:cdpDEff,cdpVolMean:cdpVolMean,cdpMassMean:cdpMassMean,coleliq:coleliq,$
-  twcFixedE:twcFixedE,colETot:colETot,cdpdbar2:cdpdbar2,twc2:twc2,colEtot2:colEtot2,coletot3:coletot3,$
-  twcolde:twcolde,colELiq3:colELiq3,lwcolde:lwcolde,cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,$
+  twc:twc,colETot:colETot,cdpdbar2:cdpdbar2,twcVarE2:twcVarE2,colEtot2:colEtot2,coletot3:coletot3,$
+  twcVarEolde:twcVarEolde,colELiq3:colELiq3,lwcVarEolde:lwcVarEolde,cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,$
   cipmodconc2:cipmodconc2,color:color}
 
   

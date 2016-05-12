@@ -11,13 +11,13 @@ pro newScatters
 
   restore,'loopdata.sav'
 
-  liqOnly=where(trf gt -3. and lwcfixede lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0.05 and twcfixede gt 0.05 and cdpMassMean lt 40.)
-  liqOnly=where(trf gt -3. and lwcfixede lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwcfixede gt 0.05 and twcfixede gt 0.05)
+  liqOnly=where(trf gt -3. and lwc lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05 and cdpMassMean lt 40.)
+  liqOnly=where(trf gt -3. and lwc lt 1.1 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05)
 
 
   if liq eq 1 then begin
-    lwc=lwc[liqonly]
-    twc=twc[liqonly]
+    lwcVarE=lwcVarE[liqonly]
+    twcVarE=twcVarE[liqonly]
     cdpdbar=cdpdbar[liqonly]
     cdpconc=cdpconc[liqonly]
     cdpDEff=cdpDEff[liqonly]
@@ -25,9 +25,9 @@ pro newScatters
     cdpMassMean=cdpMassMean[liqonly]
     cdplwc=cdplwc[liqonly]
     trf=trf[liqonly]
-    lwcfixede=lwcfixede[liqonly]
-    twcfixede=twcfixede[liqonly]
-    twc2=twc2[liqonly]
+    lwc=lwc[liqonly]
+    twc=twc[liqonly]
+    twcVarE2=twcVarE2[liqonly]
     cipmodconc0=cipmodconc0[liqonly]
     cipmodconc1=cipmodconc1[liqonly]
     cipmodconc2=cipmodconc2[liqonly]
@@ -39,7 +39,7 @@ pro newScatters
 
   ;------PLOT VARS------
 
-  varA=lwcfixede/twcfixede
+  varA=lwc/twc
   varB=''
   varX=cdpmassmean
   type='ratio'
@@ -57,7 +57,7 @@ pro newScatters
   p5.xrange=[0,42]
   p5.yrange=[0,2.]
   for f=0,n_elements(lwcInc)-2 do begin
-    filter=where(lwc gt lwcInc[f] and lwc lt lwcInc[f+1])
+    filter=where(lwcVarE gt lwcInc[f] and lwcVarE lt lwcInc[f+1])
     
     p6=scatterplot(varX[filter],varA[filter],sym_thick=1,symbol='.',sym_color=color[0],/overplot,sym_size=1.4,sym_filled=1)
     
@@ -86,7 +86,6 @@ pro newScatters
   coleliqsorted=coleliq[massmeansort]
   coletotsorted=coletot[massmeansort]
   coletotsorted2=coletot2[massmeansort]
-  twcoldesorted=twcolde[massmeansort]
   coletotsorted3=coletot3[massmeansort]
   colelwcsorted3=colELiq3[massmeansort]
   colelwcsorted=colELiq[massmeansort]
