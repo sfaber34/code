@@ -25,16 +25,18 @@ if !version.OS_FAMILY eq 'Windows' then begin
   if flightDay eq '0815' then nclPath='..\data\20130815.c1.nc'
   if flightDay eq '0802' then nclPath='..\data\20130802.c1.nc'
   if flightDay eq '0803' then nclPath='..\data\20130803.c1.nc'
-  if flightDay eq '0304' then nclPath='..\data\030416\20160304.c1.nc'
-  if flightDay eq '0307' then nclPath='..\data\030716\20160307.c1.nc'
-  if flightDay eq '1217' then nclPath='..\data\121715\20151217.c1.nc'
-  if flightDay eq '1124' then nclPath='..\data\112415\20151124.c1.nc'
+  if flightDay eq '0304' then nclPath='..\data\20160304.c1.nc'
+  if flightDay eq '0307' then nclPath='..\data\20160307.c1.nc'
+  if flightDay eq '1217' then nclPath='..\data\20151217.c1.nc'
+  if flightDay eq '1112' then nclPath='..\data\20151112.c1.nc'
+  if flightDay eq '1124' then nclPath='..\data\20151124.c1.nc'
   if flightDay eq '0806' then nclPath='..\data\20130806.c1.nc'  
   if flightDay eq '0813' then nclPath='..\data\20130813.c1.nc'
   if flightDay eq '0817' then nclPath='..\data\20130817.c1.nc'
   if flightDay eq '0722' then nclPath='..\data\20130722.c1.nc'
   if flightDay eq '0718' then nclPath='..\data\20130718.c1.nc'
-  if flightDay eq '0125' then nclPath='..\data\012513\20160125.c1.nc'
+  if flightDay eq '0120' then nclPath='..\data\20160120.c1.nc'
+  if flightDay eq '0125' then nclPath='..\data\20160125.c1.nc'
   if flightDay eq '0817a' then nclPath='..\data\20130817a.c1.nc'
   if flightDay eq '0817b' then nclPath='..\data\20130817b.c1.nc'
 endif else begin
@@ -49,16 +51,18 @@ endif else begin
   if flightDay eq '0815' then nclPath='../data/20130815.c1.nc'
   if flightDay eq '0802' then nclPath='../data/20130802.c1.nc'
   if flightDay eq '0803' then nclPath='../data/20130803.c1.nc'
-  if flightDay eq '0304' then nclPath='../data/030416/20160304.c1.nc'
-  if flightDay eq '0307' then nclPath='../data/030716/20160307.c1.nc'
-  if flightDay eq '1217' then nclPath='../data/121715/20151217.c1.nc'
-  if flightDay eq '1124' then nclPath='../data/112415/20151124.c1.nc'
+  if flightDay eq '0304' then nclPath='../data/20160304.c1.nc'
+  if flightDay eq '0307' then nclPath='../data/20160307.c1.nc'
+  if flightDay eq '1217' then nclPath='../data/20151217.c1.nc'
+  if flightDay eq '1112' then nclPath='../data/20151112.c1.nc'
+  if flightDay eq '1124' then nclPath='../data/20151124.c1.nc'
   if flightDay eq '0806' then nclPath='../data/20130806.c1.nc'  
   if flightDay eq '0813' then nclPath='../data/20130813.c1.nc'
   if flightDay eq '0817' then nclPath='../data/20130817.c1.nc'
   if flightDay eq '0722' then nclPath='../data/20130722.c1.nc'
   if flightDay eq '0718' then nclPath='../data/20130718.c1.nc'
-  if flightDay eq '0125' then nclPath='../data/012513/20160125.c1.nc'
+  if flightDay eq '0120' then nclPath='../data/20160120.c1.nc'
+  if flightDay eq '0125' then nclPath='../data/20160125.c1.nc'
   if flightDay eq '0817a' then nclPath='../data/20130817a.c1.nc'
   if flightDay eq '0817b' then nclPath='../data/20130817b.c1.nc'
   
@@ -295,11 +299,11 @@ if flightDay eq '0821' then flightString='08-21-13'
 if flightDay eq '0802' then flightString='08-02-13'
 if flightDay eq '0722' then flightString='07-22-13'
 if flightDay eq '0718' then flightString='07-18-13'
-if flightDay eq '0125' then flightString='01-25-13'
 if flightDay eq '0813' then flightString='08-13-13'
 if flightDay eq '0722' then flightString='07-21-13'
 if flightDay eq '0718' then flightString='07-18-13'
-if flightDay eq '0125' then flightString='01-25-13'
+if flightDay eq '0120' then flightString='01-20-15'
+if flightDay eq '0125' then flightString='01-25-15'
 if flightDay eq '0817a' then flightString='08-17-13'
 if flightDay eq '0817b' then flightString='08-17-13'
 
@@ -550,8 +554,6 @@ clearairTot=where(clearairToti eq 1)
 
 signalLiq=where(clearairLiqi eq 0)
 signalTot=where(clearairToti eq 0)
-
-
 
 
 clearairTotsort=sort(vtwccol[clearairTot])
@@ -859,7 +861,9 @@ twc=pTot/(1.*tas*aTot*lLiqStar)
 
 color=['black','navy','firebrick','dark green','magenta','coral','dodger blue','indian red','orange','olive drab','medium violet red']
 
-
+p1=plot(timeFlight,twc,dimensions=[1600,1200])
+p2=scatterplot(timeFlight[clearairTot],twc[clearairTot],/overplot,symbol='.',sym_color='red')
+stop
 
 g  = {as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch, $
   pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcVarE:twcVarE,$
