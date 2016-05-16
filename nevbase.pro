@@ -861,9 +861,9 @@ twc=pTot/(1.*tas*aTot*lLiqStar)
 
 color=['black','navy','firebrick','dark green','magenta','coral','dodger blue','indian red','orange','olive drab','medium violet red']
 
-p1=plot(timeFlight,twc,dimensions=[1600,1200])
-p2=scatterplot(timeFlight[clearairTot],twc[clearairTot],/overplot,symbol='.',sym_color='red')
-stop
+;p1=plot(timeFlight,twc,dimensions=[1600,1200])
+;p2=scatterplot(timeFlight[clearairTot],twc[clearairTot],/overplot,symbol='.',sym_color='red')
+
 
 g  = {as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch, $
   pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcVarE:twcVarE,$
