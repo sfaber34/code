@@ -26,14 +26,14 @@ pro loop
     cdpacc=[]
     deff=[]
     othervar=[]
-    cdpDEff=[]
-    cdpVolMean=[]
-    cdpMassMean=[]
+    dEff=[]
+    vvd=[]
+    vmd=[]
     lwcVarE=[]
     coleliq=[]
     coletot=[]
     twcVarE=[]
-    cdpdbar2=[]
+    dBarB=[]
     twcVarE2=[]
     colEtot2=[]
     colEtot3=[]
@@ -71,16 +71,16 @@ pro loop
       signalTot=[signalTot,g.signalTot]
       clearairLiq=[clearairLiq,g.clearairLiq]
       clearairTot=[clearairTot,g.clearairTot]
-      cdpDEff=[cdpDEff,g.cdpDEff]
-      cdpVolMean=[cdpVolMean,g.cdpVolMean]
-      cdpMassMean=[cdpMassMean,g.cdpMassMean]
+      dEff=[dEff,g.dEff]
+      vvd=[vvd,g.vvd]
+      vmd=[vmd,g.vmd]
       cdpconc=[cdpconc,g.cdpconc]
       cdpacc=[cdpacc,g.cdpacc]
       lwcVarE=[lwcVarE,g.lwcVarE]
       coleliq=[coleliq,g.coleliq]
       coletot=[coletot,g.coletot]
       twcVarE=[twcVarE,g.twcVarE]
-      cdpdbar2=[cdpdbar2,g.cdpdbar2]
+      dBarB=[dBarB,g.dBarB]
       twcVarE2=[twcVarE2,g.twcVarE2]
       colEtot2=[coleTot2,g.coletot2]
       colEtot3=[colEtot3,g.colEtot3]
@@ -115,8 +115,8 @@ pro loop
 
     save,filename='loopdata.sav',lwc,twc,cdpdbar,trf,twcVarE,colETot,$
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
-      signalTot,cdpconc,ltdiff,tldiff,dbar3m,cdpacc,lwcVarE,cdpdbar2,$
-      dBarBI,cdpSecondM,cdpThirdM,cdpFourthM,cdpDEff,cdpVolMean,cdpMassMean,$
+      signalTot,cdpconc,ltdiff,tldiff,dbar3m,cdpacc,lwcVarE,dBarB,$
+      dBarBI,cdpSecondM,cdpThirdM,cdpFourthM,dEff,vvd,vmd,$
       twcVarE2,coletot2,colEtot3,lwcVarEolde,colELiq3,lwcolde,$
       cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,/verbose
 

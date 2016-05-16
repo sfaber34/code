@@ -616,18 +616,18 @@ levelclearairLiq=where(baselineIB eq 1)
 
 
 ;MOMENT CALCULATIONS
-cdpDEff=make_array(n_elements(pmb))
-cdpVolMean=make_array(n_elements(pmb))
-cdpMassMean=make_array(n_elements(pmb))
+dEff=make_array(n_elements(pmb))
+vvd=make_array(n_elements(pmb))
+vmd=make_array(n_elements(pmb))
 diff=make_array(n_elements(pmb))
 if n_elements(cdpdbins[*,0,0]) eq 28 then diam=[1.5,2.5,3.5,4.5,5.5,6.5,7.5,9.,11.,13.,15.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
 if n_elements(cdpdbins[*,0,0]) eq 27 then diam=[1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,10.5,14.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
 
 
-cdpDEff=[]
-cdpMassMean=[]
-cdpVolMean=[]
-cdpdbar2=[]
+dEff=[]
+vmd=[]
+vvd=[]
+dBarB=[]
 
 
 
@@ -644,21 +644,21 @@ for m=0, n_elements(pmb)-1 do begin
     xb=[xb,(diam[j])^3.*(cdpdbins[j,0,m])]
     xc=[xc,(diam[j])^4.*(cdpdbins[j,0,m])]
   endfor
-  cdpDEff=[cdpDEff,total(xb)/total(xa)]
-  cdpdbar2=[cdpdbar2,total(xe)/total(cdpdbins[*,0,m])]
-  cdpVolMean=[cdpVolMean,(total(xb)/total(cdpdbins[*,0,m]))^(1./3.)]
-  cdpMassMean=[cdpMassMean,total(xc)/total(xb)]
+  dEff=[dEff,total(xb)/total(xa)]
+  dBarB=[dBarB,total(xe)/total(cdpdbins[*,0,m])]
+  vvd=[vvd,(total(xb)/total(cdpdbins[*,0,m]))^(1./3.)]
+  vmd=[vmd,total(xc)/total(xb)]
 endfor
 
 
 colEliq3=dindgen(n_elements(pmb),start=1,increment=0)
 
 for d=0,n_elements(pmb)-1 do begin
-  if cdpmassmean[d] le 15 then colEliq3[d]=(-0.236989)+0.503008*cdpmassmean[d]-0.0878596*$
-    cdpmassmean[d]^2.+0.00801374*cdpmassmean[d]^3.-0.000397548*cdpmassmean[d]^4.+1.01460e-05*cdpmassmean[d]^5.-1.04243e-07*cdpmassmean[d]^6.
-  if cdpmassmean[d] gt 13 and cdpmassmean[d] le 25 then colEliq3[d]=.9697
-  if cdpmassmean[d] gt 25 then begin
-    x1=((cdpMassMean[d]-20.)/90)^2.
+  if vmd[d] le 15 then colEliq3[d]=(-0.236989)+0.503008*vmd[d]-0.0878596*$
+    vmd[d]^2.+0.00801374*vmd[d]^3.-0.000397548*vmd[d]^4.+1.01460e-05*vmd[d]^5.-1.04243e-07*vmd[d]^6.
+  if vmd[d] gt 13 and vmd[d] le 25 then colEliq3[d]=.9697
+  if vmd[d] gt 25 then begin
+    x1=((vmd[d]-20.)/90)^2.
     x2=2.^(1./.26)-1.
     colEliq3[d]=.98/(1.+x1*x2)^.26
   endif
@@ -677,17 +677,17 @@ endfor
 colEliq=dindgen(n_elements(pmb),start=1,increment=0)
 
 for d=0,n_elements(pmb)-1 do begin
-  if cdpmassmean[d] ge 0.884495 and cdpmassmean[d] lt 4.78668056 then begin
-    colEliq[d]=0.76534878613892943-1.9525313756894320*cdpmassmean[d]+2.3079791209893301*cdpmassmean[d]^2.-1.1748496234649792*cdpmassmean[d]^3.+0.31405602625454776*cdpmassmean[d]^4.-0.042947818677930627*cdpmassmean[d]^5.+0.0023657753736188170*cdpmassmean[d]^6.
+  if vmd[d] ge 0.884495 and vmd[d] lt 4.78668056 then begin
+    colEliq[d]=0.76534878613892943-1.9525313756894320*vmd[d]+2.3079791209893301*vmd[d]^2.-1.1748496234649792*vmd[d]^3.+0.31405602625454776*vmd[d]^4.-0.042947818677930627*vmd[d]^5.+0.0023657753736188170*vmd[d]^6.
   endif
-  if cdpmassmean[d] ge 4.78668056 and cdpmassmean[d] lt 17.0 then begin
-    colEliq[d]=0.053872488439083099+0.38012190535664558*cdpmassmean[d]-0.073273373767733574*cdpmassmean[d]^2.+0.0082262509968131781*cdpmassmean[d]^3.-0.00056395785577478819*cdpmassmean[d]^4.+2.3254772713698912e-05*cdpmassmean[d]^5.-5.2972488973068721e-07*cdpmassmean[d]^6.+5.1198482675651746e-09*cdpmassmean[d]^7.
+  if vmd[d] ge 4.78668056 and vmd[d] lt 17.0 then begin
+    colEliq[d]=0.053872488439083099+0.38012190535664558*vmd[d]-0.073273373767733574*vmd[d]^2.+0.0082262509968131781*vmd[d]^3.-0.00056395785577478819*vmd[d]^4.+2.3254772713698912e-05*vmd[d]^5.-5.2972488973068721e-07*vmd[d]^6.+5.1198482675651746e-09*vmd[d]^7.
   endif
-  if cdpmassmean[d] ge 17.0 and cdpmassmean[d] lt 25. then begin
-    colEliq[d]=0.91221589+0.0087850597*cdpmassmean[d]-0.00025973702*cdpmassmean[d]^2.
+  if vmd[d] ge 17.0 and vmd[d] lt 25. then begin
+    colEliq[d]=0.91221589+0.0087850597*vmd[d]-0.00025973702*vmd[d]^2.
   endif
-  if cdpmassmean[d] ge 25. then begin
-    x1=((cdpMassMean[d]-20.)/90)^2.
+  if vmd[d] ge 25. then begin
+    x1=((vmd[d]-20.)/90)^2.
     x2=2.^(1./.26)-1.
     colEliq[d]=.98/(1.+x1*x2)^.26
   endif
@@ -705,10 +705,10 @@ endfor
 colETot2=dindgen(n_elements(pmb),start=1,increment=0)
 
 for r=0,n_elements(pmb)-1 do begin
-  if cdpmassmean[r] le 10.05 then colETot2[r]=(-0.0187892454)+0.2023209*cdpmassmean[r]-0.01937650*$
-    cdpmassmean[r]^2.+0.00090900815025*cdpmassmean[r]^3.-2.0036900614417430e-05*cdpmassmean[r]^4.+1.6638675680649695e-07*cdpmassmean[r]^5.
-  if cdpmassmean[r] gt 10.05 and cdpmassmean[r] le 33 then colETot2[r]=0.43729845*cdpmassmean[r]^(0.19240421)+0.11114933
-  if cdpmassmean[r] gt 33 then colETot2[r]=0.0010409079*cdpmassmean[r]+0.93375003
+  if vmd[r] le 10.05 then colETot2[r]=(-0.0187892454)+0.2023209*vmd[r]-0.01937650*$
+    vmd[r]^2.+0.00090900815025*vmd[r]^3.-2.0036900614417430e-05*vmd[r]^4.+1.6638675680649695e-07*vmd[r]^5.
+  if vmd[r] gt 10.05 and vmd[r] le 33 then colETot2[r]=0.43729845*vmd[r]^(0.19240421)+0.11114933
+  if vmd[r] gt 33 then colETot2[r]=0.0010409079*vmd[r]+0.93375003
 endfor
 
 
@@ -720,14 +720,14 @@ endfor
 colETot3=dindgen(n_elements(pmb),start=1,increment=0)
 
 for c=0,n_elements(pmb)-1 do begin
-  if cdpmassmean[c] le 50. then begin
-    colETot3[c]=-0.0576565+0.0324626*cdpmassmean[c]+0.0105399*cdpmassmean[c]^2.-0.00118195*cdpmassmean[c]^3.+5.50338e-05*cdpmassmean[c]^4.$
-      -1.32812e-06*cdpmassmean[c]^5.+1.63224e-08*cdpmassmean[c]^6.-8.08554e-11*cdpmassmean[c]^7.
+  if vmd[c] le 50. then begin
+    colETot3[c]=-0.0576565+0.0324626*vmd[c]+0.0105399*vmd[c]^2.-0.00118195*vmd[c]^3.+5.50338e-05*vmd[c]^4.$
+      -1.32812e-06*vmd[c]^5.+1.63224e-08*vmd[c]^6.-8.08554e-11*vmd[c]^7.
   endif    
-  if cdpmassmean[c] gt 50. and cdpmassmean[c] le 150. then begin
-     colETot3[c]=0.907000+0.00164001*cdpmassmean[c]-9.20008e-06*cdpmassmean[c]^2.+1.60003e-08*cdpmassmean[c]^3.  
+  if vmd[c] gt 50. and vmd[c] le 150. then begin
+     colETot3[c]=0.907000+0.00164001*vmd[c]-9.20008e-06*vmd[c]^2.+1.60003e-08*vmd[c]^3.  
   endif
-  if cdpmassmean[c] gt 150. then colETot3[c]=1.
+  if vmd[c] gt 150. then colETot3[c]=1.
 endfor
 
 
@@ -738,25 +738,22 @@ endfor
 colETot=dindgen(n_elements(pmb),start=1,increment=0)
 
 for c=0,n_elements(pmb)-1 do begin
-  if cdpmassmean[c] le 10.41 then begin
-    colETot[c]=0.0089810744193528080-0.0095860685032675974*cdpmassmean[c]+0.018453599910571938*cdpmassmean[c]^2.-0.00080000274192570942*cdpmassmean[c]^3.-0.00019379821253551199*cdpmassmean[c]^4.+2.3409862748735577e-05*cdpmassmean[c]^5.-7.7800221198742747e-07*cdpmassmean[c]^6.
+  if vmd[c] le 10.41 then begin
+    colETot[c]=0.0089810744193528080-0.0095860685032675974*vmd[c]+0.018453599910571938*vmd[c]^2.-0.00080000274192570942*vmd[c]^3.-0.00019379821253551199*vmd[c]^4.+2.3409862748735577e-05*vmd[c]^5.-7.7800221198742747e-07*vmd[c]^6.
   endif
-  if cdpmassmean[c] gt 10.41 and cdpmassmean[c] le 26.014 then begin
-    colETot[c]=-0.31618167337728664+0.14578708937187912*cdpmassmean[c]-0.0070996433610162057*cdpmassmean[c]^2.+0.00016759853006931280*cdpmassmean[c]^3.-1.5651587643716880e-06*cdpmassmean[c]^4.
+  if vmd[c] gt 10.41 and vmd[c] le 26.014 then begin
+    colETot[c]=-0.31618167337728664+0.14578708937187912*vmd[c]-0.0070996433610162057*vmd[c]^2.+0.00016759853006931280*vmd[c]^3.-1.5651587643716880e-06*vmd[c]^4.
   endif
-  if cdpmassmean[c] gt 26.014 and cdpmassmean[c] le 100.000 then begin
-    colETot[c]=0.37017905572429299+0.045383498189039528*cdpmassmean[c]-0.0014994405482866568*cdpmassmean[c]^2.+2.7550006166165986e-05*cdpmassmean[c]^3.-2.8942966512346402e-07*cdpmassmean[c]^4.+1.6276378647650525e-09*cdpmassmean[c]^5.-3.8021012390993675e-12*cdpmassmean[c]^6.
+  if vmd[c] gt 26.014 and vmd[c] le 100.000 then begin
+    colETot[c]=0.37017905572429299+0.045383498189039528*vmd[c]-0.0014994405482866568*vmd[c]^2.+2.7550006166165986e-05*vmd[c]^3.-2.8942966512346402e-07*vmd[c]^4.+1.6276378647650525e-09*vmd[c]^5.-3.8021012390993675e-12*vmd[c]^6.
   endif
-  if cdpmassmean[c] gt 100.000 and cdpmassmean[c] le 150. then begin
-    colETot[c]=0.76903533935546875+0.0065395329147577286*cdpmassmean[c]-7.0993726694723591e-05*cdpmassmean[c]^2.+3.4560855510790134e-07*cdpmassmean[c]^3.-6.3046545761835660e-10*cdpmassmean[c]^4. 
+  if vmd[c] gt 100.000 and vmd[c] le 150. then begin
+    colETot[c]=0.76903533935546875+0.0065395329147577286*vmd[c]-7.0993726694723591e-05*vmd[c]^2.+3.4560855510790134e-07*vmd[c]^3.-6.3046545761835660e-10*vmd[c]^4. 
   endif
-  if cdpmassmean[c] gt 150. then begin
+  if vmd[c] gt 150. then begin
     colETot[c]=1.
   endif
 endfor
-
-
-
 
 
 
@@ -776,19 +773,10 @@ aLiq=3.17d-5
 lLiqStar=2589.
 
 
-;LIQUID SENSOR ICE COLLECTION EFFICIENCY
-;betaLiq=0.11
-
-
-
 ;-----TOTAL-----
 
 ;surface area total sensor [m^2]
 aTot=5.02d-5
-;aTot=4.82d-5
-
-;colETot=1.
-
 
 
 ;EXPENDED HEAT FOR LIQUID
@@ -877,8 +865,8 @@ g  = {as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpit
   rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNoPresCor:pTotNoPresCor,$
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,lIceStar:lIceStar,$
   signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,$
-  cdpDEff:cdpDEff,cdpVolMean:cdpVolMean,cdpMassMean:cdpMassMean,coleliq:coleliq,$
-  twc:twc,colETot:colETot,cdpdbar2:cdpdbar2,twcVarE2:twcVarE2,colEtot2:colEtot2,coletot3:coletot3,$
+  dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,$
+  twc:twc,colETot:colETot,dBarB:dBarB,twcVarE2:twcVarE2,colEtot2:colEtot2,coletot3:coletot3,$
   twcVarEolde:twcVarEolde,colELiq3:colELiq3,lwcVarEolde:lwcVarEolde,cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,$
   cipmodconc2:cipmodconc2,color:color}
 

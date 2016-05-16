@@ -1,4 +1,4 @@
-pro coleerrorplot
+pro cdpVlwcErrBars
 
 
   cgcleanup
