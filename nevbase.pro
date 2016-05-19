@@ -765,10 +765,6 @@ endfor
 aLiq=3.17d-5
 
 
-;liquid collection efficiency
-;colELiq=1.
-
-
 ;EXPENDED HEAT FOR LIQUID
 lLiqStar=2589.
 
@@ -844,7 +840,7 @@ twcVarEolde=pTot/(colETot3*tas*aTot*lLiqStar)
 twc=pTot/(1.*tas*aTot*lLiqStar)
 
 
-
+lwcErrColE=lwc-lwcVarE
 
 
 color=['black','navy','firebrick','dark green','magenta','coral','dodger blue','indian red','orange','olive drab','medium violet red']
@@ -868,7 +864,7 @@ g  = {as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpit
   dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,$
   twc:twc,colETot:colETot,dBarB:dBarB,twcVarE2:twcVarE2,colEtot2:colEtot2,coletot3:coletot3,$
   twcVarEolde:twcVarEolde,colELiq3:colELiq3,lwcVarEolde:lwcVarEolde,cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,$
-  cipmodconc2:cipmodconc2,color:color}
+  cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE}
 
   
 return,g

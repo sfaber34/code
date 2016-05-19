@@ -44,6 +44,7 @@ pro loop
     cipmodconc1=[]
     cipmodconc2=[]
     lwc100=[]
+    lwcErrColE=[]
 
     
 
@@ -90,6 +91,7 @@ pro loop
       cipmodconc1=[cipmodconc1,g.cipmodconc1]
       cipmodconc2=[cipmodconc2,g.cipmodconc2]
       lwc100=[lwc100,g.lwc100]
+      lwcErrColE=[lwcErrColE,g.lwcErrColE]
 
       color=g.color
       
@@ -97,26 +99,13 @@ pro loop
     endfor
     
     
-    
-    stop
-    
-    
-
-    ;liqOnly=where(trf gt -3. and lwc gt .02 and lwc lt .8 and cdpacc gt 10.)
-    ;liqOnly=where(trf gt -3. and lwc lt .8 and cdpdbar gt 2.)
-
-
-    x=dindgen(n_elements(cipmodconc0))
-    p1=scatterplot(x,cipmodconc0,dimensions=[1400,1200])
-    p2=scatterplot(x,cipmodconc1,sym_color='blue',/overplot)
-    p3=scatterplot(x,cipmodconc2,sym_color='red',/overplot)
 
 
 
     save,filename='loopdata.sav',lwc,twc,cdpdbar,trf,twcVarE,colETot,$
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
       signalTot,cdpconc,ltdiff,tldiff,dbar3m,cdpacc,lwcVarE,dBarB,$
-      dBarBI,cdpSecondM,cdpThirdM,cdpFourthM,dEff,vvd,vmd,$
+      dBarBI,cdpSecondM,cdpThirdM,cdpFourthM,dEff,vvd,vmd,lwcErrColE,$
       twcVarE2,coletot2,colEtot3,lwcVarEolde,colELiq3,lwcolde,$
       cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,/verbose
 
