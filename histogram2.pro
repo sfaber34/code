@@ -8,7 +8,7 @@ pro histogram2
   restore,'loopdata.sav'
 
   ;liqOnly=where(trf gt -3. and lwc lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05 and vmd lt 40.)
-  liqOnly=where(lwc gt 0.05 and twc gt 0.05 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and cdpconc gt 100.)
+  liqOnly=where(lwc gt 0.05)
 
 
 
@@ -30,15 +30,16 @@ pro histogram2
     cipmodconc2=cipmodconc2[liqonly]
     coleliq=coleliq[liqonly]
     coletot=coletot[liqonly]
+    lwcErrColE=lwcErrColE[liqonly]
   endif
 
 
 
   ;----------------------------------------------------------------------------------------------
   ;----------------------------------------------------------------------------------------------
-  var=vmd
-  xinc=1.
-  xstart=2.
+  var=cdpconc
+  xinc=25.
+  xstart=0.
   ;----------------------------------------------------------------------------------------------
   ;----------------------------------------------------------------------------------------------
 
@@ -49,9 +50,13 @@ pro histogram2
   
   p1=barplot(dindgen(n_elements(h1),start=xstart,increment=xinc),h1,histogram=1,dimensions=[1600,1200],margin=[110,70,30,20],/device)
   
-  p1.xtitle='VMD um'
+  p1.xtitle='CDP Concentration liter-1'
   p1.ytitle='Frequency'
+  p1.xtickinterval=100
+  p1.xminor=0
+  p1.xrange=[0,1200]
+  ;p1.ytickinterval=50  
   
   p1.font_size=22
-
+  p1.save,'concFreq.jpg'
 end

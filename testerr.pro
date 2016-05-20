@@ -1,8 +1,9 @@
 pro testErr
   restore,'loopdata.sav'
-  
-  
-  p1=plot(lwc[2200:2800],dimensions=[1600,1200])
-  p2=plot(lwcVarE[2200:2800],/overplot,'r')
-  p3=plot(lwcErrColE[2200:2800],/overplot,'g')
+
+  f=where(lwc gt .05)
+
+  p1=scatterplot(vmd[f],lwcErrColE[f]/lwc[f],dimensions=[1600,1200])
+  p2=scatterplot(vmd[f],1.-coleliq[f],sym_color='red',/overplot)
+
 end
