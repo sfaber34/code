@@ -30,6 +30,7 @@ pro histogram2
     cipmodconc2=cipmodconc2[liqonly]
     coleliq=coleliq[liqonly]
     coletot=coletot[liqonly]
+    lwcErrColE=lwcErrColE[liqonly]
   endif
 
 

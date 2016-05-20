@@ -840,7 +840,7 @@ twcVarEolde=pTot/(colETot3*tas*aTot*lLiqStar)
 twc=pTot/(1.*tas*aTot*lLiqStar)
 
 
-lwcErrColE=lwc-lwcVarE
+lwcErrColE=lwcVarE-lwc
 
 
 color=['black','navy','firebrick','dark green','magenta','coral','dodger blue','indian red','orange','olive drab','medium violet red']
