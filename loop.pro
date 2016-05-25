@@ -34,12 +34,8 @@ pro loop
     coletot=[]
     twcVarE=[]
     dBarB=[]
-    twcVarE2=[]
     colEtot2=[]
     colEtot3=[]
-    lwcVarEolde=[]
-    colELiq3=[]
-    lwcolde=[]
     cipmodconc0=[]
     cipmodconc1=[]
     cipmodconc2=[]
@@ -56,58 +52,94 @@ pro loop
     for i=0, n_elements(flight)-1 do begin
 
 
-      g= nevBase(flight[i],'indicated','400')
-
-      print,flight[i]
+      d=nevBase(flight[i],'indicated','400')
 
       
-      lwc=[lwc,g.lwc]
-      as=[as,g.as]
-      pmb=[pmb,g.pmb]
-      cdplwc=[cdplwc,g.cdplwc]
-      twc=[twc,g.twc]
-      cdpdbar=[cdpdbar,g.cdpdbar]
-      trf=[trf,g.trf]
-      signalLiq=[signalLiq,g.signalLiq]
-      signalTot=[signalTot,g.signalTot]
-      clearairLiq=[clearairLiq,g.clearairLiq]
-      clearairTot=[clearairTot,g.clearairTot]
-      dEff=[dEff,g.dEff]
-      vvd=[vvd,g.vvd]
-      vmd=[vmd,g.vmd]
-      cdpconc=[cdpconc,g.cdpconc]
-      cdpacc=[cdpacc,g.cdpacc]
-      lwcVarE=[lwcVarE,g.lwcVarE]
-      coleliq=[coleliq,g.coleliq]
-      coletot=[coletot,g.coletot]
-      twcVarE=[twcVarE,g.twcVarE]
-      dBarB=[dBarB,g.dBarB]
-      twcVarE2=[twcVarE2,g.twcVarE2]
-      colEtot2=[coleTot2,g.coletot2]
-      colEtot3=[colEtot3,g.colEtot3]
-      lwcVarEolde=[lwcVarEolde,g.lwcVarEolde]
-      colELiq3=[colELiq3,g.colELiq3]
-      cipmodconc0=[cipmodconc0,g.cipmodconc0]
-      cipmodconc1=[cipmodconc1,g.cipmodconc1]
-      cipmodconc2=[cipmodconc2,g.cipmodconc2]
-      lwc100=[lwc100,g.lwc100]
-      lwcErrColE=[lwcErrColE,g.lwcErrColE]
+      lwc=[lwc,d.lwc]
+      as=[as,d.as]
+      pmb=[pmb,d.pmb]
+      cdplwc=[cdplwc,d.cdplwc]
+      twc=[twc,d.twc]
+      cdpdbar=[cdpdbar,d.cdpdbar]
+      trf=[trf,d.trf]
+      signalLiq=[signalLiq,d.signalLiq]
+      signalTot=[signalTot,d.signalTot]
+      clearairLiq=[clearairLiq,d.clearairLiq]
+      clearairTot=[clearairTot,d.clearairTot]
+      dEff=[dEff,d.dEff]
+      vvd=[vvd,d.vvd]
+      vmd=[vmd,d.vmd]
+      cdpconc=[cdpconc,d.cdpconc]
+      cdpacc=[cdpacc,d.cdpacc]
+      lwcVarE=[lwcVarE,d.lwcVarE]
+      coleliq=[coleliq,d.coleliq]
+      coletot=[coletot,d.coletot]
+      twcVarE=[twcVarE,d.twcVarE]
+      dBarB=[dBarB,d.dBarB]
+      colEtot2=[coleTot2,d.coletot2]
+      colEtot3=[colEtot3,d.colEtot3]
+      cipmodconc0=[cipmodconc0,d.cipmodconc0]
+      cipmodconc1=[cipmodconc1,d.cipmodconc1]
+      cipmodconc2=[cipmodconc2,d.cipmodconc2]
+      lwc100=[lwc100,d.lwc100]
+      lwcErrColE=[lwcErrColE,d.lwcErrColE]
 
-      color=g.color
-      
-      
     endfor
     
+    color=d.color
+    
+    
+    
+
+;    lwc=lwc
+;    as=as
+;    pmb=pmb
+;    cdplwc=cdplwc
+;    twc=twc
+;    cdpdbar=cdpdbar
+;    trf=trf
+;    signalLiq=signalLiq
+;    signalTot=signalTot
+;    clearairLiq=clearairLiq
+;    clearairTot=clearairTot
+;    dEff=dEff
+;    vvd=vvd
+;    vmd=vmd
+;    cdpconc=cdpconc
+;    cdpacc=cdpacc
+;    lwcVarE=lwcVarE
+;    coleliq=coleliq
+;    coletot=coletot
+;    twcVarE=twcVarE
+;    dBarB=dBarB
+;    colEtot2=coleTot2
+;    colEtot3=colEtot3
+;    cipmodconc0=cipmodconc0
+;    cipmodconc1=cipmodconc1
+;    cipmodconc2=cipmodconc2
+;    lwc100=lwc100
+;    lwcErrColE=lwcErrColE
     
 
 
 
     save,filename='loopdata.sav',lwc,twc,cdpdbar,trf,twcVarE,colETot,$
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
-      signalTot,cdpconc,ltdiff,tldiff,dbar3m,cdpacc,lwcVarE,dBarB,$
-      dBarBI,cdpSecondM,cdpThirdM,cdpFourthM,dEff,vvd,vmd,lwcErrColE,$
-      twcVarE2,coletot2,colEtot3,lwcVarEolde,colELiq3,lwcolde,$
-      cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,/verbose
+      signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
+      coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
+      
+;      lwcLO1,twcLO1,cdpdbarLO1,trfLO1,twcVarELO1,colETotLO1,$
+;      asLO1,pmbLO1,cdplwcLO1,clearairLiqLO1,clearairTotLO1,signalLiqLO1,colELiqLO1,$
+;      signalTotLO1,cdpconcLO1,cdpaccLO1,lwcVarELO1,dBarBLO1,dEffLO1,vvdLO1,vmdLO1,lwcErrColELO1,$
+;      coletot2LO1,colEtot3LO1,cipmodconc0LO1,cipmodconc1LO1,cipmodconc2LO1,lwc100LO1,$
+;      
+;      lwcLO2,twcLO2,cdpdbarLO2,trfLO2,twcVarELO2,colETotLO2,$
+;      asLO2,pmbLO2,cdplwcLO2,clearairLiqLO2,clearairTotLO2,signalLiqLO2,colELiqLO2,$
+;      signalTotLO2,cdpconcLO2,cdpaccLO2,lwcVarELO2,dBarBLO2,dEffLO2,vvdLO2,vmdLO2,lwcErrColELO2,$
+;      coletot2LO2,colEtot3LO2,cipmodconc0LO2,cipmodconc1LO2,cipmodconc2LO2,lwc100LO2,$
+      
+      /verbose
+      
 
 
 

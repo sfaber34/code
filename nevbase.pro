@@ -3,15 +3,18 @@
 ;
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
 function nevbase, flightDay, airspeedType, level
 
-
 common t,t
-  ;-----------------------------------------SET FILE PATH----------------------------------------------------------------------------------------------------------------------
-  ;----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+;AIRSPEED TYPE/LEVEL OVERRIDES
+airspeedType='indicated'
+level='400'
+
+
+;---------------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------FILEPATHS---------------------------------------------------------------------
+;---------------------------------------------------------------------------------------------------------------------------------------------------
 
 if !version.OS_FAMILY eq 'Windows' then begin
   if flightDay eq '0709' then nclPath='..\data\20130709.c1.nc'
@@ -73,9 +76,10 @@ if strmatch(nclpath,'*2015*') eq 1 then cope=0
 if strmatch(nclpath,'*2016*') eq 1 then cope=2
 
 
-;-----------------------------------------LOAD VARIABLES----------------------------------------------------------------------------------------------------------------------
-;----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+;--------------------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------LOAD VARIABLES---------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ;liquid reference voltage [V]
 vlwcref=loadvar('vlwcref', filename=nclPath)
@@ -156,11 +160,8 @@ cdpdbins=loadvar('ACDP_1_NRB', filename=nclPath)
 if cope eq 1 then hivs=loadvar('hivs', filename=nclPath)
 if cope ne 1 then hivs=!VALUES.F_NAN
 
-
 cipmod=1
 if flightday eq '0814' eq 1 then cipmod=0
-
-
 
 ;CIP MOD0 CONC [/liter]
 if cope eq 1 and cipmod eq 1 then begin
@@ -177,7 +178,6 @@ endif else begin
   cipmodconc1=replicate(!VALUES.F_NAN,n_elements(pmb))
 endelse
 
-
 ;CIP MOD0 CONC [/liter]
 if cope eq 1 and cipmod eq 1 then begin
   cipmodconc2=loadvar('CONC2_mod_cip_IBR', filename=nclPath)
@@ -185,15 +185,7 @@ endif else begin
   cipmodconc2=replicate(!VALUES.F_NAN,n_elements(pmb))
 endelse
 
-
-
-
 nonev1=1
-;if strmatch(nclpath,'*0806*') eq 0 and strmatch(nclpath,'*0802*')$
-;   eq 0 and strmatch(nclpath,'*0803*') eq 0 and strmatch(nclpath,'*0813*')$
-;    eq 0 and strmatch(nclpath,'*0821*') eq 0 and strmatch(nclpath,'*0722*')$
-;     eq 0 and strmatch(nclpath,'*0718*') eq 0 then nonev1=1
-
 
 ;liquid water content from Nevzorov probe [g/m^3]
 if cope eq 1 and nonev1 eq 1 then begin
@@ -202,7 +194,6 @@ endif else begin
   lwcNev1=replicate(!VALUES.F_NAN,n_elements(pmb))
 endelse  
 
-
 ;liquid water content from Nevzorov probe [g/m^3]
 if cope eq 1 and nonev1 eq 1 then begin
    lwcNev2=loadvar('nevlwc2', filename=nclPath)
@@ -210,15 +201,12 @@ endif else begin
   lwcNev2=replicate(!VALUES.F_NAN,n_elements(pmb))
 endelse
 
-
 ;Total water content from Nevzorov probe [g/m^3]
 if cope eq 1 and nonev1 eq 1 then begin
   twcNev=loadvar('nevtwc', filename=nclPath)
 endif else begin  
   twcNev=replicate(!VALUES.F_NAN,n_elements(pmb))
 endelse
-
- 
 
 ;Sideslip Angle [deg]
 betaB=loadvar('beta', filename=nclPath)
@@ -231,18 +219,12 @@ alpha=loadvar('alpha', filename=nclPath)
 
 ;Flight Time [sec]
 timeFlight=dindgen(n_elements(pmb),start=0,increment=1)
-
-;Hour
 hour=loadvar('HOUR', filename=nclPath)
-
-;Hour
 min=loadvar('MINUTE', filename=nclPath)
-
-;Hour
 sec=loadvar('SECOND', filename=nclPath)
 
 
-;Convert time for axis
+;--------------------SET TIMES FOR AXIS--------------------
 
 hourst=string(hour)
 hourstsp=strsplit(hourst,'.',/extract)
@@ -268,18 +250,13 @@ timePretty=hourstspb+':'+minstspb+':'+secstspb
 
 t={hour:hour,min:min,sec:sec,timeForm:timeForm}
 
+vsig=where(vlwccol gt 4.)
+vsig=vsig[30:n_elements(vsig)-1]
+aStart=min(vsig)+40
+aEnd=max(vsig)-40
 
 
-
-
-;-----------------------------------------SET START/STOP TIMES----------------------------------------------------------------------------------------------------------------------
-;----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-  vsig=where(vlwccol gt 4.)
-  vsig=vsig[30:n_elements(vsig)-1]
-  aStart=min(vsig)+40
-  aEnd=max(vsig)-40
-
+;--------------------SET FLIGHT STRINGS--------------------
 
 if flightDay eq '0807' then flightString='08-07-13'
 if flightDay eq '0806' then flightString='08-06-13'
@@ -308,11 +285,7 @@ if flightDay eq '0817a' then flightString='08-17-13'
 if flightDay eq '0817b' then flightString='08-17-13'
 
 
-
-
-;-----------------------------------------APPLY START/STOP TIMES TO VARIABLES----------------------------------------------------------------------------------------------------------------------
-;----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+;--------------------FILTER VARIABLES TO FLIGHT TIME BOUNDS--------------------
 
 vlwcref=vlwcref[aStart:aEnd]
 vlwccol=vlwccol[aStart:aEnd]
@@ -343,6 +316,7 @@ cdplwc_1_NRB=cdplwc_1_NRB[aStart:aEnd]
 timeFlight=timeFlight[aStart:aEnd]
 cdpdbins=cdpdbins[*,*,aStart:aEnd]
 
+;SET COPE ONLY VARIABLES
 if cope eq 1 then begin
   lwcNev1=lwcNev1[aStart:aEnd]
   lwcNev2=lwcNev2[aStart:aEnd]
@@ -351,19 +325,6 @@ if cope eq 1 then begin
   vtwcref=vlwcref 
   itwcref=ilwcref
 endif
-
-;cdpdbins[*,0,*]=cdpdbins[*,0,*]-2.
-;
-;for o=0,n_elements(cdpdbins[0,0,*])-1 do begin
-;  for p=0,n_elements(cdpdbins[*,0,0])-1 do begin
-;    if cdpdbins[p,0,o] lt 0. then cdpdbins[p,0,o]=0.
-;  endfor
-;endfor
-
-
-
-;------------------------------------------CONVERSIONS---------------------------------------------------------------------------------------------------------------------------
-;----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ;CONVERT INDICATED AIRSPEED TO M/S
 aiasMs=aias*.514444
@@ -378,47 +339,22 @@ endif
 
 
 
-;-----------------------------------------Kliq---------------------------------------------------------------------------------------------------------------------------
-;----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-;----------------------------------------------------K LIQUID---------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------K AIRSPEED DEPENDANCE PARAMETERIZATION---------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if cope eq 1 then begin
   if (airspeedType eq 'indicated') and (level eq '900') then kLiq=(2.47292)*aiasms^(-0.273777)+(0.399143) ;900 indicated
   if (airspeedType eq 'indicated') and (level eq '600') then kLiq=(3.73599)*aiasms^(-0.0628865)+(-1.67763) ;600 indicated
   if (airspeedType eq 'indicated') and (level eq '400') then kLiq=(36.0089)*aiasms^(-1.26173)+(1.03362) ;400 indicated
-  
-  if (airspeedType eq 'true') and (level eq '900') then kLiq=(8.56136)*tas^(-0.0292547)+(-6.37413) ;900 true
-  if (airspeedType eq 'true') and (level eq '600') then kLiq=(3.91644)*tas^(-0.0685396)+(-1.70073) ;600 true
-  if (airspeedType eq 'true') and (level eq '400') then kLiq=(1280.56)*tas^(-2.00624)+(1.08139) ;400 true
-endif
 
-
-
-if cope eq 2 or cope eq 0 then begin
-  if (airspeedType eq 'indicated') and (level eq '700') then kLiq=(-0.0126704)*tas^(0.698457)+(2.01460)
-  if (airspeedType eq 'indicated') and (level eq '600') then kLiq=(-0.00956550)*tas^(0.753178)+(2.00092)
-  if (airspeedType eq 'indicated') and (level eq '500') then kLiq=(-0.135222)*tas^(0.375551)+(2.43805)
-  if (airspeedType eq 'indicated') and (level eq '400') then kLiq=(-0.0810470)*tas^(0.436789)+(2.28769)
-endif
-
-
-
-
-
-
-
-
-;----------------------------------------------------K TOTAL----------------------------------------------------
-
-if cope eq 1 then begin
   if (airspeedType eq 'indicated') and (level eq '900') then kTot=(10.8603)*aiasms^(-0.675924)+(0.167331) ;900 indicated
   if (airspeedType eq 'indicated') and (level eq '600') then kTot=(3.39234)*aiasms^(-0.182697)+(-0.737908) ;600 indicated
   if (airspeedType eq 'indicated') and (level eq '400') then kTot=(224.264)*aiasms^(-1.73025)+(0.725502) ;400 indicated
+  
+  if (airspeedType eq 'true') and (level eq '900') then kLiq=(8.56136)*tas^(-0.0292547)+(-6.37413) ;900 true
+  if (airspeedType eq 'true') and (level eq '600') then kLiq=(3.91644)*tas^(-0.0685396)+(-1.70073) ;600 true
+  if (airspeedType eq 'true') and (level eq '400') then kLiq=(1280.56)*tas^(-2.00624)+(1.08139) ;400 true  
 
   if (airspeedType eq 'true') and (level eq '900') then kTot=(35.0933)*tas^(-1.00354)+(0.318860) ;900 true
   if (airspeedType eq 'true') and (level eq '600') then kTot=(3.83487)*tas^(-0.238794)+(-0.496087) ;600 true
@@ -428,18 +364,22 @@ endif
 
 
 if cope eq 2 or cope eq 0 then begin
+  if (airspeedType eq 'indicated') and (level eq '700') then kLiq=(-0.0126704)*tas^(0.698457)+(2.01460)
+  if (airspeedType eq 'indicated') and (level eq '600') then kLiq=(-0.00956550)*tas^(0.753178)+(2.00092)
+  if (airspeedType eq 'indicated') and (level eq '500') then kLiq=(-0.135222)*tas^(0.375551)+(2.43805)
+  if (airspeedType eq 'indicated') and (level eq '400') then kLiq=(-0.0810470)*tas^(0.436789)+(2.28769)
+  
   if (airspeedType eq 'indicated') and (level eq '700') then kTot=(-0.0258749)*aiasms^(0.711242)+(1.37937)
   if (airspeedType eq 'indicated') and (level eq '600') then kTot=(-0.104706)*aiasms^(0.468563)+(1.64276)
   if (airspeedType eq 'indicated') and (level eq '500') then kTot=(-0.0249307)*aiasms^(0.698422)+(1.39464)
-  if (airspeedType eq 'indicated') and (level eq '400') then kTot=(-0.0700741)*aiasms^(0.512351)+(1.56121) ;400 indicated
+  if (airspeedType eq 'indicated') and (level eq '400') then kTot=(-0.0700741)*aiasms^(0.512351)+(1.56121)
 endif
 
 
 
-
-
-;------------------------------------------FILTER CLEAR AIR---------------------------------------------------------------------------------------------------------------------------
-;-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------CLEARAIR POINT DETECTION---------------------------------------------------------------------
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 correctionLiq=dindgen(n_elements(pmb),increment=0)
 smoothSignalLiq=dindgen(n_elements(pmb),increment=0)
@@ -447,26 +387,10 @@ smoothSignalLiq=dindgen(n_elements(pmb),increment=0)
 correctionTot=dindgen(n_elements(pmb),increment=0)
 smoothSignalTot=dindgen(n_elements(pmb),increment=0)
 
-
-
-;----------SIGNAL RATIO----------
-
-;-----LIQUID-----
 rawSignalLiq=(vlwccol)
-
-
-
-
-
-
-;-----TOTAL-----
 rawSignalTot=(vtwccol)
 
-
-
-;----------BASELINE DETECTION STEP----------
 int=10
-
 for i=0,n_elements(pmb)-(int+1) do begin
   correctionLiq[i:i+int]=min(rawSignalLiq[i:i+int])
   i=i+int
@@ -479,24 +403,17 @@ for i=0,n_elements(pmb)-(int+1) do begin
 endfor
 
 intb=20
-
 for i=0,n_elements(pmb)-(intb+1) do begin
   correctionTot[i:i+intb]=min(rawSignalTot[i:i+intb])
   i=i+int
 endfor
-
 
 for i=0,n_elements(pmb)-(intb+1) do begin
   smoothSignalTot[i:i+intb]=rawSignalTot[i:i+intb]-correctionTot[i:i+intb]
   i=i+int
 endfor
 
-
-
-
 diffLiq=smoothSignalLiq
-
-
 uLiq2=sort(rawSignalLiq)
 uLiq3=reverse(uLiq2)
 uLiq=diffLiq[uLiq3]
@@ -508,14 +425,7 @@ x2Liq=max([u1Liq,u2Liq])
 if cope eq 0 or cope eq 2 then threshLiq=.007*mean(rawSignalLiq[0:50])
 if cope eq 1 then threshLiq=.007*mean(rawSignalLiq[0:50])
 
-
-
-
-
-
-
 diffTot=smoothSignalTot
-
 threshtot=0.
 uTot2=sort(diffTot)
 uTot3=reverse(uTot2)
@@ -523,16 +433,12 @@ uTot=diffTot[uTot3]
 u1Tot=uTot[0]
 u2Tot=uTot[50]
 
-
 x1Tot=min([u1Tot,u2Tot])
 x2Tot=max([u1Tot,u2Tot])
 if cope eq 0 or cope eq 2 then threshTot=.085*mean(uTot[0:50])
 if (cope eq 0 or cope eq 2) and threshTot lt .003 then threshTot=.004
 
 if cope eq 1 then threshTot=0.0025*mean(uTot[0:50])
-
-
- 
 
 
 clearairLiqi=findgen(n_elements(pmb),start=0.,increment=0.)
@@ -562,27 +468,17 @@ clearairTotsortsorted=clearairTotsortsorted[n_elements(clearairTotsortsorted)*.0
 
 
 
-
-
-
-
-
-;------------------------------------------FILTER MISC.---------------------------------------------------------------------------------------------------------------------------
-;-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
+;---------------------------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------MISC. POINT DETECTION---------------------------------------------------------------------
+;---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 aSpan = n_elements(pmb) - 1
-
 BetaI=dindgen(n_elements(pmb),start=0,increment=0)
 baselineIB=dindgen(n_elements(pmb),start=0,increment=0)
 baselineRollI=dindgen(n_elements(pmb),start=0,increment=0)
 baselineYawI=dindgen(n_elements(pmb),start=0,increment=0)
 baselinePitchI=dindgen(n_elements(pmb),start=0,increment=0)
 baselineI=dindgen(n_elements(pmb),start=0,increment=0)
-
-
 
 for i=0, aSpan do begin
   if (abs(avRoll[i]) lt 5) then begin
@@ -602,20 +498,14 @@ for i=0, aSpan do begin
   endif
 endfor
 
-
-
 levelclearairLiq=where(baselineIB eq 1)
 
 
 
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------MOMENT CALCULATIONS---------------------------------------------------------------------
+;-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-;-----------------------------------------CONSTANTS-------------------------------------------------------------------------------------------------------------------------------
-;----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-;MOMENT CALCULATIONS
 dEff=make_array(n_elements(pmb))
 vvd=make_array(n_elements(pmb))
 vmd=make_array(n_elements(pmb))
@@ -629,10 +519,6 @@ vmd=[]
 vvd=[]
 dBarB=[]
 
-
-
-
-;MOMENTS
 for m=0, n_elements(pmb)-1 do begin
   xa=[]
   xb=[]
@@ -651,31 +537,13 @@ for m=0, n_elements(pmb)-1 do begin
 endfor
 
 
-colEliq3=dindgen(n_elements(pmb),start=1,increment=0)
 
-for d=0,n_elements(pmb)-1 do begin
-  if vmd[d] le 15 then colEliq3[d]=(-0.236989)+0.503008*vmd[d]-0.0878596*$
-    vmd[d]^2.+0.00801374*vmd[d]^3.-0.000397548*vmd[d]^4.+1.01460e-05*vmd[d]^5.-1.04243e-07*vmd[d]^6.
-  if vmd[d] gt 13 and vmd[d] le 25 then colEliq3[d]=.9697
-  if vmd[d] gt 25 then begin
-    x1=((vmd[d]-20.)/90)^2.
-    x2=2.^(1./.26)-1.
-    colEliq3[d]=.98/(1.+x1*x2)^.26
-  endif
-endfor
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------COLLECTION EFFECIENCY PARAMETERIZATION---------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
+;--------------------LIQUID COLLECTION EFFECIENCY--------------------
 colEliq=dindgen(n_elements(pmb),start=1,increment=0)
-
 for d=0,n_elements(pmb)-1 do begin
   if vmd[d] ge 0.884495 and vmd[d] lt 4.78668056 then begin
     colEliq[d]=0.76534878613892943-1.9525313756894320*vmd[d]+2.3079791209893301*vmd[d]^2.-1.1748496234649792*vmd[d]^3.+0.31405602625454776*vmd[d]^4.-0.042947818677930627*vmd[d]^5.+0.0023657753736188170*vmd[d]^6.
@@ -693,17 +561,39 @@ for d=0,n_elements(pmb)-1 do begin
   endif
 endfor
 
+colEliq3=dindgen(n_elements(pmb),start=1,increment=0)
+for d=0,n_elements(pmb)-1 do begin
+  if vmd[d] le 15 then colEliq3[d]=(-0.236989)+0.503008*vmd[d]-0.0878596*$
+    vmd[d]^2.+0.00801374*vmd[d]^3.-0.000397548*vmd[d]^4.+1.01460e-05*vmd[d]^5.-1.04243e-07*vmd[d]^6.
+  if vmd[d] gt 13 and vmd[d] le 25 then colEliq3[d]=.9697
+  if vmd[d] gt 25 then begin
+    x1=((vmd[d]-20.)/90)^2.
+    x2=2.^(1./.26)-1.
+    colEliq3[d]=.98/(1.+x1*x2)^.26
+  endif
+endfor
 
-
-
-
-
-
-
-
+;--------------------TOTAL COLLECTION EFFECIENCY--------------------
+colETot=dindgen(n_elements(pmb),start=1,increment=0)
+for c=0,n_elements(pmb)-1 do begin
+  if vmd[c] le 10.41 then begin
+    colETot[c]=0.0089810744193528080-0.0095860685032675974*vmd[c]+0.018453599910571938*vmd[c]^2.-0.00080000274192570942*vmd[c]^3.-0.00019379821253551199*vmd[c]^4.+2.3409862748735577e-05*vmd[c]^5.-7.7800221198742747e-07*vmd[c]^6.
+  endif
+  if vmd[c] gt 10.41 and vmd[c] le 26.014 then begin
+    colETot[c]=-0.31618167337728664+0.14578708937187912*vmd[c]-0.0070996433610162057*vmd[c]^2.+0.00016759853006931280*vmd[c]^3.-1.5651587643716880e-06*vmd[c]^4.
+  endif
+  if vmd[c] gt 26.014 and vmd[c] le 100.000 then begin
+    colETot[c]=0.37017905572429299+0.045383498189039528*vmd[c]-0.0014994405482866568*vmd[c]^2.+2.7550006166165986e-05*vmd[c]^3.-2.8942966512346402e-07*vmd[c]^4.+1.6276378647650525e-09*vmd[c]^5.-3.8021012390993675e-12*vmd[c]^6.
+  endif
+  if vmd[c] gt 100.000 and vmd[c] le 150. then begin
+    colETot[c]=0.76903533935546875+0.0065395329147577286*vmd[c]-7.0993726694723591e-05*vmd[c]^2.+3.4560855510790134e-07*vmd[c]^3.-6.3046545761835660e-10*vmd[c]^4.
+  endif
+  if vmd[c] gt 150. then begin
+    colETot[c]=1.
+  endif
+endfor
 
 colETot2=dindgen(n_elements(pmb),start=1,increment=0)
-
 for r=0,n_elements(pmb)-1 do begin
   if vmd[r] le 10.05 then colETot2[r]=(-0.0187892454)+0.2023209*vmd[r]-0.01937650*$
     vmd[r]^2.+0.00090900815025*vmd[r]^3.-2.0036900614417430e-05*vmd[r]^4.+1.6638675680649695e-07*vmd[r]^5.
@@ -711,14 +601,7 @@ for r=0,n_elements(pmb)-1 do begin
   if vmd[r] gt 33 then colETot2[r]=0.0010409079*vmd[r]+0.93375003
 endfor
 
-
-
-
-
-
-
 colETot3=dindgen(n_elements(pmb),start=1,increment=0)
-
 for c=0,n_elements(pmb)-1 do begin
   if vmd[c] le 50. then begin
     colETot3[c]=-0.0576565+0.0324626*vmd[c]+0.0105399*vmd[c]^2.-0.00118195*vmd[c]^3.+5.50338e-05*vmd[c]^4.$
@@ -733,124 +616,71 @@ endfor
 
 
 
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------LWC/TWC/IWC CALCULATIONS---------------------------------------------------------------------
+;------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
-colETot=dindgen(n_elements(pmb),start=1,increment=0)
-
-for c=0,n_elements(pmb)-1 do begin
-  if vmd[c] le 10.41 then begin
-    colETot[c]=0.0089810744193528080-0.0095860685032675974*vmd[c]+0.018453599910571938*vmd[c]^2.-0.00080000274192570942*vmd[c]^3.-0.00019379821253551199*vmd[c]^4.+2.3409862748735577e-05*vmd[c]^5.-7.7800221198742747e-07*vmd[c]^6.
-  endif
-  if vmd[c] gt 10.41 and vmd[c] le 26.014 then begin
-    colETot[c]=-0.31618167337728664+0.14578708937187912*vmd[c]-0.0070996433610162057*vmd[c]^2.+0.00016759853006931280*vmd[c]^3.-1.5651587643716880e-06*vmd[c]^4.
-  endif
-  if vmd[c] gt 26.014 and vmd[c] le 100.000 then begin
-    colETot[c]=0.37017905572429299+0.045383498189039528*vmd[c]-0.0014994405482866568*vmd[c]^2.+2.7550006166165986e-05*vmd[c]^3.-2.8942966512346402e-07*vmd[c]^4.+1.6276378647650525e-09*vmd[c]^5.-3.8021012390993675e-12*vmd[c]^6.
-  endif
-  if vmd[c] gt 100.000 and vmd[c] le 150. then begin
-    colETot[c]=0.76903533935546875+0.0065395329147577286*vmd[c]-7.0993726694723591e-05*vmd[c]^2.+3.4560855510790134e-07*vmd[c]^3.-6.3046545761835660e-10*vmd[c]^4. 
-  endif
-  if vmd[c] gt 150. then begin
-    colETot[c]=1.
-  endif
-endfor
-
-
-
-
-
-;-----LIQUID-----
-
+;--------------------CONSTANTS--------------------
 ;surface area liquid sensor [m^2]
 aLiq=3.17d-5
-
 
 ;EXPENDED HEAT FOR LIQUID
 lLiqStar=2589.
 
-
-;-----TOTAL-----
-
 ;surface area total sensor [m^2]
 aTot=5.02d-5
-
 
 ;EXPENDED HEAT FOR LIQUID
 lIceStar=lLiqStar
 
 
 
-;-----HEAT LOSS LIQUID------
+;--------------------POWER CALCULATIONS--------------------
 pLiq=vlwccol*ilwccol-kLiq*vlwcref*ilwcref
 pLiqNoPresCor=pLiq
-
-
 lwcNoPresCor=pLiq/(colELiq*tas*aLiq*lLiqStar)
 
-
-
-
-;-----HEAT LOSS TOTAL------
 pTot=vtwccol*itwccol-kTot*vtwcref*itwcref
 pTotNoPresCor=pTot
-
 twcNoPresCor=pTot/(colETot*tas*aTot*lIceStar)
 
 
 
-;-----------------------------------------PRESSURE correctionLiq---------------------------------------------------------------------------------------------------------------------------
-;----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+;--------------------POWER PRESSURE CORRECTION--------------------
 
 linPresCorLiq=linfit(pmb[clearairLiq],pLiqNoPresCor[clearairLiq])
-
-
 pLiq=pLiqNoPresCor - ( linPresCorLiq[1]*pmb + linPresCorLiq[0] )
 
-
-
-
-
 linPresCorTot=linfit(pmb[clearairTot],pTotNoPresCor[clearairTot])
-
-
 pTot=pTotNoPresCor - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
 
 
+;--------------------FINAL CALCULATIONS--------------------
 
-;-----------------------------------------CALCULATIONS---------------------------------------------------------------------------------------------------------------------------
-;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-;WATER CONTENT LIQUID
-lwcVarEolde=pLiq/(colELiq3*tas*aLiq*lLiqStar)
-lwcVarE=pLiq/(colELiq*tas*aLiq*lLiqStar)
+;LWC
 lwc=pLiq/(1.*tas*aLiq*lLiqStar)
+lwcVarE=pLiq/(colELiq*tas*aLiq*lLiqStar)
 
-
-
-;WATER CONTENT TOTAL
-twcVarE=pTot/(colETot*tas*aTot*lLiqStar)
-twcVarE2=pTot/(colETot2*tas*aTot*lLiqStar)
-twcVarEolde=pTot/(colETot3*tas*aTot*lLiqStar)
+;TWC
 twc=pTot/(1.*tas*aTot*lLiqStar)
+twcVarE=pTot/(colETot*tas*aTot*lLiqStar)
+
 
 
 lwcErrColE=lwcVarE-lwc
+twcErrColE=twcVarE-twc
+
+iwc=twc-lwc
 
 
+
+;--------------------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------PASS VARIABLES---------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------------------------------------
 
 color=['black','navy','firebrick','dark green','magenta','coral','dodger blue','indian red','orange','olive drab','medium violet red']
 
-;p1=plot(timeFlight,twc,dimensions=[1600,1200])
-;p2=scatterplot(timeFlight[clearairTot],twc[clearairTot],/overplot,symbol='.',sym_color='red')
-
-
-g  = {as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch, $
+d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch, $
   pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcVarE:twcVarE,$
   clearairLiq:clearairLiq, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
   flightString:flightString, kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,$
@@ -863,17 +693,24 @@ g  = {as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpit
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,lIceStar:lIceStar,$
   signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,$
   dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,$
-  twc:twc,colETot:colETot,dBarB:dBarB,twcVarE2:twcVarE2,colEtot2:colEtot2,coletot3:coletot3,$
-  twcVarEolde:twcVarEolde,colELiq3:colELiq3,lwcVarEolde:lwcVarEolde,cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,$
+  twc:twc,colETot:colETot,dBarB:dBarB,colEtot2:colEtot2,coletot3:coletot3,$
+  cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,$
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE}
 
-  
-return,g
+return,d
 
 end
 
 
 
+
+
+
+
+
+;---------------------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------MISC. FUNCTIONS---------------------------------------------------------------------
+;---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function convertTime,hh,mm,ss
   common t,t
@@ -884,46 +721,32 @@ end
 
 
 pro info
-print,''
-print,''
-print,'-------------COPE-----------------'
-print,'LEVELS COPE = 400, 600, 900'
-print,'DAYS COPE = 0710, 0725, 0727, 0728, 0729, 0803, 0807, 0814, 0815, ||0709||'
-print,''
-print,''
-print,'-----------LARAMIE----------------'
-print,'LEVELS LARAMIE = 400, 500, 600, 700'
-print,'DAYS LARAMIE = 0307, ||0304||'
-print,''
-print,'-------------COMMANDS-----------------'
-print,'SUPERSCRIPT = !U *** !N'
-print,''
-print,''
-print,'fu = min((VAR[*] - 450), i, /absolute)'
-print,''
-print,''
-print,'endif else begin'
-print,'.............'
-print,'endelse'
-print,''
-print,''
-print,',margin=[110,70,30,20],/device'
+  print,''
+  print,''
+  print,'-------------COPE-----------------'
+  print,'LEVELS COPE = 400, 600, 900'
+  print,'DAYS COPE = 0710, 0725, 0727, 0728, 0729, 0803, 0807, 0814, 0815, ||0709||'
+  print,''
+  print,''
+  print,'-----------LARAMIE----------------'
+  print,'LEVELS LARAMIE = 400, 500, 600, 700'
+  print,'DAYS LARAMIE = 0307, ||0304||'
+  print,''
+  print,'-------------COMMANDS-----------------'
+  print,'SUPERSCRIPT = !U *** !N'
+  print,''
+  print,''
+  print,'fu = min((VAR[*] - 450), i, /absolute)'
+  print,''
+  print,''
+  print,'endif else begin'
+  print,'.............'
+  print,'endelse'
+  print,''
+  print,''
+  print,',margin=[110,70,30,20],/device'
 end
 
-
-
-
-pro setwd
-
-  cd,current=h
-  h=STRMATCH(h, '*/nevzorov/*')
-
-  if !version.OS_FAMILY eq 'unix' then begin
-    if h ne 1 then cd,'/Volumes/sfaber1/research/nevzorov/refactoredCode'
-  endif else begin
-    if h ne 1 then cd,'Z:\research\nevzorov/refactoredCode'
-  endelse
-end  
 
 
 

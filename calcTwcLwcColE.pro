@@ -30,7 +30,8 @@ pro calcTwcLwcColE
   restore,'loopdata.sav'
 
   ;liqOnly=where(trf gt -3. and lwc lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05 and vmd lt 40. and cdpconc lt 600.)
-  liqOnly=where(lwc gt 0.05 and lwc lt 1.2 and cdpconc lt 200.)
+  liqOnly=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.03 and twc gt 0.03 and cdpconc lt 300.)
+  ;liqOnly=where(lwc gt 0.05 and lwc lt 1.2 and cdpconc lt 200.)
 
 
   if liq eq 1 then begin
@@ -45,7 +46,7 @@ pro calcTwcLwcColE
     trf=trf[liqonly]
     lwc=lwc[liqonly]
     twc=twc[liqonly]
-    twcVarE2=twcVarE2[liqonly]
+ 
     cipmodconc0=cipmodconc0[liqonly]
     cipmodconc1=cipmodconc1[liqonly]
     cipmodconc2=cipmodconc2[liqonly]
@@ -54,7 +55,7 @@ pro calcTwcLwcColE
 
   minbin=binint
 
-
+stop
   ;-------------------------------SET VAR---------------------------------------
   var=vmd
   ;-------------------------------SET VAR---------------------------------------
@@ -214,10 +215,7 @@ pro calcTwcLwcColE
     cdpVtwc=[cdpVtwc,mean(cdplwc[bins])/mean(twc[bins])]
     cdpVLwcCor=[cdpVLwcCor,mean(cdplwc[bins])/mean(lwcVarE[bins])]
     cdpVTwcCor=[cdpVTwcCor,mean(cdplwc[bins])/mean(twcVarE[bins])]
-    colevarLwc2=[colevarLwc2,mean(twcVarE2[bins])/mean(lwc[bins])]
-    colevarbothTwc2=[colevarbothTwc2,mean(lwc[bins])/mean(twcVarE2[bins])]
     lwctwc=[lwctwc,mean(lwcVarE[bins])/mean(twcVarE[bins])]
-    lwctwc2=[lwctwc2,mean(lwcVarE[bins])/mean(twcVarE2[bins])]
     lwc100Vlwc=[lwc100Vlwc,mean(lwcVarE[bins])/mean(lwc100[bins])]
     lwc100Vtwc=[lwc100Vtwc,mean(twcVarE[bins])/mean(lwc100[bins])]
     lwc100Vcdplwc=[lwc100Vcdplwc,mean(cdplwc[bins])/mean(lwc100[bins])]
