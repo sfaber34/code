@@ -1,38 +1,37 @@
 pro vmdLwcRel
 restore,'loopdata.sav'
 
-liq=0
 
 ;liqOnly=where(trf gt -3. and lwc lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05 and vmd lt 40. and cdpconc lt 600.)
-L=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.03 and twc gt 0.03)
-L2=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.03 and twc gt 0.03 and cdpconc lt 110.)
+L=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.01 and lwcnev2 gt 0.01 and finite(vmd) eq 1)
+L2=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.01 and lwcnev2 gt 0.01 and cdpconc lt 120. and finite(vmd) eq 1)
+L3=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.01 and lwcnev2 gt 0.01 and cdpconc gt 120. and cdpconc lt 220. and finite(vmd) eq 1)
+L4=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.01 and lwcnev2 gt 0.01 and cdpconc gt 220. and cdpconc lt 320. and finite(vmd) eq 1)
+L5=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.01 and lwcnev2 gt 0.01 and cdpconc gt 320. and cdpconc lt 420. and finite(vmd) eq 1)
 ;liqOnly=where(lwc gt 0.05 and lwc lt 1.2 and cdpconc lt 200.)
 
+min=0.
+max=2.5
 
-if liq eq 1 then begin
-  lwcVarE=lwcVarE[liqonly]
-  twcVarE=twcVarE[liqonly]
-  cdpdbar=cdpdbar[liqonly]
-  cdpconc=cdpconc[liqonly]
-  dEff=dEff[liqonly]
-  vvd=vvd[liqonly]
-  vmd=vmd[liqonly]
-  cdplwc=cdplwc[liqonly]
-  trf=trf[liqonly]
-  lwc=lwc[liqonly]
-  twc=twc[liqonly]
 
-  cipmodconc0=cipmodconc0[liqonly]
-  cipmodconc1=cipmodconc1[liqonly]
-  cipmodconc2=cipmodconc2[liqonly]
-  lwc100=lwc100[liqonly]
-endif
+p1=scatterplot(vmd[L2],lwc[l2]-lwcnev2[L2],dimensions=[1600,1200],symbol='.')
+p2=scatterplot(vmd[L3],lwc[l3]-lwcnev2[L3],/overplot,symbol='.',sym_color='blue')
+p3=scatterplot(vmd[L4],lwc[l4]-lwcnev2[L4],/overplot,symbol='.',sym_color='red')
+p4=scatterplot(vmd[L5],lwc[l5]-lwcnev2[L5],/overplot,symbol='.',sym_color='green')
+f1=poly_fit(vmd[L2],lwc[l2]-lwcnev2[L2],2,yfit=yfit)
 
-p1=scatterplot(vmd[L],lwc[L]-twc[L],dimensions=[1200,1600])
-p1=scatterplot(vmd[L2],lwc[L2]-twc[L2],/overplot,sym_color='red',SYM_TRANSPARENCY=20)
+xbounds=dindgen(500,start=0,increment=.1)
+p2=plot(xbounds,f1[0]+f1[1]*xbounds+f1[2]*xbounds^2.,/overplot,'r')
+
+;p2=scatterplot(vmd[L2],lwc[l2]-lwcnev2[L2],/overplot,sym_color='red',symbol='.')
+
+
+;p2=scatterplot(vmd[L2],lwc[L2]-twc[L2],/overplot,sym_color='red',SYM_TRANSPARENCY=20)
 
 f1=ladfit(vmd[L2],lwc[L2]-twc[L2])
-xbounds=dindgen(50,start=0,increment=1)
+
+
+
 l1=yfit
 p2=plot(xbounds,l1,/overplot,'r')
 

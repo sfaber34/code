@@ -41,6 +41,8 @@ pro loop
     cipmodconc2=[]
     lwc100=[]
     lwcErrColE=[]
+    lwcNev2=[]
+    pvmlwc=[]
 
     
 
@@ -83,42 +85,13 @@ pro loop
       cipmodconc2=[cipmodconc2,d.cipmodconc2]
       lwc100=[lwc100,d.lwc100]
       lwcErrColE=[lwcErrColE,d.lwcErrColE]
+      lwcNev2=[lwcNev2,d.lwcNev2]
+      pvmlwc=[pvmlwc,d.pvmlwc]
 
     endfor
     
     color=d.color
-    
-    
-    
 
-;    lwc=lwc
-;    as=as
-;    pmb=pmb
-;    cdplwc=cdplwc
-;    twc=twc
-;    cdpdbar=cdpdbar
-;    trf=trf
-;    signalLiq=signalLiq
-;    signalTot=signalTot
-;    clearairLiq=clearairLiq
-;    clearairTot=clearairTot
-;    dEff=dEff
-;    vvd=vvd
-;    vmd=vmd
-;    cdpconc=cdpconc
-;    cdpacc=cdpacc
-;    lwcVarE=lwcVarE
-;    coleliq=coleliq
-;    coletot=coletot
-;    twcVarE=twcVarE
-;    dBarB=dBarB
-;    colEtot2=coleTot2
-;    colEtot3=colEtot3
-;    cipmodconc0=cipmodconc0
-;    cipmodconc1=cipmodconc1
-;    cipmodconc2=cipmodconc2
-;    lwc100=lwc100
-;    lwcErrColE=lwcErrColE
     
 
 
@@ -127,18 +100,7 @@ pro loop
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
-      
-;      lwcLO1,twcLO1,cdpdbarLO1,trfLO1,twcVarELO1,colETotLO1,$
-;      asLO1,pmbLO1,cdplwcLO1,clearairLiqLO1,clearairTotLO1,signalLiqLO1,colELiqLO1,$
-;      signalTotLO1,cdpconcLO1,cdpaccLO1,lwcVarELO1,dBarBLO1,dEffLO1,vvdLO1,vmdLO1,lwcErrColELO1,$
-;      coletot2LO1,colEtot3LO1,cipmodconc0LO1,cipmodconc1LO1,cipmodconc2LO1,lwc100LO1,$
-;      
-;      lwcLO2,twcLO2,cdpdbarLO2,trfLO2,twcVarELO2,colETotLO2,$
-;      asLO2,pmbLO2,cdplwcLO2,clearairLiqLO2,clearairTotLO2,signalLiqLO2,colELiqLO2,$
-;      signalTotLO2,cdpconcLO2,cdpaccLO2,lwcVarELO2,dBarBLO2,dEffLO2,vvdLO2,vmdLO2,lwcErrColELO2,$
-;      coletot2LO2,colEtot3LO2,cipmodconc0LO2,cipmodconc1LO2,cipmodconc2LO2,lwc100LO2,$
-      
-      /verbose
+      lwcNev2,pvmlwc,/verbose
       
 
 
