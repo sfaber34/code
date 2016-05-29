@@ -3,7 +3,7 @@ restore,'loopdata.sav'
 
 
 ;liqOnly=where(trf gt -3. and lwc lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05 and vmd lt 40. and cdpconc lt 600.)
-L=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.01 and lwcnev2 gt 0.01 and finite(vmd) eq 1)
+L=where(lwc gt 0.02)
 L2=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.01 and lwcnev2 gt 0.01 and cdpconc lt 120. and finite(vmd) eq 1)
 L3=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.01 and lwcnev2 gt 0.01 and cdpconc gt 120. and cdpconc lt 220. and finite(vmd) eq 1)
 L4=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.01 and lwcnev2 gt 0.01 and cdpconc gt 220. and cdpconc lt 320. and finite(vmd) eq 1)
@@ -12,6 +12,17 @@ L5=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc
 
 min=0.
 max=2.5
+
+p1=scatterplot(vmd[l],((lwc[l]-lwcvarh[l])/lwc[l])*100.,dimensions=[1600,1000],symbol='.')
+stop
+p3=plot([0,2.5],[0,2.5],/overplot,'red')
+p2=scatterplot(twcvare[L],lwcvare[l],dimensions=[920,1000],symbol='.')
+p4=plot([0,2.5],[0,2.5],/overplot,'red')
+
+p1.xrange=[0,2.5]
+p1.yrange=[0,2.5]
+p2.xrange=[0,2.5]
+p2.yrange=[0,2.5]
 
 
 p1=scatterplot(vmd[L2],lwc[l2]-lwcnev2[L2],dimensions=[1600,1200],symbol='.')

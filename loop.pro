@@ -43,6 +43,9 @@ pro loop
     lwcErrColE=[]
     lwcNev2=[]
     pvmlwc=[]
+    expHeatLiq=[]
+    lwcVarH=[]
+    twcVarH=[]
 
     
 
@@ -87,23 +90,18 @@ pro loop
       lwcErrColE=[lwcErrColE,d.lwcErrColE]
       lwcNev2=[lwcNev2,d.lwcNev2]
       pvmlwc=[pvmlwc,d.pvmlwc]
+      expHeatLiq=[expHeatLiq,d.expHeatLiq]
+      lwcVarH=[lwcVarH,d.lwcVarH]
+      twcVarH=[twcVarH,d.twcVarH]
 
     endfor
     
     color=d.color
 
-    
-
-
-
     save,filename='loopdata.sav',lwc,twc,cdpdbar,trf,twcVarE,colETot,$
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
-      lwcNev2,pvmlwc,/verbose
-      
-
-
-
-
+      lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,/verbose
+   
 end

@@ -171,21 +171,34 @@ endif else begin
 endelse
 if cipmod eq 1 then print,'-----------', flightDay, '-----------'
 
-;CIP MOD0 CONC [/liter]
+;CIP MOD1 CONC [/liter]
 if cope eq 1 and cipmod eq 1 then begin
   cipmodconc1=loadvar('CONC1_mod_cip_IBR', filename=nclPath)
 endif else begin
   cipmodconc1=replicate(!VALUES.F_NAN,n_elements(pmb))
 endelse
 
-;CIP MOD0 CONC [/liter]
+;CIP MOD2 CONC [/liter]
 if cope eq 1 and cipmod eq 1 then begin
   cipmodconc2=loadvar('CONC2_mod_cip_IBR', filename=nclPath)
 endif else begin
   cipmodconc2=replicate(!VALUES.F_NAN,n_elements(pmb))
 endelse
 
-nonev1=1
+;nevzorov sensor temperature [C]
+nevTemp=double(loadvar('VLWCCOL_RAW', filename=nclPath, attr='temperature'))
+
+;nevzorov sensor area [cm2]
+if cope eq 1 then begin
+  aLiq=.317
+  aTot=.502
+endif else begin
+  aLiq=loadvar('VLWCCOL_RAW', filename=nclPath, attr='SampleArea')
+  aTot=loadvar('VTWCCOL_RAW', filename=nclPath, attr='SampleArea')
+endelse
+
+
+noNev1=1
 
 ;liquid water content from Nevzorov probe [g/m^3]
 if cope eq 1 and nonev1 eq 1 then begin
@@ -621,28 +634,28 @@ endfor
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ;--------------------CONSTANTS--------------------
-;surface area liquid sensor [m^2]
-aLiq=3.17d-5
+;sensor surface area conversion [cm^2] -> [m^2]
+aLiq=aLiq*1d-4
+aTot=aTot*1d-4
 
-;EXPENDED HEAT FOR LIQUID
-lLiqStar=2589.
+;EXPENDED HEAT
 
-;surface area total sensor [m^2]
-aTot=5.02d-5
+;latent heat of vaporization, liquid water at nev sensor temperature [J/Kg]
+lw=2.5008d6-(4218.0d - 1870.4d)*(nevTemp)
 
-;EXPENDED HEAT FOR LIQUID
-lIceStar=lLiqStar
 
+expHeatLiq=(nevTemp-trf)*4.218+lw*1d-3
+expHeatIce=expHeatLiq
 
 
 ;--------------------POWER CALCULATIONS--------------------
 pLiq=vlwccol*ilwccol-kLiq*vlwcref*ilwcref
 pLiqNoPresCor=pLiq
-lwcNoPresCor=pLiq/(colELiq*tas*aLiq*lLiqStar)
+lwcNoPresCor=pLiq/(colELiq*tas*aLiq*2589.)
 
 pTot=vtwccol*itwccol-kTot*vtwcref*itwcref
 pTotNoPresCor=pTot
-twcNoPresCor=pTot/(colETot*tas*aTot*lIceStar)
+twcNoPresCor=pTot/(colETot*tas*aTot*2589.)
 
 
 
@@ -658,12 +671,14 @@ pTot=pTotNoPresCor - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
 ;--------------------FINAL CALCULATIONS--------------------
 
 ;LWC
-lwc=pLiq/(1.*tas*aLiq*lLiqStar)
-lwcVarE=pLiq/(colELiq*tas*aLiq*lLiqStar)
+lwc=pLiq/(1.*tas*aLiq*2589.)
+lwcVarH=pLiq/(1.*tas*aLiq*expHeatLiq)
+lwcVarE=pLiq/(colELiq*tas*aLiq*2589.)
 
 ;TWC
-twc=pTot/(1.*tas*aTot*lLiqStar)
-twcVarE=pTot/(colETot*tas*aTot*lLiqStar)
+twc=pTot/(1.*tas*aTot*2589.)
+twcVarH=pTot/(1.*tas*aTot*expHeatIce)
+twcVarE=pTot/(colETot*tas*aTot*2589.)
 
 
 
@@ -690,9 +705,9 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   avyaw:avyawr,pvmlwc:pvmlwc,cdplwc:cdplwc_1_NRB,pLiqNoPresCor:pLiqNoPresCor,$
   rawSignalLiq:rawSignalLiq, smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,$
   rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNoPresCor:pTotNoPresCor,$
-  vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,lIceStar:lIceStar,$
-  signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,$
-  dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,$
+  vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,expHeatIce:expHeatIce,$
+  signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,$
+  dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcVarH:lwcVarH,twcVarH:twcVarH,$
   twc:twc,colETot:colETot,dBarB:dBarB,colEtot2:colEtot2,coletot3:coletot3,$
   cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,$
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE}
