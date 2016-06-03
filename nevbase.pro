@@ -132,6 +132,9 @@ z=loadvar('z', filename=nclPath)
 ;liquid water content from Gerber probe [g/m^3]
 pvmlwc=loadvar('pvmlwc', filename=nclPath)
 
+;liquid water content from Gerber probe [g/m^3]
+pvmDEff=loadvar('pvmre_c', filename=nclPath)
+
 ;liquid water content from lwc100 probe [g/m^3]
 lwc100=loadvar('lwc100', filename=nclPath)
 
@@ -155,6 +158,12 @@ avroll=loadvar('avroll', filename=nclPath)
 
 ;CDP diameter per bin
 cdpdbins=loadvar('ACDP_1_NRB', filename=nclPath)
+
+;FSSP total concentration
+fsspConc=loadvar('CONCF_IBL', filename=nclPath)
+
+;FSSP LWC
+fsspLwc=loadvar('PLWCF_IBL', filename=nclPath)
 
 ;Vertical Speed [m/s]
 if cope eq 1 then hivs=loadvar('hivs', filename=nclPath)
@@ -317,6 +326,7 @@ pmb=pmb[aStart:aEnd]
 trose=trose[aStart:aEnd]
 z=z[aStart:aEnd]
 pvmlwc=pvmlwc[aStart:aEnd]
+pvmDEff=pvmDEff[aStart:aEnd]
 lwc100=lwc100[aStart:aEnd]
 cdpconc_1_NRB=cdpconc_1_NRB[aStart:aEnd]
 cdpacc=cdpacc[aStart:aEnd]
@@ -328,6 +338,8 @@ alpha=alpha[aStart:aEnd]
 cdplwc_1_NRB=cdplwc_1_NRB[aStart:aEnd]
 timeFlight=timeFlight[aStart:aEnd]
 cdpdbins=cdpdbins[*,*,aStart:aEnd]
+fsspConc=fsspConc[aStart:aEnd]
+fsspLwc=fsspLwc[aStart:aEnd]
 
 ;SET COPE ONLY VARIABLES
 if cope eq 1 then begin
@@ -709,8 +721,9 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,$
   dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcVarH:lwcVarH,twcVarH:twcVarH,$
   twc:twc,colETot:colETot,dBarB:dBarB,colEtot2:colEtot2,coletot3:coletot3,$
-  cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,$
-  cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE}
+  cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,$
+  cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
+  pvmDEff:pvmDEff}
 
 return,d
 

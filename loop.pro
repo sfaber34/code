@@ -41,11 +41,15 @@ pro loop
     cipmodconc2=[]
     lwc100=[]
     lwcErrColE=[]
+    lwcNev1=[]
     lwcNev2=[]
     pvmlwc=[]
     expHeatLiq=[]
     lwcVarH=[]
     twcVarH=[]
+    fsspConc=[]
+    fsspLwc=[]
+    pvmDEff=[]
 
     
 
@@ -88,11 +92,15 @@ pro loop
       cipmodconc2=[cipmodconc2,d.cipmodconc2]
       lwc100=[lwc100,d.lwc100]
       lwcErrColE=[lwcErrColE,d.lwcErrColE]
+      lwcNev1=[lwcNev1,d.lwcNev1]
       lwcNev2=[lwcNev2,d.lwcNev2]
       pvmlwc=[pvmlwc,d.pvmlwc]
       expHeatLiq=[expHeatLiq,d.expHeatLiq]
       lwcVarH=[lwcVarH,d.lwcVarH]
       twcVarH=[twcVarH,d.twcVarH]
+      fsspConc=[fsspConc,d.fsspConc]
+      fsspLwc=[fsspLwc,d.fsspLwc]
+      pvmDEff=[pvmDEff,d.pvmDEff]
 
     endfor
     
@@ -102,6 +110,7 @@ pro loop
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
-      lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,/verbose
+      lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
+      pvmDEff,/verbose
    
 end
