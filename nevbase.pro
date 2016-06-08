@@ -237,12 +237,23 @@ hour=loadvar('HOUR', filename=nclPath)
 min=loadvar('MINUTE', filename=nclPath)
 sec=loadvar('SECOND', filename=nclPath)
 
-;CDP interarival times [us]
+;CDP average transit times [us]
 if cope eq 1 and calcTrans eq 1 then begin
-  cdpTrans=cdpTransTime(flightDay)
+  cdpTransB=cdpTransTime(flightDay)
+  cdpTrans=cdpTransB[*,0]
 endif else begin
   cdpTrans=replicate(!VALUES.F_NAN,n_elements(pmb))
 endelse
+
+;CDP interarival times [us]
+if cope eq 1 and calcTrans eq 1 then begin
+  cdpDofRejB=cdpTransTime(flightDay)
+  cdpDofRej=cdpDofRejB[*,1]
+endif else begin
+  cdpDofRej=replicate(!VALUES.F_NAN,n_elements(pmb))
+endelse
+
+;=loadvar('REJDOF_NRB', filename=nclPath) 
 
 
 
@@ -341,6 +352,7 @@ cdpdbins=cdpdbins[*,*,aStart:aEnd]
 fsspConc=fsspConc[aStart:aEnd]
 fsspLwc=fsspLwc[aStart:aEnd]
 cdpTrans=cdpTrans[aStart:aEnd]
+cdpDofRej=cdpDofRej[aStart:aEnd]
 
 ;SET COPE ONLY VARIABLES
 if cope eq 1 then begin
@@ -706,7 +718,7 @@ iwc=twc-lwc
 ;---------------------------------------------------------------------PASS VARIABLES---------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-color=['black','navy','firebrick','dark green','magenta','coral','dodger blue','indian red','orange','olive drab','medium violet red']
+color=['black','firebrick','navy','dark green','magenta','coral','indian red','dodger blue','orange','olive drab','medium violet red']
 
 d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch, $
   pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcVarE:twcVarE,$
@@ -714,7 +726,7 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   flightString:flightString, kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,$
   aiasMs:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNoPresCor:twcNoPresCor,$
   vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf, threshTot:threshTot,$
-  lwc100:lwc100, cdpdbar:cdpdbar_1_NRB,lwcnev2:lwcnev2, timePretty:timePretty,$
+  lwc100:lwc100, cdpdbar:cdpdbar_1_NRB,lwcnev2:lwcnev2, timePretty:timePretty,cdpDofRej:cdpDofRej,$
   avyaw:avyawr,pvmlwc:pvmlwc,cdplwc:cdplwc_1_NRB,pLiqNoPresCor:pLiqNoPresCor,$
   rawSignalLiq:rawSignalLiq, smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,$
   rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNoPresCor:pTotNoPresCor,$

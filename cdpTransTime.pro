@@ -26,14 +26,32 @@ function cdpTransTime, flightDay
   if flightDay eq '0817a' then nclPath='/Volumes/externalHD/copeRaw/20130817a_raw.nc'
   if flightDay eq '0817b' then nclPath='/Volumes/externalHD/copeRaw/20130817b_raw.nc'
 
-  sps=loadvar('AVGTRNS_NRB', filename=nclPath)
-  spsAve=dindgen(n_elements(sps[0,*]))
-  spsAve[*]=!Values.d_NAN
+  cdpAveTransSps=loadvar('AVGTRNS_NRB', filename=nclPath)
+  cdpDofRejSps=loadvar('REJDOF_NRB', filename=nclPath)
+  cdpAveTransSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))
+  cdpAveTransSpsAve[*]=!Values.d_NAN
+  cdpDofRejSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))
+  cdpDofRejSpsAve[*]=!Values.d_NAN
   
-  for i=0,n_elements(sps[0,*])-1 do begin
-    if max(sps[*,i]) gt 0. then spsAve[i]=mean(sps[*,i])
+;  
+;  for i=300,400 do begin
+;    print,i,'->',max(sps[*,i]) 
+;  endfor
+  
+  for i=342,n_elements(cdpAveTransSps[0,*])-1 do begin    
+    cdpAveTransSpsFilt=cdpAveTransSps[*,i]
+    nonNull=where(cdpAveTransSpsFilt gt 0.)
+    cdpAveTransSpsFiltB=cdpAveTransSpsFilt[nonNull]
+    cdpAveTransSpsAve[i]=mean(cdpAveTransSpsFiltB)
+
+    cdpDofRejSpsFilt=cdpDofRejSps[*,i]
+    nonNull=where(cdpDofRejSpsFilt gt 0.)
+    cdpDofRejSpsFiltB=cdpDofRejSpsFilt[nonNull]
+    cdpDofRejSpsAve[i]=mean(cdpDofRejSpsFiltB)
   endfor
   
+  cdpAveTrans=cdpAveTransSpsAve
+  cdpDofRej=cdpDofRejSpsAve
 
-  return, spsAve
+  return, [[cdpAveTrans],[cdpDofRej]]
 end

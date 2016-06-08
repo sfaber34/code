@@ -51,6 +51,7 @@ pro loop
     fsspLwc=[]
     pvmDEff=[]
     cdpTrans=[]
+    cdpDofRej=[]
     
 
 
@@ -102,6 +103,7 @@ pro loop
       fsspLwc=[fsspLwc,d.fsspLwc]
       pvmDEff=[pvmDEff,d.pvmDEff]
       cdpTrans=[cdpTrans,d.cdpTrans]
+      cdpDofRej=[cdpDofRej,d.cdpDofRej]
     endfor
     
     color=d.color
@@ -113,6 +115,6 @@ pro loop
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
       lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
-      pvmDEff,cdpTrans,/verbose
+      pvmDEff,cdpTrans,cdpDofRej,/verbose
    
 end
