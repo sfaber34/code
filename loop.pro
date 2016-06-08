@@ -50,7 +50,7 @@ pro loop
     fsspConc=[]
     fsspLwc=[]
     pvmDEff=[]
-
+    cdpTrans=[]
     
 
 
@@ -101,16 +101,18 @@ pro loop
       fsspConc=[fsspConc,d.fsspConc]
       fsspLwc=[fsspLwc,d.fsspLwc]
       pvmDEff=[pvmDEff,d.pvmDEff]
-
+      cdpTrans=[cdpTrans,d.cdpTrans]
     endfor
     
     color=d.color
+    
+    
 
     save,filename='loopdata.sav',lwc,twc,cdpdbar,trf,twcVarE,colETot,$
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
       lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
-      pvmDEff,/verbose
+      pvmDEff,cdpTrans,/verbose
    
 end

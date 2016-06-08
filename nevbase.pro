@@ -10,39 +10,13 @@ common t,t
 ;AIRSPEED TYPE/LEVEL OVERRIDES
 airspeedType='indicated'
 level='400'
+calcTrans=1
 
 
 ;---------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------FILEPATHS---------------------------------------------------------------------
 ;---------------------------------------------------------------------------------------------------------------------------------------------------
 
-if !version.OS_FAMILY eq 'Windows' then begin
-  if flightDay eq '0709' then nclPath='..\data\20130709.c1.nc'
-  if flightDay eq '0710' then nclPath='..\data\20130710.c1.nc'
-  if flightDay eq '0725' then nclPath='..\data\20130725.c1.nc'
-  if flightDay eq '0727' then nclPath='..\data\20130727.c1.nc'
-  if flightDay eq '0728' then nclPath='..\data\20130728.c1.nc'
-  if flightDay eq '0729' then nclPath='..\data\20130729.c1.nc'
-  if flightDay eq '0807' then nclPath='..\data\20130807.c1.nc'
-  if flightDay eq '0814' then nclPath='..\data\20130814.c1.nc'
-  if flightDay eq '0815' then nclPath='..\data\20130815.c1.nc'
-  if flightDay eq '0802' then nclPath='..\data\20130802.c1.nc'
-  if flightDay eq '0803' then nclPath='..\data\20130803.c1.nc'
-  if flightDay eq '0304' then nclPath='..\data\20160304.c1.nc'
-  if flightDay eq '0307' then nclPath='..\data\20160307.c1.nc'
-  if flightDay eq '1217' then nclPath='..\data\20151217.c1.nc'
-  if flightDay eq '1112' then nclPath='..\data\20151112.c1.nc'
-  if flightDay eq '1124' then nclPath='..\data\20151124.c1.nc'
-  if flightDay eq '0806' then nclPath='..\data\20130806.c1.nc'  
-  if flightDay eq '0813' then nclPath='..\data\20130813.c1.nc'
-  if flightDay eq '0817' then nclPath='..\data\20130817.c1.nc'
-  if flightDay eq '0722' then nclPath='..\data\20130722.c1.nc'
-  if flightDay eq '0718' then nclPath='..\data\20130718.c1.nc'
-  if flightDay eq '0120' then nclPath='..\data\20160120.c1.nc'
-  if flightDay eq '0125' then nclPath='..\data\20160125.c1.nc'
-  if flightDay eq '0817a' then nclPath='..\data\20130817a.c1.nc'
-  if flightDay eq '0817b' then nclPath='..\data\20130817b.c1.nc'
-endif else begin
   if flightDay eq '0709' then nclPath='../data/20130709.c1.nc'
   if flightDay eq '0710' then nclPath='../data/20130710.c1.nc'
   if flightDay eq '0725' then nclPath='../data/20130725.c1.nc'
@@ -68,8 +42,7 @@ endif else begin
   if flightDay eq '0125' then nclPath='../data/20160125.c1.nc'
   if flightDay eq '0817a' then nclPath='../data/20130817a.c1.nc'
   if flightDay eq '0817b' then nclPath='../data/20130817b.c1.nc'
-  
-endelse
+
 
 if strmatch(nclpath,'*2013*') eq 1 then cope=1
 if strmatch(nclpath,'*2015*') eq 1 then cope=0
@@ -80,6 +53,25 @@ if strmatch(nclpath,'*2016*') eq 1 then cope=2
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------LOAD VARIABLES---------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+;nRows=n_elements(loadvar('time',filename=nclPath))
+;
+;
+;inputVars=['vlwcref','vlwccol','vtwcref','vtwccol','ilwcref','ilwccol','itwcref','itwccol','trf','tas','aias','TIME','time','pmb','trose','z',$
+;  'pvmlwc','pvmre_c','lwc100','cdpconc_1_NRB','cdplwc_1_NRB','cdpacc_1_NRB','cdpdbar_1_NRB','avpitch','avroll','ACDP_1_NRB','CONCF_IBL','PLWCF_IBL',$
+;  'hivs','CONC0_mod_cip_IBR','CONC1_mod_cip_IBR','CONC2_mod_cip_IBR','nevlwc1',$
+;  'nevlwc2','nevtwc','beta','avyawr','alpha','HOUR','MINUTE','SECOND']
+;
+;NCDF_get, nclPath,inputVars,ncdfFile,found=found,missing=missing,/quiet
+;
+;for i=0,n_elements(missing)-1 do begin
+;  nanFill=replicate(!VALUES.F_NAN,nRows)
+;  
+;  fu=execute('missing[i]=',make_array(1))
+;  fu=execute('missing[i]=replicate(!VALUES.F_NAN,nRows)')
+;  
+;endfor
+
 
 ;liquid reference voltage [V]
 vlwcref=loadvar('vlwcref', filename=nclPath)
@@ -178,7 +170,7 @@ if cope eq 1 and cipmod eq 1 then begin
 endif else begin
   cipmodconc0=replicate(!VALUES.F_NAN,n_elements(pmb))
 endelse
-if cipmod eq 1 then print,'-----------', flightDay, '-----------'
+print,'-----------', flightDay, '-----------'
 
 ;CIP MOD1 CONC [/liter]
 if cope eq 1 and cipmod eq 1 then begin
@@ -244,6 +236,14 @@ timeFlight=dindgen(n_elements(pmb),start=0,increment=1)
 hour=loadvar('HOUR', filename=nclPath)
 min=loadvar('MINUTE', filename=nclPath)
 sec=loadvar('SECOND', filename=nclPath)
+
+;CDP interarival times [us]
+if cope eq 1 and calcTrans eq 1 then begin
+  cdpTrans=cdpTransTime(flightDay)
+endif else begin
+  cdpTrans=replicate(!VALUES.F_NAN,n_elements(pmb))
+endelse
+
 
 
 ;--------------------SET TIMES FOR AXIS--------------------
@@ -340,6 +340,7 @@ timeFlight=timeFlight[aStart:aEnd]
 cdpdbins=cdpdbins[*,*,aStart:aEnd]
 fsspConc=fsspConc[aStart:aEnd]
 fsspLwc=fsspLwc[aStart:aEnd]
+cdpTrans=cdpTrans[aStart:aEnd]
 
 ;SET COPE ONLY VARIABLES
 if cope eq 1 then begin
@@ -721,7 +722,7 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,$
   dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcVarH:lwcVarH,twcVarH:twcVarH,$
   twc:twc,colETot:colETot,dBarB:dBarB,colEtot2:colEtot2,coletot3:coletot3,$
-  cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,$
+  cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,cdpTrans:cdpTrans,$
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
   pvmDEff:pvmDEff}
 
