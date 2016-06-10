@@ -1,20 +1,20 @@
-pro lwccdp11
+pro msCdplwcVLwc
 
   restore,'loopdata.sav'
-  
+
   plots=2
 
   ;STARTING LEFT VALUE
-  binint=2
+  binint=0
 
   ;WIDTH OF BINS
-  binsize=50
+  binsize=150
 
   ;LIQUID ONLY POINTS OR ALL
   liq=1
 
 
-  liqOnly=where(trf gt -3. and lwc gt .01)
+  liqOnly=where(trf gt -3. and lwc gt .01 and vmd gt 15.)
 
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -142,7 +142,7 @@ pro lwccdp11
   ;------------------------------------------LWC/TWC 1:1 COMP----------------------------------------------
   ;--------------------------------------------------------------------------------------------------------
 
-  cgcleanup
+  ;cgcleanup
 
   zeros=dindgen(100000,start=0,increment=0)
   twos=dindgen(100000,start=0,increment=0)
@@ -151,22 +151,22 @@ pro lwccdp11
   fixedlwcerror=[]
   fixedtwcerror=[]
   maxx=1
-  w=window(dimensions=[940,1000])
+  ;w=window(dimensions=[1800,1200])
 
   for i=0,n_elements(binistarti)-1 do begin
 
     bins=binindex[binistarti[i]:biniendi[i]]
 
-    p1=scatterplot(cdplwc[bins],lwcvare[bins],sym_color=color[i],sym_size=.5,/overplot,SYM_TRANSPARENCY=50,sym_filled=1,margin=50)
-    p2=plot([0,2.4],[0,2.4],thick=2,/overplot)
+    p1=scatterplot(cdplwc[bins],lwc[bins],sym_color=color[2],sym_size=.5,/current,SYM_TRANSPARENCY=80,sym_filled=1,margin=50,layout=[3.,ceil((n_elements(binistarti)-1)/3.),i+1.],/device)
+    p2=plot([0,2.8],[0,2.8],thick=2,/overplot)
     cole2=ladfit([zeros,cdplwc[bins]],[zeros,lwc[bins]])
 
     cole3=ladfit([zeros,cdplwc[bins]],[zeros,lwc[bins]])
 
-    print,(1.-cole3[1])*100.
+    print,(binistarti[i])
 
-    p1.xrange=[0.,2.4]
-    p1.yrange=[0.,2.4]
+    p1.xrange=[0.,2.8]
+    p1.yrange=[0.,2.8]
 
 
 

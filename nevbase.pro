@@ -240,7 +240,7 @@ sec=loadvar('SECOND', filename=nclPath)
 ;CDP average transit times [us]
 if cope eq 1 and calcTrans eq 1 then begin
   cdpTransB=cdpTransTime(flightDay)
-  cdpTrans=cdpTransB[*,0]
+  cdpTrans=cdpTransB[*,0]*25d-3
 endif else begin
   cdpTrans=replicate(!VALUES.F_NAN,n_elements(pmb))
 endelse
