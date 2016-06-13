@@ -11,7 +11,7 @@ pro histogram2
   
 
   ;liqOnly=where(trf gt -3. and lwc lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05 and vmd lt 40.)
-  liqOnly=where(lwc gt 0.02)
+  liqOnly=where(lwc gt 0.02 and trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) )
 
 
 
@@ -35,14 +35,15 @@ pro histogram2
     coletot=coletot[liqonly]
     lwcErrColE=lwcErrColE[liqonly]
     cdptrans=cdptrans[liqonly]
+    cdpacc=cdpacc[liqonly]
   endif
 
 
 
   ;--------------------------------------SET OPTIONS---------------------------------------------------------------------------------------------
   ;----------------------------------------------------------------------------------------------------------------------------------------------
-  var=cdptrans
-  xinc=.25
+  var=abs(cdplwc-lwc)/abs(lwc)
+  xinc=.02
   xstart=0.
   liq=1
   ;binsize=50.

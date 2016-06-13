@@ -52,8 +52,10 @@ pro loop
     pvmDEff=[]
     cdpTrans=[]
     cdpDofRej=[]
-    cdpDBins=[]
     tas=[]
+    cdpBinSecSum=[]
+    cdpBinN=[]
+    
     
 
 
@@ -65,14 +67,27 @@ pro loop
 
 
       d=nevBase(flight[i],'indicated','400')
-
       
+      cdpBinSecSumB=make_array(n_elements(d.(1)),start=0,increment=0)
+      cdpBinNB=make_array(28,n_elements(d.(1)),start=0,increment=0)
+      
+      for j=0,n_elements(d.(1))-1 do begin
+        cdpBinSecSumB[j]=total(d.cdpdbins[*,0,j])
+        
+        for k=0,27 do begin
+          cdpBinNB[k,j]=d.cdpDBins[k,0,j]
+        endfor
+        
+      endfor
+      
+;      cdpBinN=[cdpBinN,cdpBinNB]
+      cdpBinN=[cdpBinN,replicate(!values.D_NAN,n_elements(d.(1)))]
+      cdpBinSecSum=[cdpBinSecSum,cdpBinSecSumB]
       lwc=[lwc,d.lwc]
       as=[as,d.as]
       pmb=[pmb,d.pmb]
       cdplwc=[cdplwc,d.cdplwc]
       twc=[twc,d.twc]
-      cdpdbar=[cdpdbar,d.cdpdbar]
       trf=[trf,d.trf]
       signalLiq=[signalLiq,d.signalLiq]
       signalTot=[signalTot,d.signalTot]
@@ -106,11 +121,13 @@ pro loop
       pvmDEff=[pvmDEff,d.pvmDEff]
       cdpTrans=[cdpTrans,d.cdpTrans]
       cdpDofRej=[cdpDofRej,d.cdpDofRej]
-      ;cdpDBins=[cdpDBins,d.cdpDBins]
       tas=[tas,d.tas]
+      cdpdbar=[cdpdbar,d.cdpdbar]
+      
     endfor
     
     color=d.color
+    
     
     
 
@@ -119,6 +136,6 @@ pro loop
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
       lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
-      pvmDEff,cdpTrans,cdpDofRej,cdpDBins,tas,/verbose
+      pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,/verbose
    
 end
