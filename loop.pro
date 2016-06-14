@@ -55,14 +55,28 @@ pro loop
     tas=[]
     cdpBinSecSum=[]
     cdpBinN=[]
+    cdpBinVar=[]
+    cdpBinSkew=[]
+    cdpBinKert=[]
+    counts=[]
+    cdpBinBimod=[]
     
     
-
+    nPoints=146852d
 
     flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
     ;flight=['1124','1217','0120','0125','0304','0307']
 
 
+;    for i=0, n_elements(flight)-1 do begin
+;      d=nevBase(flight[i],'indicated','400')
+;      counts=[counts,n_elements(d.(1))]
+;    endfor
+;    
+   cdpBinN=make_array(28,nPoints)
+   cdpBinN[*,*]=!values.d_nan
+    
+    r=0
     for i=0, n_elements(flight)-1 do begin
 
 
@@ -72,16 +86,16 @@ pro loop
       cdpBinNB=make_array(28,n_elements(d.(1)),start=0,increment=0)
       
       for j=0,n_elements(d.(1))-1 do begin
-        cdpBinSecSumB[j]=total(d.cdpdbins[*,0,j])
-        
-        for k=0,27 do begin
-          cdpBinNB[k,j]=d.cdpDBins[k,0,j]
-        endfor
+        cdpBinSecSumB[j]=total(d.cdpdbins[*,0,j])+200
         
       endfor
       
-;      cdpBinN=[cdpBinN,cdpBinNB]
-      cdpBinN=[cdpBinN,replicate(!values.D_NAN,n_elements(d.(1)))]
+      o=0
+      for m=r,n_elements(d.(1))+r-2 do begin
+        cdpBinN[*,m]=d.cdpdbins[*,0,o]
+        o++
+      endfor
+      
       cdpBinSecSum=[cdpBinSecSum,cdpBinSecSumB]
       lwc=[lwc,d.lwc]
       as=[as,d.as]
@@ -123,19 +137,34 @@ pro loop
       cdpDofRej=[cdpDofRej,d.cdpDofRej]
       tas=[tas,d.tas]
       cdpdbar=[cdpdbar,d.cdpdbar]
+      cdpBinVar=[cdpBinVar,d.cdpBinVar]
+      cdpBinSkew=[cdpBinSkew,d.cdpBinSkew]
+      cdpBinKert=[cdpBinKert,d.cdpBinKert]
+      cdpBinBimod=[cdpBinBimod,d.cdpBinBimod]
       
+      r=r+n_elements(d.(1))
     endfor
+    
+    cdpBinNB=make_array(28,n_elements(pmb))
+    t=0
+    for u=0,n_elements(cdpBinN[0,*])-1 do begin
+      if n_elements(where(finite(cdpBinN[*,u] gt 1))) gt 0 then begin
+        cdpBinNB[*,t]=cdpBinN[*,u]
+        t++
+      endif
+    endfor
+    
+    cdpBinN=cdpBinNB
     
     color=d.color
     
-    
-    
-
+   
     save,filename='loopdata.sav',lwc,twc,cdpdbar,trf,twcVarE,colETot,$
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
       lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
-      pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,/verbose
+      pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,$
+      cdpBinSkew,cdpBinKert,cdpBinBimod,/verbose
    
 end

@@ -556,6 +556,10 @@ dEff=[]
 vmd=[]
 vvd=[]
 dBarB=[]
+cdpBinVar=[]
+cdpBinSkew=[]
+cdpBinKert=[]
+cdpBinBimod=[]
 
 for m=0, n_elements(pmb)-1 do begin
   xa=[]
@@ -572,7 +576,15 @@ for m=0, n_elements(pmb)-1 do begin
   dBarB=[dBarB,total(xe)/total(cdpdbins[*,0,m])]
   vvd=[vvd,(total(xb)/total(cdpdbins[*,0,m]))^(1./3.)]
   vmd=[vmd,total(xc)/total(xb)]
+  
+  mom=moment(cdpdbins[*,0,m])
+  cdpBinVar=[cdpBinVar,mom[1]]
+  cdpBinSkew=[cdpBinSkew,mom[2]]
+  cdpBinKert=[cdpBinKert,mom[3]]
+  cdpBinBimod=[cdpBinBiMod,(mom[2]^2.+1.)/mom[3]]
 endfor
+
+
 
 
 
@@ -736,7 +748,8 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   twc:twc,colETot:colETot,dBarB:dBarB,colEtot2:colEtot2,coletot3:coletot3,$
   cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,cdpTrans:cdpTrans,$
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
-  pvmDEff:pvmDEff}
+  pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
+  cdpBinBimod:cdpBinBimod}
 
 return,d
 
