@@ -560,28 +560,49 @@ cdpBinVar=[]
 cdpBinSkew=[]
 cdpBinKert=[]
 cdpBinBimod=[]
-
+cdpBinMAD=[]
+cdpBinSD=[]
+s=0
 for m=0, n_elements(pmb)-1 do begin
   xa=[]
   xb=[]
   xc=[]
   xe=[]
+  meanDiff=[]
   for j=0,n_elements(cdpdbins[*,0,0])-1 do begin
     xe=[xe,(diam[j])*(cdpdbins[j,0,m])]
     xa=[xa,(diam[j])^2.*(cdpdbins[j,0,m])]
     xb=[xb,(diam[j])^3.*(cdpdbins[j,0,m])]
     xc=[xc,(diam[j])^4.*(cdpdbins[j,0,m])]
-  endfor
+  endfor  
   dEff=[dEff,total(xb)/total(xa)]
   dBarB=[dBarB,total(xe)/total(cdpdbins[*,0,m])]
   vvd=[vvd,(total(xb)/total(cdpdbins[*,0,m]))^(1./3.)]
   vmd=[vmd,total(xc)/total(xb)]
+
+  gtZInd=where(cdpdbins[*,0,m] gt 0)
+  binRedist=[]
+  for y=0,n_elements(gtZInd)-1 do begin
+    if min(gtZInd) gt 0d then begin
+      binRedist=[binRedist,replicate(diam[gtZInd[y]],cdpdbins[gtZInd[y],0,m])]
+    endif else begin
+      binRedist=!values.d_nan
+    endelse
+    
+  endfor
   
-  mom=moment(cdpdbins[*,0,m])
-  cdpBinVar=[cdpBinVar,mom[1]]
-  cdpBinSkew=[cdpBinSkew,mom[2]]
-  cdpBinKert=[cdpBinKert,mom[3]]
-  cdpBinBimod=[cdpBinBiMod,(mom[2]^2.+1.)/mom[3]]
+  diffs=binRedist-dBarB[m]
+  
+  varianceB=total((diffs)^2d)/(n_elements(binRedist)-1d)
+  meanAbsDeviation=total(abs(diffs))/(n_elements(binRedist))
+  skewnessB=total((diffs/sqrt(varianceB))^3d)/(n_elements(binRedist))
+  kurtosisB=total((diffs/sqrt(varianceB))^4d)/(n_elements(binRedist))-3d
+  cdpBinVar=[cdpBinVar,varianceB]
+  cdpBinSD=[cdpBinSD,sqrt(varianceB)]
+  cdpBinSkew=[cdpBinSkew,skewnessB]
+  cdpBinKert=[cdpBinKert,kurtosisB]
+  cdpBinBimod=[cdpBinBimod,((skewnessB)^(2d)+1d)/kurtosisB]
+  cdpBinMAD=[cdpBinMAD,meanAbsDeviation]  
 endfor
 
 
@@ -749,7 +770,7 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,cdpTrans:cdpTrans,$
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
   pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
-  cdpBinBimod:cdpBinBimod}
+  cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD}
 
 return,d
 

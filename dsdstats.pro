@@ -3,13 +3,13 @@ pro dsdStats
   
   ;--------------------------------------SET OPTIONS---------------------------------------------------------------------------------------------
   ;----------------------------------------------------------------------------------------------------------------------------------------------
-  liq=0
+  liq=1
   ;----------------------------------------------------------------------------------------------------------------------------------------------
   ;----------------------------------------------------------------------------------------------------------------------------------------------
 
 
   ;liqOnly=where(trf gt -3. and lwc lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05 and vmd lt 40.)
-  liqOnly=where(lwc gt 0.02 and trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and cdpacc gt 2)
+  liqOnly=where(lwc gt 0.02 and lwc lt 1.3 and trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and cdpconc gt .1)
 
 
 
@@ -38,7 +38,10 @@ pro dsdStats
     cdpbinkert=cdpbinkert[liqonly]
     cdpbinskew=cdpbinskew[liqonly]
     cdpbinbimod=cdpbinbimod[liqonly]
+    cdpBinMAD=cdpBinMAD[liqonly]
+    cdpBinSD=cdpBinSD[liqonly]
   endif
   
-  p1=scatterplot(cdpbinbimod,cdplwc-lwc,sym_size=.5,sym_filled=1,sym_transparency=60,dimensions=[1800,1000],margin=50,xlog=0,ylog=0,/device)
+  p1=scatterplot(cdpbinbimod,(cdplwc-lwc)/abs(lwc),sym_size=.5,sym_filled=1,sym_transparency=60,dimensions=[1800,1000],margin=50,xlog=0,ylog=0,/device)
+stop
 end

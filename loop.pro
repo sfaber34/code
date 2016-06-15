@@ -60,6 +60,8 @@ pro loop
     cdpBinKert=[]
     counts=[]
     cdpBinBimod=[]
+    cdpBinMAD=[]
+    cdpBinSD=[]
     
     
     nPoints=146852d
@@ -141,6 +143,8 @@ pro loop
       cdpBinSkew=[cdpBinSkew,d.cdpBinSkew]
       cdpBinKert=[cdpBinKert,d.cdpBinKert]
       cdpBinBimod=[cdpBinBimod,d.cdpBinBimod]
+      cdpBinMAD=[cdpBinMAD,d.cdpBinMAD]
+      cdpBinSD=[cdpBinSD,d.cdpBinSD]
       
       r=r+n_elements(d.(1))
     endfor
@@ -165,6 +169,6 @@ pro loop
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
       lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
       pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,$
-      cdpBinSkew,cdpBinKert,cdpBinBimod,/verbose
+      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,/verbose
    
 end
