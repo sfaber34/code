@@ -51,7 +51,7 @@ pro coleerrorplot
 
   xErrBar=(.5/abs(xHigh-xLow))*abs(xHigh-xLow)
   
-  for i=0,n_elements(varA)-1 do begin
+  for i=0,num(vara) do begin
     p92=plot([varXA[i],varXA[i]],[varA[i],varAErrUp[i]+varA[i]],thick=2,color=symColor,/overplot)
     p93=plot([varXA[i]-xErrBar,varXA[i]+xErrBar],[varAErrUp[i]+varA[i],varAErrUp[i]+varA[i]],color=symColor,thick=2,/overplot)
   endfor
