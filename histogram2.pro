@@ -36,6 +36,8 @@ pro histogram2
     lwcErrColE=lwcErrColE[liqonly]
     cdptrans=cdptrans[liqonly]
     cdpacc=cdpacc[liqonly]
+    colELiqUP=colELiqUP[liqonly]
+    colELiqU=colELiqU[liqonly]
   endif
 
 

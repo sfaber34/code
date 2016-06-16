@@ -62,6 +62,9 @@ pro loop
     cdpBinBimod=[]
     cdpBinMAD=[]
     cdpBinSD=[]
+    colELiqUP=[]
+    colELiqU=[]
+    cdpTransScaled=[]
     
     
     nPoints=146852d
@@ -145,6 +148,10 @@ pro loop
       cdpBinBimod=[cdpBinBimod,d.cdpBinBimod]
       cdpBinMAD=[cdpBinMAD,d.cdpBinMAD]
       cdpBinSD=[cdpBinSD,d.cdpBinSD]
+      colELiqUP=[colELiqUP,d.colELiqUP]
+      colELiqU=[colELiqU,d.colELiqU]
+      cdpTransScaled=[cdpTransScaled,d.cdpTransScaled]
+      
       
       r=r+n_elements(d.(1))
     endfor
@@ -169,6 +176,7 @@ pro loop
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
       lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
       pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,$
-      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,/verbose
+      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,$
+      cdpTransScaled,/verbose
    
 end

@@ -42,7 +42,11 @@ function cdpTransTime, flightDay
     cdpAveTransSpsFilt=cdpAveTransSps[*,i]
     nonNull=where(cdpAveTransSpsFilt gt 0.)
     cdpAveTransSpsFiltB=cdpAveTransSpsFilt[nonNull]
-    cdpAveTransSpsAve[i]=mean(cdpAveTransSpsFiltB)
+    ;cdpAveTransSpsAve[i]=mean(cdpAveTransSpsFiltB) --FOR AVE--
+    s=sort(cdpAveTransSpsFiltB)
+    sd=cdpAveTransSpsFiltB[s]
+    cdpAveTransSpsAve[i]=median(sd,/even)
+    
 
     cdpDofRejSpsFilt=cdpDofRejSps[*,i]
     nonNull=where(cdpDofRejSpsFilt gt 0.)

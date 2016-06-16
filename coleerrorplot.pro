@@ -11,10 +11,10 @@ pro coleerrorplot
 
   ;-----PLOT OPTIONS------
 
-  xLow=5.
-  xHigh=45.
-  yLow=-20.
-  yHigh=50.
+  xLow=0.
+  xHigh=50.
+  yLow=0.
+  yHigh=1.3
 
 
   varXA=binGeoMean
@@ -26,15 +26,16 @@ pro coleerrorplot
   varBErrLowData=lwcVCdpQ1B
   varBErrUpData=lwcVCdpQ3B
   
-  varA=varAData*100.  
-  varAErrUp=varAErrUpData*100.
+  varA=lwcmean 
+  varAErrUp=colELiqUMean
   varAErrLow=varAErrLowData*100.
   varB=varBData*100.
   varBErrLow=varBErrLowData*100.
   varBErrUp=varBErrUpData*100.
   
+  
   symColor='Navy'
-  symColorB='Red'
+  ;symColorB='Red'
 
 
   varAx=dindgen(n_elements(varA),start=binintstart,increment=.25)
@@ -45,28 +46,25 @@ pro coleerrorplot
 
 
   p5=scatterplot(varXA,varA,sym_thick=2,sym_color=symColor,sym_filled=1,dimensions=[1600,1200])
-  p6=scatterplot(varXB,varB,sym_thick=2,sym_color=symColorB,sym_filled=1,/overplot)
+  ;p6=scatterplot(varXB,varB,sym_thick=2,sym_color=symColorB,sym_filled=1,/overplot)
 
 
   xErrBar=(.5/abs(xHigh-xLow))*abs(xHigh-xLow)
   
   for i=0,n_elements(varA)-1 do begin
-    p90=plot([varXA[i],varXA[i]],[varAErrLow[i],varA[i]],thick=2,color=symColor,/overplot)
-    p91=plot([varXA[i]-xErrBar,varXA[i]+xErrBar],[varAErrLow[i],varAErrLow[i]],color=symColor,thick=2,/overplot)
-
-    p92=plot([varXA[i],varXA[i]],[varA[i],varAErrUp[i]],thick=2,color=symColor,/overplot)
-    p93=plot([varXA[i]-xErrBar,varXA[i]+xErrBar],[varAErrUp[i],varAErrUp[i]],color=symColor,thick=2,/overplot)
+    p92=plot([varXA[i],varXA[i]],[varA[i],varAErrUp[i]+varA[i]],thick=2,color=symColor,/overplot)
+    p93=plot([varXA[i]-xErrBar,varXA[i]+xErrBar],[varAErrUp[i]+varA[i],varAErrUp[i]+varA[i]],color=symColor,thick=2,/overplot)
   endfor
   
   
   
-  for i=0,n_elements(varB)-1 do begin
-    p94=plot([varXB[i],varXB[i]],[varBErrLow[i],varB[i]],thick=2,color=symColorB,/overplot)
-    p95=plot([varXB[i]-xErrBar,varXB[i]+xErrBar],[varBErrLow[i],varBErrLow[i]],color=symColorB,thick=2,/overplot)
-  
-    p96=plot([varXB[i],varXB[i]],[varB[i],varBErrUp[i]],thick=2,color=symColorB,/overplot)
-    p97=plot([varXB[i]-xErrBar,varXB[i]+xErrBar],[varBErrUp[i],varBErrUp[i]],color=symColorB,thick=2,/overplot)
-  endfor
+;  for i=0,n_elements(varB)-1 do begin
+;    p94=plot([varXB[i],varXB[i]],[varBErrLow[i],varB[i]],thick=2,color=symColorB,/overplot)
+;    p95=plot([varXB[i]-xErrBar,varXB[i]+xErrBar],[varBErrLow[i],varBErrLow[i]],color=symColorB,thick=2,/overplot)
+;  
+;    p96=plot([varXB[i],varXB[i]],[varB[i],varBErrUp[i]],thick=2,color=symColorB,/overplot)
+;    p97=plot([varXB[i]-xErrBar,varXB[i]+xErrBar],[varBErrUp[i],varBErrUp[i]],color=symColorB,thick=2,/overplot)
+;  endfor
 
 
   p5.xrange=[xLow,xHigh]

@@ -6,18 +6,18 @@ pro calcTwcLwcColE
   plots=1
 
   ;STARTING LEFT VALUE
-  binint=5.
+  binint=2.
   binintstart=binint
 
   ;WIDTH OF BINS
-  binsize=2.
+  binsize=5.
   binsizestart=binsize
 
   ;LIQUID ONLY POINTS OR ALL
   liq=1
 
 
-  saveV=1
+  saveV=0
 
 
   ;---------------------------------------------------------------------------------------------------
@@ -30,13 +30,13 @@ pro calcTwcLwcColE
   restore,'loopdata.sav'
 
   ;liqOnly=where(trf gt -3. and lwc lt 1.2 and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.05 and twc gt 0.05 and vmd lt 40. and cdpconc lt 600.)
-  liqOnly=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.03 and twc gt 0.03 and cdpconc lt 300.)
+  liqOnly=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.02)
   ;liqOnly=where(lwc gt 0.05 and lwc lt 1.2 and cdpconc lt 200.)
 
 
   if liq eq 1 then begin
-    lwcVarE=lwcVarE[liqonly]
-    twcVarE=twcVarE[liqonly]
+    lwc=lwc[liqonly]
+    twc=twc[liqonly]
     cdpdbar=cdpdbar[liqonly]
     cdpconc=cdpconc[liqonly]
     dEff=dEff[liqonly]
@@ -44,18 +44,23 @@ pro calcTwcLwcColE
     vmd=vmd[liqonly]
     cdplwc=cdplwc[liqonly]
     trf=trf[liqonly]
-    lwc=lwc[liqonly]
-    twc=twc[liqonly]
- 
+    lwcVarE=lwcVarE[liqonly]
+    twcVarE=twcVarE[liqonly]
     cipmodconc0=cipmodconc0[liqonly]
     cipmodconc1=cipmodconc1[liqonly]
     cipmodconc2=cipmodconc2[liqonly]
-    lwc100=lwc100[liqonly]
+    coleliq=coleliq[liqonly]
+    coletot=coletot[liqonly]
+    lwcErrColE=lwcErrColE[liqonly]
+    cdptrans=cdptrans[liqonly]
+    cdpacc=cdpacc[liqonly]
+    colELiqUP=colELiqUP[liqonly]
+    colELiqU=colELiqU[liqonly]
   endif
 
   minbin=binint
 
-stop
+
   ;-------------------------------SET VAR---------------------------------------
   var=vmd
   ;-------------------------------SET VAR---------------------------------------
@@ -64,9 +69,6 @@ stop
 
   binint2=binint+binsize
 
-
-;  dBarBI=dblarr(bincount,n_elements(pmb))
-;  dbarbinn=dindgen(bincount,start=0,increment=0)
 
 
   binstart=[]
@@ -127,6 +129,9 @@ stop
   lwcVcdpq3=[]
   lwcVcdp=[]
   binGeoMean=[]
+  colELiqUPMean=[]
+  colELiqUMean=[]
+  lwcMean=[]
   
 
 
@@ -222,6 +227,8 @@ stop
     vmdMean=[vmdMean,mean(vmd[bins])]
     cdpDBarMean=[cdpDBarMean,mean(cdpdbar[bins])]
     binGeoMean=[binGeoMean,binintstart+binsizestart*(i+1.)-.5*binsizestart]
+    lwcMean=[lwcMean,mean(lwc[bins])]
+    colELiqUMean=[colELiqUMean,mean(colELiqU[bins])]
     
 
 
@@ -319,6 +326,8 @@ stop
     cdpDBarMeanB=cdpDBarMean
     binGeoMeanB=binGeoMean
     lwcVCdpB=lwcVCdp
+    colELiqUMeanB=colELiqUMean
+    lwcMeanB=lwcMean
 
     save,filename='colesavefileB.sav',coleControlLwcB,coleControlTwcB,$
       colevarLwcB,colevarTwcB,colevarbothLwcB,colevarbothTwcB,binsizestartB,$
@@ -327,7 +336,7 @@ stop
       lwcq1B,lwcq3B,twcq1B,twcq3B,color,lwc100VcdplwcB,lwc100MeanB,$
       lwc100VLwcq1B,lwc100VLwcq3B,lwc100VCdplwcq1B,lwc100VCdplwcq3B,$
       vmdMeanB,cdpVlwcq1B,cdpVlwcq3B,lwcVcdpq1B,lwcVcdpq3B,lwcVCdpB,$
-      cdpDBarMeanB,binGeoMeanB,/verbose
+      cdpDBarMeanB,binGeoMeanB,colELiqUMeanB,lwcMeanB,/verbose
   endif
 
 
@@ -335,8 +344,8 @@ stop
     save,filename='colesavefile.sav',coleControlLwc,coleControlTwc,vmdGeoMean,$
       colevarLwc,colevarTwc,colevarbothLwc,colevarbothTwc,binsizestart,$
       binintstart,cdpVlwc,cdpVtwc,cdpVLwc,cdpVTwc,colevarLwc2,$
-      colevarbothTwc2,lwctwc,lwctwc2,minbin,lwc100Vcdplwc,$
-      lwc100Vtwc,lwc100Vlwc,lwc100Vtwc,lwc100Mean,$
+      colevarbothTwc2,lwctwc,lwctwc2,minbin,lwc100Vcdplwc,lwcMean,$
+      lwc100Vtwc,lwc100Vlwc,lwc100Vtwc,lwc100Mean,colELiqUMean,$
       lwcq1,lwcq3,twcq1,twcq3,color,vmdMean,cdpVlwcq1,cdpVlwcq3,$
       lwc100VLwcq1,lwc100VLwcq3,lwc100VCdplwcq1,lwc100VCdplwcq3,$
       lwcVcdpq1,lwcVcdpq3,lwcVCdp,cdpDBarMean,binGeoMean,/verbose

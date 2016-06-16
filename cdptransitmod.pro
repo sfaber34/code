@@ -6,13 +6,13 @@ pro cdpTransitMod
   ;--------------------------------------SET OPTIONS---------------------------------------------------------------------------------------------
   ;----------------------------------------------------------------------------------------------------------------------------------------------
 
-  xVar=cdpconc
+  xVar=tas
   xVar2=0
   yVar=cdptrans
   yVar2=0
 
 
-  filtMain=where(lwc gt .02 and lwc lt 1.3 and cdpTrans lt 10 and cdpconc gt 1.5)
+  filtMain=where(lwc gt .02 and lwc lt 1.3 and cdpconc gt 1.5)
   fu=ladfit(cdpconc,cdptrans)
   subsetVar=fu[0]
   inds=[0,.05,.1,.15,.2,.1,.12,.14,.16]
