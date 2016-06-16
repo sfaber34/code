@@ -376,7 +376,7 @@ if airspeedType eq 'indicated' then begin
 endif
 
 ;SCALE CDP TRANSITS TO MEAN TAS
-cdpTransScaled=cdpTrans*(tas/95.927322)
+cdpTransEst=.0002/tas
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------K AIRSPEED DEPENDANCE PARAMETERIZATION---------------------------------------------------------------------
@@ -778,7 +778,7 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
   pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,colELiqU:colELiqU,$
-  colELiqUP:colELiqUP,cdpTransScaled:cdpTransScaled}
+  colELiqUP:colELiqUP,cdpTransEst:cdpTransEst}
 
 return,d
 

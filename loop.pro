@@ -89,7 +89,7 @@ pro loop
       
       cdpBinSecSumB=make_array(n_elements(d.(1)),start=0,increment=0)
       cdpBinNB=make_array(28,n_elements(d.(1)),start=0,increment=0)
-      
+      stop
       for j=0,n_elements(d.(1))-1 do begin
         cdpBinSecSumB[j]=total(d.cdpdbins[*,0,j])+200
         
