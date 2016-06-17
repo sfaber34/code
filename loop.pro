@@ -64,7 +64,7 @@ pro loop
     cdpBinSD=[]
     colELiqUP=[]
     colELiqU=[]
-    cdpTransScaled=[]
+    cdpTransEst=[]
     
     
     nPoints=146852d
@@ -89,7 +89,6 @@ pro loop
       
       cdpBinSecSumB=make_array(n_elements(d.(1)),start=0,increment=0)
       cdpBinNB=make_array(28,n_elements(d.(1)),start=0,increment=0)
-      stop
       for j=0,n_elements(d.(1))-1 do begin
         cdpBinSecSumB[j]=total(d.cdpdbins[*,0,j])+200
         
@@ -150,7 +149,7 @@ pro loop
       cdpBinSD=[cdpBinSD,d.cdpBinSD]
       colELiqUP=[colELiqUP,d.colELiqUP]
       colELiqU=[colELiqU,d.colELiqU]
-      cdpTransScaled=[cdpTransScaled,d.cdpTransScaled]
+      cdpTransEst=[cdpTransEst,d.cdpTransEst]
       
       
       r=r+n_elements(d.(1))
@@ -177,6 +176,6 @@ pro loop
       lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
       pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,$
       cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,$
-      cdpTransScaled,/verbose
+      cdpTrans,cdpTransEst,/verbose
    
 end
