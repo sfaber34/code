@@ -49,7 +49,6 @@ if strmatch(nclpath,'*2015*') eq 1 then cope=0
 if strmatch(nclpath,'*2016*') eq 1 then cope=2
 
 
-
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------LOAD VARIABLES---------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -114,6 +113,8 @@ time=loadvar('time', filename=nclPath)
 
 ;pressure from rosemount sensor [mb]
 pmb=loadvar('pmb', filename=nclPath)
+nPoints=n(pmb)
+nPoints1=n1(pmb)
 
 ;temperature from rosemount sensor [C]
 trose=loadvar('trose', filename=nclPath)
@@ -168,7 +169,7 @@ if flightday eq '0814' eq 1 then cipmod=0
 if cope eq 1 and cipmod eq 1 then begin
   cipmodconc0=loadvar('CONC0_mod_cip_IBR', filename=nclPath)
 endif else begin
-  cipmodconc0=replicate(!VALUES.F_NAN,n_elements(pmb))
+  cipmodconc0=replicate(!VALUES.F_NAN,nPoints1)
 endelse
 print,'-----------', flightDay, '-----------'
 
@@ -176,14 +177,14 @@ print,'-----------', flightDay, '-----------'
 if cope eq 1 and cipmod eq 1 then begin
   cipmodconc1=loadvar('CONC1_mod_cip_IBR', filename=nclPath)
 endif else begin
-  cipmodconc1=replicate(!VALUES.F_NAN,n_elements(pmb))
+  cipmodconc1=replicate(!VALUES.F_NAN,nPoints1)
 endelse
 
 ;CIP MOD2 CONC [/liter]
 if cope eq 1 and cipmod eq 1 then begin
   cipmodconc2=loadvar('CONC2_mod_cip_IBR', filename=nclPath)
 endif else begin
-  cipmodconc2=replicate(!VALUES.F_NAN,n_elements(pmb))
+  cipmodconc2=replicate(!VALUES.F_NAN,nPoints1)
 endelse
 
 ;nevzorov sensor temperature [C]
@@ -205,21 +206,21 @@ noNev1=1
 if cope eq 1 and nonev1 eq 1 then begin
   lwcNev1=loadvar('nevlwc1', filename=nclPath)
 endif else begin
-  lwcNev1=replicate(!VALUES.F_NAN,n_elements(pmb))
+  lwcNev1=replicate(!VALUES.F_NAN,nPoints1)
 endelse  
 
 ;liquid water content from Nevzorov probe [g/m^3]
 if cope eq 1 and nonev1 eq 1 then begin
    lwcNev2=loadvar('nevlwc2', filename=nclPath)
 endif else begin   
-  lwcNev2=replicate(!VALUES.F_NAN,n_elements(pmb))
+  lwcNev2=replicate(!VALUES.F_NAN,nPoints1)
 endelse
 
 ;Total water content from Nevzorov probe [g/m^3]
 if cope eq 1 and nonev1 eq 1 then begin
   twcNev=loadvar('nevtwc', filename=nclPath)
 endif else begin  
-  twcNev=replicate(!VALUES.F_NAN,n_elements(pmb))
+  twcNev=replicate(!VALUES.F_NAN,nPoints1)
 endelse
 
 ;Sideslip Angle [deg]
@@ -232,7 +233,7 @@ avyawr=loadvar('avyawr', filename=nclPath)
 alpha=loadvar('alpha', filename=nclPath)
 
 ;Flight Time [sec]
-timeFlight=dindgen(n_elements(pmb),start=0,increment=1)
+timeFlight=dindgen(nPoints1,start=0,increment=1)
 hour=loadvar('HOUR', filename=nclPath)
 min=loadvar('MINUTE', filename=nclPath)
 sec=loadvar('SECOND', filename=nclPath)
@@ -242,7 +243,7 @@ if cope eq 1 and calcTrans eq 1 then begin
   cdpTransB=cdpTransTime(flightDay)
   cdpTrans=cdpTransB[*,0]*25d-3
 endif else begin
-  cdpTrans=replicate(!VALUES.F_NAN,n_elements(pmb))
+  cdpTrans=replicate(!VALUES.F_NAN,nPoints1)
 endelse
 
 ;CDP interarival times [us]
@@ -250,10 +251,8 @@ if cope eq 1 and calcTrans eq 1 then begin
   cdpDofRejB=cdpTransTime(flightDay)
   cdpDofRej=cdpDofRejB[*,1]
 endif else begin
-  cdpDofRej=replicate(!VALUES.F_NAN,n_elements(pmb))
-endelse
-
-;=loadvar('REJDOF_NRB', filename=nclPath) 
+  cdpDofRej=replicate(!VALUES.F_NAN,nPoints1)
+endelse 
 
 
 
@@ -378,6 +377,9 @@ endif
 ;SCALE CDP TRANSITS TO MEAN TAS
 cdpTransEst=.0002/tas
 
+nPoints=n(pmb)
+nPoints1=n1(pmb)
+
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------K AIRSPEED DEPENDANCE PARAMETERIZATION---------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -420,34 +422,34 @@ endif
 ;---------------------------------------------------------------------CLEARAIR POINT DETECTION---------------------------------------------------------------------
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-correctionLiq=dindgen(n_elements(pmb),increment=0)
-smoothSignalLiq=dindgen(n_elements(pmb),increment=0)
+correctionLiq=dindgen(nPoints1,increment=0)
+smoothSignalLiq=dindgen(nPoints1,increment=0)
 
-correctionTot=dindgen(n_elements(pmb),increment=0)
-smoothSignalTot=dindgen(n_elements(pmb),increment=0)
+correctionTot=dindgen(nPoints1,increment=0)
+smoothSignalTot=dindgen(nPoints1,increment=0)
 
 rawSignalLiq=(vlwccol)
 rawSignalTot=(vtwccol)
 
 int=10
-for i=0,n_elements(pmb)-(int+1) do begin
+for i=0,nPoints1-(int+1) do begin
   correctionLiq[i:i+int]=min(rawSignalLiq[i:i+int])
   i=i+int
 endfor
 
 
-for i=0,n_elements(pmb)-(int+1) do begin
+for i=0,nPoints1-(int+1) do begin
   smoothSignalLiq[i:i+int]=rawSignalLiq[i:i+int]-correctionLiq[i:i+int]
   i=i+int
 endfor
 
 intb=20
-for i=0,n_elements(pmb)-(intb+1) do begin
+for i=0,nPoints1-(intb+1) do begin
   correctionTot[i:i+intb]=min(rawSignalTot[i:i+intb])
   i=i+int
 endfor
 
-for i=0,n_elements(pmb)-(intb+1) do begin
+for i=0,nPoints1-(intb+1) do begin
   smoothSignalTot[i:i+intb]=rawSignalTot[i:i+intb]-correctionTot[i:i+intb]
   i=i+int
 endfor
@@ -461,8 +463,7 @@ u2Liq=uLiq[50]
 
 x1Liq=min([u1Liq,u2Liq])
 x2Liq=max([u1Liq,u2Liq])
-if cope eq 0 or cope eq 2 then threshLiq=.007*mean(rawSignalLiq[0:50])
-if cope eq 1 then threshLiq=.007*mean(rawSignalLiq[0:50])
+threshLiq=.007*mean(rawSignalLiq[0:50])
 
 diffTot=smoothSignalTot
 threshtot=0.
@@ -480,10 +481,10 @@ if (cope eq 0 or cope eq 2) and threshTot lt .003 then threshTot=.004
 if cope eq 1 then threshTot=0.0025*mean(uTot[0:50])
 
 
-clearairLiqi=findgen(n_elements(pmb),start=0.,increment=0.)
-clearairToti=findgen(n_elements(pmb),start=0.,increment=0.)
+clearairLiqi=findgen(nPoints1,start=0.,increment=0.)
+clearairToti=findgen(nPoints1,start=0.,increment=0.)
     
-for i=0,n_elements(pmb)-1 do begin
+for i=0,nPoints do begin
   if abs(diffLiq[i]) le threshLiq and shift(abs(diffLiq[i]),1) le threshLiq and $
     shift(abs(diffLiq[i]),-1) le threshLiq and shift(abs(diffLiq[i]),2) le threshLiq and $
     shift(abs(diffLiq[i]),-2) le threshLiq then clearairLiqi[i]=1
@@ -511,13 +512,13 @@ clearairTotsortsorted=clearairTotsortsorted[n_elements(clearairTotsortsorted)*.0
 ;---------------------------------------------------------------------MISC. POINT DETECTION---------------------------------------------------------------------
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-aSpan = n_elements(pmb) - 1
-BetaI=dindgen(n_elements(pmb),start=0,increment=0)
-baselineIB=dindgen(n_elements(pmb),start=0,increment=0)
-baselineRollI=dindgen(n_elements(pmb),start=0,increment=0)
-baselineYawI=dindgen(n_elements(pmb),start=0,increment=0)
-baselinePitchI=dindgen(n_elements(pmb),start=0,increment=0)
-baselineI=dindgen(n_elements(pmb),start=0,increment=0)
+aSpan = nPoints
+BetaI=dindgen(nPoints1,start=0,increment=0)
+baselineIB=dindgen(nPoints1,start=0,increment=0)
+baselineRollI=dindgen(nPoints1,start=0,increment=0)
+baselineYawI=dindgen(nPoints1,start=0,increment=0)
+baselinePitchI=dindgen(nPoints1,start=0,increment=0)
+baselineI=dindgen(nPoints1,start=0,increment=0)
 
 for i=0, aSpan do begin
   if (abs(avRoll[i]) lt 5) then begin
@@ -545,10 +546,10 @@ levelclearairLiq=where(baselineIB eq 1)
 ;---------------------------------------------------------------------MOMENT CALCULATIONS---------------------------------------------------------------------
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-dEff=make_array(n_elements(pmb))
-vvd=make_array(n_elements(pmb))
-vmd=make_array(n_elements(pmb))
-diff=make_array(n_elements(pmb))
+dEff=make_array(nPoints1)
+vvd=make_array(nPoints1)
+vmd=make_array(nPoints1)
+diff=make_array(nPoints1)
 if n_elements(cdpdbins[*,0,0]) eq 28 then diam=[1.5,2.5,3.5,4.5,5.5,6.5,7.5,9.,11.,13.,15.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
 if n_elements(cdpdbins[*,0,0]) eq 27 then diam=[1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,10.5,14.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
 
@@ -564,7 +565,7 @@ cdpBinBimod=[]
 cdpBinMAD=[]
 cdpBinSD=[]
 s=0
-for m=0, n_elements(pmb)-1 do begin
+for m=0, nPoints do begin
   xa=[]
   xb=[]
   xc=[]
@@ -615,8 +616,8 @@ endfor
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ;--------------------LIQUID COLLECTION EFFECIENCY--------------------
-colEliq=dindgen(n_elements(pmb),start=1,increment=0)
-for d=0,n_elements(pmb)-1 do begin
+colEliq=dindgen(nPoints1,start=1,increment=0)
+for d=0,nPoints do begin
   if vmd[d] ge 0.884495 and vmd[d] lt 4.78668056 then begin
     colEliq[d]=0.76534878613892943-1.9525313756894320*vmd[d]+2.3079791209893301*vmd[d]^2.-1.1748496234649792*vmd[d]^3.+0.31405602625454776*vmd[d]^4.-0.042947818677930627*vmd[d]^5.+0.0023657753736188170*vmd[d]^6.
   endif
@@ -634,8 +635,8 @@ for d=0,n_elements(pmb)-1 do begin
 endfor
 
 
-colEliq3=dindgen(n_elements(pmb),start=1,increment=0)
-for d=0,n_elements(pmb)-1 do begin
+colEliq3=dindgen(nPoints1,start=1,increment=0)
+for d=0,nPoints do begin
   if vmd[d] le 15 then colEliq3[d]=(-0.236989)+0.503008*vmd[d]-0.0878596*$
     vmd[d]^2.+0.00801374*vmd[d]^3.-0.000397548*vmd[d]^4.+1.01460e-05*vmd[d]^5.-1.04243e-07*vmd[d]^6.
   if vmd[d] gt 13 and vmd[d] le 25 then colEliq3[d]=.9697
@@ -647,8 +648,8 @@ for d=0,n_elements(pmb)-1 do begin
 endfor
 
 ;--------------------TOTAL COLLECTION EFFECIENCY--------------------
-colETot=dindgen(n_elements(pmb),start=1,increment=0)
-for c=0,n_elements(pmb)-1 do begin
+colETot=dindgen(nPoints1,start=1,increment=0)
+for c=0,nPoints do begin
   if vmd[c] le 10.41 then begin
     colETot[c]=0.0089810744193528080-0.0095860685032675974*vmd[c]+0.018453599910571938*vmd[c]^2.-0.00080000274192570942*vmd[c]^3.-0.00019379821253551199*vmd[c]^4.+2.3409862748735577e-05*vmd[c]^5.-7.7800221198742747e-07*vmd[c]^6.
   endif
@@ -666,16 +667,16 @@ for c=0,n_elements(pmb)-1 do begin
   endif
 endfor
 
-colETot2=dindgen(n_elements(pmb),start=1,increment=0)
-for r=0,n_elements(pmb)-1 do begin
+colETot2=dindgen(nPoints1,start=1,increment=0)
+for r=0,nPoints do begin
   if vmd[r] le 10.05 then colETot2[r]=(-0.0187892454)+0.2023209*vmd[r]-0.01937650*$
     vmd[r]^2.+0.00090900815025*vmd[r]^3.-2.0036900614417430e-05*vmd[r]^4.+1.6638675680649695e-07*vmd[r]^5.
   if vmd[r] gt 10.05 and vmd[r] le 33 then colETot2[r]=0.43729845*vmd[r]^(0.19240421)+0.11114933
   if vmd[r] gt 33 then colETot2[r]=0.0010409079*vmd[r]+0.93375003
 endfor
 
-colETot3=dindgen(n_elements(pmb),start=1,increment=0)
-for c=0,n_elements(pmb)-1 do begin
+colETot3=dindgen(nPoints1,start=1,increment=0)
+for c=0,nPoints do begin
   if vmd[c] le 50. then begin
     colETot3[c]=-0.0576565+0.0324626*vmd[c]+0.0105399*vmd[c]^2.-0.00118195*vmd[c]^3.+5.50338e-05*vmd[c]^4.$
       -1.32812e-06*vmd[c]^5.+1.63224e-08*vmd[c]^6.-8.08554e-11*vmd[c]^7.
@@ -711,11 +712,11 @@ expHeatIce=expHeatLiq
 ;--------------------POWER CALCULATIONS--------------------
 pLiq=vlwccol*ilwccol-kLiq*vlwcref*ilwcref
 pLiqNoPresCor=pLiq
-lwcNoPresCor=pLiq/(colELiq*tas*aLiq*2589.)
+lwcNoPresCor=pLiq/(1d*tas*aLiq*2589.)
 
 pTot=vtwccol*itwccol-kTot*vtwcref*itwcref
 pTotNoPresCor=pTot
-twcNoPresCor=pTot/(colETot*tas*aTot*2589.)
+twcNoPresCor=pTot/(1d*tas*aTot*2589.)
 
 
 
@@ -830,160 +831,7 @@ pro info
   print,',margin=[110,70,30,20],/device'
 end
 
-function loadvar,varname,ncid=ncid,filename=filename,cal=cal, double_prec=double_prec, $
-  scale = scale, offset = offset, coef = coef, adcoef=adcoef, span=span, attr = attr, help=help
 
-  ;+
-  ;
-  ;
-  ;  $Id: loadvar.pro,v 1.1.1.1 2005/05/03 17:48:13 french Exp $
-  ;  MODIFIED 2015/03/26:  added ability to read and return variable attributes 'Span' and 'AdditionalCoefficients'
-  ;
-  ;
-  ; A generic function to load a variable from a netCDF file,
-  ;
-  ; The function will also look for standard variable attributes (scale_factor &
-  ;   add_offset) and non-standard attributes (cal_coef) and apply them if
-  ; they exist.
-  ;
-  ; Added in 2015, if user provides a string for the keyword 'attr', then function
-  ;   will search if that variable attrib exists, and if it does return the value of
-  ;   that attribute rather than the value of the variable. If the attrib does not exist
-  ;   it returns -1
-  ;
-  ; The function is written to be backwards compatible with old version of
-  ; of ARL aircraft data which contain calibration coefficients written
-  ; with 'cal_pwr' and 'coefn' where n is 0 or 1
-  ;
-  ; The function returns the values for varname
-  ;
-  ; One can either pass the NAME of a CLOSED netCDF file through the 'filename'
-  ; keyword, or the netCDF FILE ID of an OPEN netCDF file through the 'ncid'
-  ; keyword. If using 'filename', the file will be closed by loadvar.
-  ; If using 'ncid', the file will remain open.
-  ;
-  ;
-  if KEYWORD_SET(help) then begin
-    print,''
-    print,'Result = loadvar(varname, [ncid=ncid | filename=filename])'
-    print,''
-    print,'ARGUMENTS'
-    print,'varname  : name of netCDF variable'
-    print,'ncid   : netCDF file ID of OPEN netCDF file'
-    print,'filename : name (& path) of CLOSED netCDF file'
-    print,' NOTE: call requires either ncid or filename KEYWORD'
-    print,''
-    print,'KEYWORDS'
-    print,'attr    : set this keyword to the name of a variable attribute'
-    print,'   if set and the attribute exists function returns value of attribute'
-    print,'   if set and the attribute doesnot exist function returns -1'
-    print,' '
-    print,'cal    : set this keyword to apply calibration coefficients'
-    print,'   if they exist (ignored if they do not exist)'
-    print,'double_prec: if set, result is returned as double precision'
-    print,'   otherwise returned as float'
-    print,'scale    : name of variable that will contain, upon exit, value'
-    print,'   of scale factor'
-    print,'offset   : name of variable that will contain, upon exit, value'
-    print,'   of add_offset'
-    print,'coef   : name of variable that will contain, upon exit, value(s)'
-    print,'   of calibration coefficient(s)'
-    RETURN, -1
-  endif
-  ;-
-
-  IF NOT isa(ncid) THEN $
-    close_file = 1
-
-  IF KEYWORD_SET(filename) THEN $
-    ncid = NCDF_OPEN(filename)
-
-
-  IF NOT isa(ncid) THEN BEGIN
-    PRINT, "loadvar: no filename or valid file ID given"
-    RETURN,-1
-  ENDIF
-
-  IF (KEYWORD_SET(double_prec)) THEN dbl = 1 ELSE dbl = 0
-
-  varid = NCDF_VARID(ncid, varname)
-
-
-  vardata = NCDF_VARINQ(ncid, varid)
-
-
-  scale = 1. & offset = 0.
-  FOR i = 1, vardata.natts DO BEGIN
-    attname = NCDF_ATTNAME(ncid, varid, i-1)
-    ; print,attname
-    IF (attname eq 'add_offset') THEN BEGIN
-      NCDF_ATTGET, ncid, varid, 'add_offset', offset
-      IF (dbl) THEN offset = double(offset)
-    ENDIF
-    IF (attname eq 'scale_factor') THEN BEGIN
-      NCDF_ATTGET, ncid, varid, 'scale_factor', scale
-      IF (dbl) THEN scale = double(scale)
-    ENDIF
-    IF ( (KEYWORD_SET(cal)) AND (attname EQ 'cal_coef') ) THEN BEGIN
-      NCDF_ATTGET, ncid, varid, 'cal_coef', cal_coef
-      IF (dbl) THEN cal_coef = double(cal_coef)
-    ENDIF
-
-    ;the following is for special attributes contained in some netcdf variables in UWKA files
-
-    IF (  (attname EQ 'AdditionalCoefficients') ) THEN $
-      NCDF_ATTGET, ncid, varid, 'AdditionalCoefficients', adcoef
-    IF (  (attname EQ 'Span') ) THEN $
-      NCDF_ATTGET, ncid, varid, 'Span', span
-
-    ; the following is to be back compatible with old ncr files
-    IF ( (KEYWORD_SET(cal)) AND (attname EQ 'cal_pwr') ) THEN $
-      NCDF_ATTGET, ncid, varid, 'cal_pwr', cal_pwr
-    IF ( (KEYWORD_SET(cal)) AND (attname EQ 'coef_0') ) THEN BEGIN
-      NCDF_ATTGET, ncid, varid, 'coef_0', coef_0
-      IF (dbl) THEN coef_0 = double(coef_0)
-    ENDIF
-    IF ( (KEYWORD_SET(cal)) AND (attname EQ 'coef_1') ) THEN BEGIN
-      NCDF_ATTGET, ncid, varid, 'coef_1', coef_1
-      IF (dbl) THEN coef_1 = double(coef_1)
-    ENDIF
-
-  ENDFOR
-
-
-  ;check to see if keyword 'attr' is present -- if it is, get the attribute and return it
-  ;if the keyword is not present, then continue getting the variable data and return that
-
-  IF isa(attr) THEN BEGIN
-    NCDF_ATTGET, ncid, varid, attr, temp
-    RETURN, temp
-  ENDIF ELSE BEGIN
-    NCDF_VARGET, ncid, varid, temp_u
-  ENDELSE
-
-  temp = temp_u*scale + offset
-
-  ; the following is to be back compatible with old ncr files
-  IF isa(cal_pwr) THEN BEGIN
-    cal_coef = FLTARR(2)
-    cal_coef[0] = coef_0
-    cal_coef[1] = coef_1
-  ENDIF
-
-  engin = 0
-  IF ( KEYWORD_SET(cal) AND (N_ELEMENTS(cal_coef) gt 0) ) THEN BEGIN
-    coef = cal_coef
-    FOR i = 0, N_ELEMENTS(cal_coef)-1 DO $
-      engin = cal_coef[i]*(temp^i)+engin
-    temp = engin
-  ENDIF
-
-  IF isa(close_file) THEN $
-    NCDF_CLOSE, ncid
-
-  RETURN, temp
-
-end
 
 
 

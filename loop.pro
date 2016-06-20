@@ -65,7 +65,8 @@ pro loop
     colELiqUP=[]
     colELiqU=[]
     cdpTransEst=[]
-    
+    lwcNoPresCor=[]
+    aiasms=[]
     
     nPoints=146852d
 
@@ -150,7 +151,8 @@ pro loop
       colELiqUP=[colELiqUP,d.colELiqUP]
       colELiqU=[colELiqU,d.colELiqU]
       cdpTransEst=[cdpTransEst,d.cdpTransEst]
-      
+      lwcNoPresCor=[lwcNoPresCor,d.lwcNoPresCor]
+      aiasms=[aiasms,d.aiasms]
       
       r=r+n_elements(d.(1))
     endfor
@@ -176,6 +178,6 @@ pro loop
       lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
       pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,$
       cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,$
-      cdpTrans,cdpTransEst,/verbose
+      cdpTrans,cdpTransEst,aiasms,lwcnoprescor,/verbose
    
 end
