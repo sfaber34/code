@@ -6,6 +6,7 @@
 function nevbase, flightDay, airspeedType, level
 
 common t,t
+common inds,inds
 
 ;AIRSPEED TYPE/LEVEL OVERRIDES
 airspeedType='indicated'
@@ -431,7 +432,7 @@ smoothSignalTot=dindgen(nPoints1,increment=0)
 rawSignalLiq=(vlwccol)
 rawSignalTot=(vtwccol)
 
-int=10
+int=20
 for i=0,nPoints1-(int+1) do begin
   correctionLiq[i:i+int]=min(rawSignalLiq[i:i+int])
   i=i+int
@@ -463,7 +464,7 @@ u2Liq=uLiq[50]
 
 x1Liq=min([u1Liq,u2Liq])
 x2Liq=max([u1Liq,u2Liq])
-threshLiq=.007*mean(rawSignalLiq[0:50])
+threshLiq=.01*med(rawSignalLiq[0:50])
 
 diffTot=smoothSignalTot
 threshtot=0.
@@ -755,6 +756,20 @@ colELiqUP=1.-colEliq
 colELiqU=abs(lwc)*colELiqUP
 
 
+
+;--------------------FINAL BASELINE FILTERING--------------------
+
+lwcBL=lwc[clearairLiq]
+lwcBL=lwcBL[where(lwcBL gt 0.)]
+lwcBLThresh=mean(lwcBL)*1.2
+
+lwcBaseline=where(lwc lt lwcBLThresh)+inds.starti
+
+if inds.starti eq 0 then startsec=0
+if inds.starti gt 0 then startsec=inds.starti
+flightSec=dindgen(nPoints1,start=startsec,increment=1)
+
+
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------PASS VARIABLES---------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -769,7 +784,7 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf, threshTot:threshTot,$
   lwc100:lwc100, cdpdbar:cdpdbar_1_NRB,lwcnev2:lwcnev2, timePretty:timePretty,cdpDofRej:cdpDofRej,$
   avyaw:avyawr,pvmlwc:pvmlwc,cdplwc:cdplwc_1_NRB,pLiqNoPresCor:pLiqNoPresCor,$
-  rawSignalLiq:rawSignalLiq, smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,$
+  rawSignalLiq:rawSignalLiq, smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,flightSec:flightSec,$
   rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNoPresCor:pTotNoPresCor,$
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,expHeatIce:expHeatIce,$
   signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,$
@@ -779,7 +794,7 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
   pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,colELiqU:colELiqU,$
-  colELiqUP:colELiqUP,cdpTransEst:cdpTransEst}
+  colELiqUP:colELiqUP,cdpTransEst:cdpTransEst,lwcBaseline:lwcBaseline}
 
 return,d
 

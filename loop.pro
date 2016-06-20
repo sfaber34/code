@@ -1,6 +1,7 @@
 pro loop
 
-
+common inds,inds
+inds={starti:double(0)}
 
     lwc=[]
     as=[]
@@ -67,25 +68,22 @@ pro loop
     cdpTransEst=[]
     lwcNoPresCor=[]
     aiasms=[]
+    lwcBaseline=[]
+    flightSec=[]
     
     nPoints=146852d
 
     flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
     ;flight=['1124','1217','0120','0125','0304','0307']
-
-
-;    for i=0, n_elements(flight)-1 do begin
-;      d=nevBase(flight[i],'indicated','400')
-;      counts=[counts,n_elements(d.(1))]
-;    endfor
-;    
+   
    cdpBinN=make_array(28,nPoints)
    cdpBinN[*,*]=!values.d_nan
     
     r=0
     for i=0, n_elements(flight)-1 do begin
 
-
+      ;if i eq 0 then inds.starti=0
+      
       d=nevBase(flight[i],'indicated','400')
       
       cdpBinSecSumB=make_array(n_elements(d.(1)),start=0,increment=0)
@@ -153,13 +151,16 @@ pro loop
       cdpTransEst=[cdpTransEst,d.cdpTransEst]
       lwcNoPresCor=[lwcNoPresCor,d.lwcNoPresCor]
       aiasms=[aiasms,d.aiasms]
+      lwcBaseline=[lwcBaseline,d.lwcBaseline]
+      flightSec=[flightSec,d.flightSec]
       
       r=r+n_elements(d.(1))
+      inds.starti=inds.starti+n1(d.(1))
     endfor
     
     cdpBinNB=make_array(28,n_elements(pmb))
     t=0
-    for u=0,n_elements(cdpBinN[0,*])-1 do begin
+    for u=0,n_elements(cdpBinNB[0,*])-1 do begin
       if n_elements(where(finite(cdpBinN[*,u] gt 1))) gt 0 then begin
         cdpBinNB[*,t]=cdpBinN[*,u]
         t++
@@ -178,6 +179,6 @@ pro loop
       lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
       pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,$
       cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,$
-      cdpTrans,cdpTransEst,aiasms,lwcnoprescor,/verbose
+      cdpTrans,cdpTransEst,aiasms,lwcnoprescor,lwcBaseline,flightSec
    
 end
