@@ -16,7 +16,7 @@ pro calcBinnedVals
   ;LIQUID ONLY POINTS OR ALL
   liq=1
   
-  saveName='calFLEff900.sav'
+  saveName='calcBins400.sav'
 
 
   ;---------------------------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ pro calcBinnedVals
 
 
 
-  restore,'loopdata900.sav'
+  restore,'saves/loopdata400.sav'
 
   liqOnly=clearAirLiq
 
@@ -293,7 +293,7 @@ pro calcBinnedVals
   endfor
 
 
-    save,filename=saveName,coleControlLwc,coleControlTwc,vmdGeoMean,$
+    save,filename='saves/'+saveName,coleControlLwc,coleControlTwc,vmdGeoMean,$
       colevarLwc,colevarTwc,colevarbothLwc,colevarbothTwc,binsizestart,$
       binintstart,cdpVlwc,cdpVtwc,cdpVLwc,cdpVTwc,colevarLwc2,pmbMed,$
       colevarbothTwc2,lwctwc,lwctwc2,minbin,lwc100Vcdplwc,lwcMean,$

@@ -1,6 +1,6 @@
 pro loop
 
-savename='loopdata900.sav'
+savename='loopdata400.sav'
 
 common inds,inds
 inds={starti:double(0)}
@@ -78,7 +78,7 @@ inds={starti:double(0)}
     nPoints=146852d
 
     flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
-    ;flight=['1124','1217','0120','0125','0304','0307']
+    flight=['1124','1217','0120','0125','0304','0307']
     ;flight='0725'
    
    cdpBinN=make_array(28,nPoints)
@@ -89,7 +89,7 @@ inds={starti:double(0)}
 
       ;if i eq 0 then inds.starti=0
       
-      d=nevBase(flight[i],'indicated','900')
+      d=nevBase(flight[i],'indicated','400')
       
       cdpBinSecSumB=make_array(n_elements(d.(1)),start=0,increment=0)
       cdpBinNB=make_array(28,n_elements(d.(1)),start=0,increment=0)
@@ -179,7 +179,7 @@ inds={starti:double(0)}
     color=d.color
     
    
-    save,filename=savename,lwc,twc,cdpdbar,trf,twcVarE,colETot,$
+    save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,twcVarE,colETot,$
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
