@@ -14,9 +14,9 @@ pro calcBinnedVals
   binsizestart=binsize
 
   ;LIQUID ONLY POINTS OR ALL
-  liq=0
+  liq=1
   
-  saveName='lwcVnevA.sav'
+  saveName='calFLEff900.sav'
 
 
   ;---------------------------------------------------------------------------------------------------
@@ -26,9 +26,9 @@ pro calcBinnedVals
 
 
 
-  restore,'loopdata.sav'
+  restore,'loopdata900.sav'
 
-  liqOnly=where(trf gt -3. and (cipmodconc0 lt .5 and finite(cipmodconc0) eq 1) and lwc gt 0.02)
+  liqOnly=clearAirLiq
 
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -53,6 +53,9 @@ pro calcBinnedVals
     colELiqUP=colELiqUP[liqonly]
     colELiqU=colELiqU[liqonly]
     lwcNev1=lwcNev1[liqonly]
+    flightsec=flightsec[liqonly]
+    pmb=pmb[liqonly]
+    lwcnoprescor=lwcnoprescor[liqonly]
   endif
 
   minbin=binint
@@ -130,13 +133,14 @@ pro calcBinnedVals
   lwcOoc=[]
   lwcOocq1=[]
   lwcOocq3=[]
+  pmbMed=[]
 
 
 
   starti=0
   endi=0
 
-  binNum=max(var)/binsize
+  binNum=ceil(max(var)/binsize)
 
   for i=0,binNum do begin
     selectinds=where(var ge binint and var le binint2)
@@ -279,10 +283,10 @@ pro calcBinnedVals
     lwcVcdpq1=[lwcVcdpq1,lwcVCdpDistSD[n_elements(lwcVCdpDistSD)*.25]]
     lwcVcdpq3=[lwcVcdpq3,lwcVCdpDistSD[n_elements(lwcVCdpDistSD)*.75]]
     
-    lwcOoc=[lwcOoc,(med(lwc[bins]))]
-    lwcOocq1=[lwcOocq1,q1(lwc[bins])]
-    lwcOocq3=[lwcOocq3,q3(lwc[bins])]
-
+    lwcOoc=[lwcOoc,(med(abs(lwcnoprescor[bins])))*100d]
+    lwcOocq1=[lwcOocq1,q1(abs(lwcnoprescor[bins]))*100d]
+    lwcOocq3=[lwcOocq3,q3(abs(lwcnoprescor[bins]))*100d]
+    pmbMed=[pmbMed,mean(pmb[bins])]
 
 
     print,binintstart+binsizestart*(i+1.),'-',n_elements(bins)
@@ -291,12 +295,12 @@ pro calcBinnedVals
 
     save,filename=saveName,coleControlLwc,coleControlTwc,vmdGeoMean,$
       colevarLwc,colevarTwc,colevarbothLwc,colevarbothTwc,binsizestart,$
-      binintstart,cdpVlwc,cdpVtwc,cdpVLwc,cdpVTwc,colevarLwc2,$
+      binintstart,cdpVlwc,cdpVtwc,cdpVLwc,cdpVTwc,colevarLwc2,pmbMed,$
       colevarbothTwc2,lwctwc,lwctwc2,minbin,lwc100Vcdplwc,lwcMean,$
       lwc100Vtwc,lwc100Vlwc,lwc100Vtwc,lwc100Mean,colELiqUMean,$
       lwcq1,lwcq3,twcq1,twcq3,color,vmdMean,cdpVlwcq1,cdpVlwcq3,$
       lwc100VLwcq1,lwc100VLwcq3,lwc100VCdplwcq1,lwc100VCdplwcq3,$
-      lwcVcdpq1,lwcVcdpq3,lwcVCdp,cdpDBarMean,binGeoMean,lwcOoc,lwcOocq1,lwcOocq3/verbose
+      lwcVcdpq1,lwcVcdpq3,lwcVCdp,cdpDBarMean,binGeoMean,lwcOoc,lwcOocq1,lwcOocq3
 
 
 

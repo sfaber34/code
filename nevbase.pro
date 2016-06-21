@@ -8,9 +8,12 @@ function nevbase, flightDay, airspeedType, level
 common t,t
 common inds,inds
 
+if inds.starti eq 0 then startsec=0
+if inds.starti gt 0 then startsec=inds.starti
+
 ;AIRSPEED TYPE/LEVEL OVERRIDES
 airspeedType='indicated'
-level='400'
+
 calcTrans=1
 
 
@@ -432,7 +435,7 @@ smoothSignalTot=dindgen(nPoints1,increment=0)
 rawSignalLiq=(vlwccol)
 rawSignalTot=(vtwccol)
 
-int=20
+int=30
 for i=0,nPoints1-(int+1) do begin
   correctionLiq[i:i+int]=min(rawSignalLiq[i:i+int])
   i=i+int
@@ -456,15 +459,11 @@ for i=0,nPoints1-(intb+1) do begin
 endfor
 
 diffLiq=smoothSignalLiq
-uLiq2=sort(rawSignalLiq)
-uLiq3=reverse(uLiq2)
-uLiq=diffLiq[uLiq3]
-u1Liq=uLiq[0]
-u2Liq=uLiq[50]
+uLiq2=sort(smoothSignalLiq)
+uLiq=diffLiq[uLiq2]
+uLiq=uLiq[where(uLiq gt 0)]
 
-x1Liq=min([u1Liq,u2Liq])
-x2Liq=max([u1Liq,u2Liq])
-threshLiq=.01*med(rawSignalLiq[0:50])
+threshLiq=q3(uLiq)
 
 diffTot=smoothSignalTot
 threshtot=0.
@@ -483,6 +482,7 @@ if cope eq 1 then threshTot=0.0025*mean(uTot[0:50])
 
 
 clearairLiqi=findgen(nPoints1,start=0.,increment=0.)
+clearairLiqiB=findgen(nPoints1,start=0.,increment=0.)
 clearairToti=findgen(nPoints1,start=0.,increment=0.)
     
 for i=0,nPoints do begin
@@ -497,6 +497,15 @@ for i=0,nPoints do begin
 endfor    
     
 clearairLiq=where(clearairLiqi eq 1)
+
+for i=0,nPoints do begin
+  if vlwccol[i] lt (stddev(vlwccol[clearairliq])*2.5+mean(vlwccol[clearairliq])) and clearairLiqi[i] eq 1 then clearairLiqiB[i]=1
+endfor
+clearairLiqS2=where(clearairLiqiB eq 1)
+
+
+
+clearairLiqB=double(clearairLiqS2+startsec)
 clearairTot=where(clearairToti eq 1)
 
 signalLiq=where(clearairLiqi eq 0)
@@ -765,8 +774,7 @@ lwcBLThresh=mean(lwcBL)*1.2
 
 lwcBaseline=where(lwc lt lwcBLThresh)+inds.starti
 
-if inds.starti eq 0 then startsec=0
-if inds.starti gt 0 then startsec=inds.starti
+
 flightSec=dindgen(nPoints1,start=startsec,increment=1)
 
 
@@ -778,7 +786,7 @@ color=['black','firebrick','navy','dark green','magenta','coral','indian red','d
 
 d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch, $
   pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcVarE:twcVarE,$
-  clearairLiq:clearairLiq, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
+  clearairLiq:clearairLiqB, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
   flightString:flightString, kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,$
   aiasMs:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNoPresCor:twcNoPresCor,$
   vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf, threshTot:threshTot,$
@@ -846,6 +854,78 @@ pro info
   print,',margin=[110,70,30,20],/device'
 end
 
+
+
+
+function cdpTransTime, flightDay
+
+  if flightDay eq '0709' then nclPath='/Volumes/externalHD/copeRaw/20130709_raw.nc'
+  if flightDay eq '0710' then nclPath='/Volumes/externalHD/copeRaw/20130710_raw.nc'
+  if flightDay eq '0725' then nclPath='/Volumes/externalHD/copeRaw/20130725_raw.nc'
+  if flightDay eq '0727' then nclPath='/Volumes/externalHD/copeRaw/20130727_raw.nc'
+  if flightDay eq '0728' then nclPath='/Volumes/externalHD/copeRaw/20130728_raw.nc'
+  if flightDay eq '0729' then nclPath='/Volumes/externalHD/copeRaw/20130729_raw.nc'
+  if flightDay eq '0807' then nclPath='/Volumes/externalHD/copeRaw/20130807_raw.nc'
+  if flightDay eq '0814' then nclPath='/Volumes/externalHD/copeRaw/20130814_raw.nc'
+  if flightDay eq '0815' then nclPath='/Volumes/externalHD/copeRaw/20130815_raw.nc'
+  if flightDay eq '0802' then nclPath='/Volumes/externalHD/copeRaw/20130802_raw.nc'
+  if flightDay eq '0803' then nclPath='/Volumes/externalHD/copeRaw/20130803_raw.nc'
+  if flightDay eq '0304' then nclPath='/Volumes/externalHD/copeRaw/20160304_raw.nc'
+  if flightDay eq '0307' then nclPath='/Volumes/externalHD/copeRaw/20160307_raw.nc'
+  if flightDay eq '1217' then nclPath='/Volumes/externalHD/copeRaw/20151217_raw.nc'
+  if flightDay eq '1112' then nclPath='/Volumes/externalHD/copeRaw/20151112_raw.nc'
+  if flightDay eq '1124' then nclPath='/Volumes/externalHD/copeRaw/20151124_raw.nc'
+  if flightDay eq '0806' then nclPath='/Volumes/externalHD/copeRaw/20130806_raw.nc'
+  if flightDay eq '0813' then nclPath='/Volumes/externalHD/copeRaw/20130813_raw.nc'
+  if flightDay eq '0817' then nclPath='/Volumes/externalHD/copeRaw/20130817_raw.nc'
+  if flightDay eq '0722' then nclPath='/Volumes/externalHD/copeRaw/20130722_raw.nc'
+  if flightDay eq '0718' then nclPath='/Volumes/externalHD/copeRaw/20130718_raw.nc'
+  if flightDay eq '0120' then nclPath='/Volumes/externalHD/copeRaw/20160120_raw.nc'
+  if flightDay eq '0125' then nclPath='/Volumes/externalHD/copeRaw/20160125_raw.nc'
+  if flightDay eq '0817a' then nclPath='/Volumes/externalHD/copeRaw/20130817a_raw.nc'
+  if flightDay eq '0817b' then nclPath='/Volumes/externalHD/copeRaw/20130817b_raw.nc'
+
+  if flightDay eq '0120' then nclPath='/Volumes/externalHD/copeRaw/20160120.c1.nc'
+  if flightDay eq '0125' then nclPath='/Volumes/externalHD/copeRaw/20160125.c1.nc'
+  if flightDay eq '0304' then nclPath='/Volumes/externalHD/copeRaw/20160304.c1.nc'
+  if flightDay eq '0307' then nclPath='/Volumes/externalHD/copeRaw/20160307.c1.nc'
+  if flightDay eq '1217' then nclPath='/Volumes/externalHD/copeRaw/20151217.c1.nc'
+  if flightDay eq '1112' then nclPath='/Volumes/externalHD/copeRaw/20151112.c1.nc'
+  if flightDay eq '1124' then nclPath='/Volumes/externalHD/copeRaw/20151124.c1.nc'
+
+  cdpAveTransSps=loadvar('AVGTRNS_NRB', filename=nclPath)
+  cdpDofRejSps=loadvar('REJDOF_NRB', filename=nclPath)
+  cdpAveTransSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))
+  cdpAveTransSpsAve[*]=!Values.d_NAN
+  cdpDofRejSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))
+  cdpDofRejSpsAve[*]=!Values.d_NAN
+
+  ;
+  ;  for i=300,400 do begin
+  ;    print,i,'->',max(sps[*,i])
+  ;  endfor
+
+  for i=0,n_elements(cdpAveTransSps[0,*])-1 do begin
+    cdpAveTransSpsFilt=cdpAveTransSps[*,i]
+    nonNull=where(cdpAveTransSpsFilt gt 0.)
+    cdpAveTransSpsFiltB=cdpAveTransSpsFilt[nonNull]
+    ;cdpAveTransSpsAve[i]=mean(cdpAveTransSpsFiltB) --FOR AVE--
+    s=sort(cdpAveTransSpsFiltB)
+    sd=cdpAveTransSpsFiltB[s]
+    cdpAveTransSpsAve[i]=median(sd,/even)
+
+
+    cdpDofRejSpsFilt=cdpDofRejSps[*,i]
+    nonNull=where(cdpDofRejSpsFilt gt 0.)
+    cdpDofRejSpsFiltB=cdpDofRejSpsFilt[nonNull]
+    cdpDofRejSpsAve[i]=mean(cdpDofRejSpsFiltB)
+  endfor
+
+  cdpAveTrans=cdpAveTransSpsAve
+  cdpDofRej=cdpDofRejSpsAve
+
+  return, [[cdpAveTrans],[cdpDofRej]]
+end
 
 
 
