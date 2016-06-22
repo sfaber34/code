@@ -1,6 +1,10 @@
 pro loop
 
-savename='loopdata400.sav'
+level=400
+suffix='400'
+
+
+savename='loopdata'+suffix+'.sav'
 
 common inds,inds
 inds={starti:double(0)}
@@ -69,11 +73,11 @@ inds={starti:double(0)}
     colELiqU=[]
     cdpTransEst=[]
     lwcNoPresCor=[]
-    aiasms=[]
     lwcBaseline=[]
     flightSec=[]
     vlwccol=[]
     smoothSignalLiq=[]
+    aias=[]
     
     nPoints=146852d
 
@@ -89,7 +93,7 @@ inds={starti:double(0)}
 
       ;if i eq 0 then inds.starti=0
       
-      d=nevBase(flight[i],'indicated','400')
+      d=nevBase(flight[i],'indicated',level)
       
       cdpBinSecSumB=make_array(n_elements(d.(1)),start=0,increment=0)
       cdpBinNB=make_array(28,n_elements(d.(1)),start=0,increment=0)
@@ -155,11 +159,11 @@ inds={starti:double(0)}
       colELiqU=[colELiqU,d.colELiqU]
       cdpTransEst=[cdpTransEst,d.cdpTransEst]
       lwcNoPresCor=[lwcNoPresCor,d.lwcNoPresCor]
-      aiasms=[aiasms,d.aiasms]
       lwcBaseline=[lwcBaseline,d.lwcBaseline]
       flightSec=[flightSec,d.flightSec]
       vlwccol=[vlwccol,d.vlwccol]
       smoothSignalLiq=[smoothSignalLiq,d.smoothSignalLiq]
+      aias=[aias,d.aias]
       
       r=r+n_elements(d.(1))
       inds.starti=inds.starti+n1(d.(1))
@@ -180,12 +184,12 @@ inds={starti:double(0)}
     
    
     save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,twcVarE,colETot,$
-      as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,$
+      as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,aias,$
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
       lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
       pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
       cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,$
-      cdpTrans,cdpTransEst,aiasms,lwcnoprescor,lwcBaseline,flightSec,vlwccol
+      cdpTrans,cdpTransEst,lwcnoprescor,lwcBaseline,flightSec,vlwccol
    
 end

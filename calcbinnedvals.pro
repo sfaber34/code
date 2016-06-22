@@ -1,7 +1,7 @@
 pro calcBinnedVals
 
-
-
+  
+  suffix='400'
 
   plots=1
 
@@ -16,7 +16,7 @@ pro calcBinnedVals
   ;LIQUID ONLY POINTS OR ALL
   liq=1
   
-  saveName='calcBins400.sav'
+  saveName='calcBins'+suffix+'.sav'
 
 
   ;---------------------------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ pro calcBinnedVals
 
 
 
-  restore,'saves/loopdata400.sav'
+  restore,'saves/loopdata'+suffix+'.sav'
 
   liqOnly=clearAirLiq
 
@@ -63,6 +63,7 @@ pro calcBinnedVals
 
   ;-------------------------------SET VAR---------------------------------------
   var=pmb
+  maxX=800.
   ;-------------------------------SET VAR---------------------------------------
 
 
@@ -134,18 +135,18 @@ pro calcBinnedVals
   lwcOocq1=[]
   lwcOocq3=[]
   pmbMed=[]
-
+  lwcOocSDev=[]
 
 
   starti=0
   endi=0
 
-  binNum=ceil(max(var)/binsize)
+  binNum=ceil(maxX/binsize)
 
   for i=0,binNum do begin
     selectinds=where(var ge binint and var le binint2)
 
-    if binint lt max(var) then begin
+    if binint lt maxX then begin
 
       vmdGeoMean=[vmdGeoMean,(min(vmd[selectinds])+max(vmd[selectinds]))/2.]
       lwc100Mean=[lwc100Mean,(min(lwc100[selectinds])+max(lwc100[selectinds]))/2.]
@@ -283,9 +284,10 @@ pro calcBinnedVals
     lwcVcdpq1=[lwcVcdpq1,lwcVCdpDistSD[n_elements(lwcVCdpDistSD)*.25]]
     lwcVcdpq3=[lwcVcdpq3,lwcVCdpDistSD[n_elements(lwcVCdpDistSD)*.75]]
     
-    lwcOoc=[lwcOoc,(med(abs(lwcnoprescor[bins])))*100d]
-    lwcOocq1=[lwcOocq1,q1(abs(lwcnoprescor[bins]))*100d]
-    lwcOocq3=[lwcOocq3,q3(abs(lwcnoprescor[bins]))*100d]
+    lwcOoc=[lwcOoc,(med(abs(lwcnoprescor[bins])))]
+    lwcOocq1=[lwcOocq1,q1(abs(lwcnoprescor[bins]))]
+    lwcOocq3=[lwcOocq3,q3(abs(lwcnoprescor[bins]))]
+    lwcOocSDev=[lwcOocSDev,(stddev(abs(lwcnoprescor[bins])))]
     pmbMed=[pmbMed,mean(pmb[bins])]
 
 
@@ -299,7 +301,7 @@ pro calcBinnedVals
       colevarbothTwc2,lwctwc,lwctwc2,minbin,lwc100Vcdplwc,lwcMean,$
       lwc100Vtwc,lwc100Vlwc,lwc100Vtwc,lwc100Mean,colELiqUMean,$
       lwcq1,lwcq3,twcq1,twcq3,color,vmdMean,cdpVlwcq1,cdpVlwcq3,$
-      lwc100VLwcq1,lwc100VLwcq3,lwc100VCdplwcq1,lwc100VCdplwcq3,$
+      lwc100VLwcq1,lwc100VLwcq3,lwc100VCdplwcq1,lwc100VCdplwcq3,lwcOocSDev,$
       lwcVcdpq1,lwcVcdpq3,lwcVCdp,cdpDBarMean,binGeoMean,lwcOoc,lwcOocq1,lwcOocq3
 
 

@@ -156,11 +156,17 @@ avroll=loadvar('avroll', filename=nclPath)
 ;CDP diameter per bin
 cdpdbins=loadvar('ACDP_1_NRB', filename=nclPath)
 
-;FSSP total concentration
-fsspConc=loadvar('CONCF_IBL', filename=nclPath)
+if cope eq 1 then begin
+  ;FSSP total concentration
+  fsspConc=loadvar('CONCF_IBL', filename=nclPath)
 
-;FSSP LWC
-fsspLwc=loadvar('PLWCF_IBL', filename=nclPath)
+  ;FSSP LWC
+  fsspLwc=loadvar('PLWCF_IBL', filename=nclPath)
+endif else begin
+  fsspConc=replicate(!values.d_nan,n1(vlwcref))
+  fsspLwc=replicate(!values.d_nan,n1(vlwcref))
+endelse
+
 
 ;Vertical Speed [m/s]
 if cope eq 1 then hivs=loadvar('hivs', filename=nclPath)
@@ -409,15 +415,15 @@ endif
 
 
 if cope eq 2 or cope eq 0 then begin
-  if (airspeedType eq 'indicated') and (level eq '700') then kLiq=(-0.0126704)*tas^(0.698457)+(2.01460)
-  if (airspeedType eq 'indicated') and (level eq '600') then kLiq=(-0.00956550)*tas^(0.753178)+(2.00092)
-  if (airspeedType eq 'indicated') and (level eq '500') then kLiq=(-0.135222)*tas^(0.375551)+(2.43805)
-  if (airspeedType eq 'indicated') and (level eq '400') then kLiq=(-0.0810470)*tas^(0.436789)+(2.28769)
+  if (level eq '700') then kLiq=(-0.0126704)*tas^(0.698457)+(2.01460)
+  if (level eq '600') then kLiq=(-0.00956550)*tas^(0.753178)+(2.00092)
+  if (level eq '500') then kLiq=(-0.135222)*tas^(0.375551)+(2.43805)
+  if (level eq '400') then kLiq=(-0.0810470)*tas^(0.436789)+(2.28769)
   
-  if (airspeedType eq 'indicated') and (level eq '700') then kTot=(-0.0258749)*aiasms^(0.711242)+(1.37937)
-  if (airspeedType eq 'indicated') and (level eq '600') then kTot=(-0.104706)*aiasms^(0.468563)+(1.64276)
-  if (airspeedType eq 'indicated') and (level eq '500') then kTot=(-0.0249307)*aiasms^(0.698422)+(1.39464)
-  if (airspeedType eq 'indicated') and (level eq '400') then kTot=(-0.0700741)*aiasms^(0.512351)+(1.56121)
+  if (level eq '700') then kTot=(-0.0258749)*aiasms^(0.711242)+(1.37937)
+  if (level eq '600') then kTot=(-0.104706)*aiasms^(0.468563)+(1.64276)
+  if (level eq '500') then kTot=(-0.0249307)*aiasms^(0.698422)+(1.39464)
+  if (level eq '400') then kTot=(-0.0700741)*aiasms^(0.512351)+(1.56121)
 endif
 
 
@@ -788,7 +794,7 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcVarE:twcVarE,$
   clearairLiq:clearairLiqB, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
   flightString:flightString, kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,$
-  aiasMs:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNoPresCor:twcNoPresCor,$
+  aias:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNoPresCor:twcNoPresCor,$
   vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf, threshTot:threshTot,$
   lwc100:lwc100, cdpdbar:cdpdbar_1_NRB,lwcnev2:lwcnev2, timePretty:timePretty,cdpDofRej:cdpDofRej,$
   avyaw:avyawr,pvmlwc:pvmlwc,cdplwc:cdplwc_1_NRB,pLiqNoPresCor:pLiqNoPresCor,$

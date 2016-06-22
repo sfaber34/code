@@ -1,61 +1,66 @@
 pro ploterrorbars
 
 
-
-
-
   ;--------------------------------------------------------------------------------------------------------
   ;------------------------------------------PLOTS SCATTERS WITH ERROR BARS--------------------------------
   ;------------------------------------------USE CALCBINNEDVALS BEFOREHAND---------------------------------
   ;--------------------------------------------------------------------------------------------------------
-
-
-
-
-
-  xs=dindgen(501,start=0,increment=.1)
-
-  ;p1=scatterplot(korX,korY,sym_color=grey,sym_size=.1,symbol=0,dimensions=[1600,1200])
-
-
-
-  restore,'saves/calcBins400.sav'
-  ;restore,'colesavefileB.sav'
+cgcleanup
+  
+  plotArr=[]
+  
   
   ;-----PLOT OPTIONS------
   
-  varX=pmbMed
-  varA=lwcooc
-  varAErrUp=lwcoocq3
-  varAErrLow=lwcoocq1
-  varB=lwc100Vcdplwc
-
-
-  varAx=dindgen(n_elements(varA),start=binintstart,increment=.25)
-  varBx=dindgen(n_elements(varB),start=minbin,increment=.5)
-  hErr=dindgen(n_elements(varA),start=2.,increment=0)
-  yErr=dindgen(n_elements(varA),start=0,increment=0)
   
-  lineRange=10.
-  color='red'
-
-  p5=scatterplot(varX,varA,sym_thick=2,sym_color=color,sym_filled=1,dimensions=[1600,1200],/overplot)
+  lineWidth=12
+  xBarThick=4
+  xBarStyle='-'
   
-  for i=0,n_elements(varA)-1 do begin
-    p90=plot([varX[i],varX[i]],[varA[i],varAErrLow[i]],thick=2,color=color,/overplot)
-    p91=plot([varX[i]-lineRange,varX[i]+lineRange],[varAErrLow[i],varAErrLow[i]],thick=2,color=color,/overplot)
-    
-    p92=plot([varX[i],varX[i]],[varA[i],varAErrUp[i]],thick=2,color=color,/overplot)
-    p93=plot([varX[i]-lineRange,varX[i]+lineRange],[varAErrUp[i],varAErrUp[i]],thick=2,color=color,/overplot)
+  barTrans=20
+  symTrans=6
+  
+  
+  symSize=1.8
+  symThick=6
+  colorArr=['red','green','blue','black']
+  suffixArr=['400','500','600','700']
+  
+  for j=0,n(suffixArr) do begin
+    suffix=suffixArr[j]
+    colorSet=colorArr[j]
+   
+   restore,'saves/calcBins'+suffix+'.sav'
+   
+   varX=pmbMed
+   varA=lwcooc
+   varAErrUp=lwcoocq1
+   varAErrLow=lwcoocq3
+   varB=lwc100Vcdplwc
+   
+   yBarThick=6.-j*1.4
+   
+    p1=scatterplot(varX,varA,sym_color=colorSet,sym_filled=1,name=suffix+' mb',symbol='x',sym_size=symSize,sym_thick=symThick,sym_transparency=symTrans,dimensions=[1200,1000],margin=[150,100,30,30],/device,/overplot)
+    plotArr=[temporary(plotArr),p1]
+    for i=0,n_elements(varA)-1 do begin
+      p90=plot([varX[i],varX[i]],[varA[i],varAErrLow[i]],thick=yBarThick,color=colorSet,transparency=barTrans,/overplot)
+      p91=plot([varX[i]-lineWidth,varX[i]+lineWidth],[varAErrLow[i],varAErrLow[i]],thick=xBarThick,color=colorSet,linestyle=xBarStyle,transparency=barTrans,/overplot)
+
+      p92=plot([varX[i],varX[i]],[varA[i],varAErrUp[i]],thick=yBarThick,color=colorSet,transparency=barTrans,/overplot)
+      p93=plot([varX[i]-lineWidth,varX[i]+lineWidth],[varAErrUp[i],varAErrUp[i]],thick=xBarThick,color=colorSet,linestyle=xBarStyle,transparency=barTrans,/overplot)
+    endfor
   endfor
   
- 
+  p1.font_size=22
+  p1.xmajor=9
+  p1.xtitle='Flight Level mb'
+  p1.ytitle='Absolute Median Clear Air Uncertainty g m!u-3!n'
+  
+  l1=legend(target=plotArr,auto_text_color=1,font_size=22,shadow=0,/device)
+  
   
 
-
-
-
-  p5.font_size=22
+stop
 
 
 end
