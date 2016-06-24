@@ -1,7 +1,7 @@
 pro calcBinnedVals
 
   
-  suffix='400'
+  suffix=''
 
   plots=1
 

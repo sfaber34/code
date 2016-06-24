@@ -1,7 +1,7 @@
 pro loop
 
 level=400
-suffix='400'
+suffix=''
 
 
 savename='loopdata'+suffix+'.sav'
@@ -78,6 +78,7 @@ inds={starti:double(0)}
     vlwccol=[]
     smoothSignalLiq=[]
     aias=[]
+    iwc=[]
     
     nPoints=146852d
 
@@ -164,6 +165,7 @@ inds={starti:double(0)}
       vlwccol=[vlwccol,d.vlwccol]
       smoothSignalLiq=[smoothSignalLiq,d.smoothSignalLiq]
       aias=[aias,d.aias]
+      iwc=[iwc,d.iwc]
       
       r=r+n_elements(d.(1))
       inds.starti=inds.starti+n1(d.(1))
@@ -190,6 +192,6 @@ inds={starti:double(0)}
       lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
       pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
       cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,$
-      cdpTrans,cdpTransEst,lwcnoprescor,lwcBaseline,flightSec,vlwccol
+      cdpTrans,cdpTransEst,lwcnoprescor,lwcBaseline,flightSec,vlwccol,iwc
    
 end

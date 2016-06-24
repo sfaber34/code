@@ -808,7 +808,7 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
   pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,colELiqU:colELiqU,$
-  colELiqUP:colELiqUP,cdpTransEst:cdpTransEst,lwcBaseline:lwcBaseline}
+  colELiqUP:colELiqUP,cdpTransEst:cdpTransEst,lwcBaseline:lwcBaseline,iwc:iwc}
 
 return,d
 
