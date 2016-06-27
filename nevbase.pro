@@ -728,11 +728,11 @@ expHeatIce=expHeatLiq
 ;--------------------POWER CALCULATIONS--------------------
 pLiq=vlwccol*ilwccol-kLiq*vlwcref*ilwcref
 pLiqNoPresCor=pLiq
-lwcNoPresCor=pLiq/(1d*tas*aLiq*2589.)
+lwcNoPresCor=pLiq/(1d*tas*aLiq*expHeatLiq)
 
 pTot=vtwccol*itwccol-kTot*vtwcref*itwcref
 pTotNoPresCor=pTot
-twcNoPresCor=pTot/(1d*tas*aTot*2589.)
+twcNoPresCor=pTot/(1d*tas*aTot*expHeatIce)
 
 
 
@@ -748,14 +748,14 @@ pTot=pTotNoPresCor - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
 ;--------------------FINAL CALCULATIONS--------------------
 
 ;LWC
-lwc=pLiq/(1.*tas*aLiq*2589.)
-lwcVarH=pLiq/(1.*tas*aLiq*expHeatLiq)
-lwcVarE=pLiq/(colELiq*tas*aLiq*2589.)
+lwc=pLiq/(1.*tas*aLiq*expHeatLiq)
+lwcFixedLv=pLiq/(1.*tas*aLiq*2589.)
+lwcVarE=pLiq/(colELiq*tas*aLiq*expHeatLiq)
 
 ;TWC
-twc=pTot/(1.*tas*aTot*2589.)
-twcVarH=pTot/(1.*tas*aTot*expHeatIce)
-twcVarE=pTot/(colETot*tas*aTot*2589.)
+twc=pTot/(1.*tas*aTot*expHeatIce)
+twcFixedLv=pTot/(1.*tas*aTot*2589.)
+twcVarE=pTot/(colETot*tas*aTot*expHeatIce)
 
 
 
@@ -802,7 +802,7 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNoPresCor:pTotNoPresCor,$
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,expHeatIce:expHeatIce,$
   signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,$
-  dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcVarH:lwcVarH,twcVarH:twcVarH,$
+  dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcFixedLv:lwcFixedLv,twcFixedLv:twcFixedLv,$
   twc:twc,colETot:colETot,dBarB:dBarB,colEtot2:colEtot2,coletot3:coletot3,$
   cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,cdpTrans:cdpTrans,$
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$

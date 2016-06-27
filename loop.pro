@@ -1,6 +1,6 @@
 pro loop
 
-level=400
+level=700
 suffix=''
 
 
@@ -52,8 +52,8 @@ inds={starti:double(0)}
     lwcNev2=[]
     pvmlwc=[]
     expHeatLiq=[]
-    lwcVarH=[]
-    twcVarH=[]
+    lwcFixedLv=[]
+    twcFixedLv=[]
     fsspConc=[]
     fsspLwc=[]
     pvmDEff=[]
@@ -82,7 +82,7 @@ inds={starti:double(0)}
     
     nPoints=146852d
 
-    flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
+    ;flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
     flight=['1124','1217','0120','0125','0304','0307']
     ;flight='0725'
    
@@ -141,8 +141,8 @@ inds={starti:double(0)}
       lwcNev2=[lwcNev2,d.lwcNev2]
       pvmlwc=[pvmlwc,d.pvmlwc]
       expHeatLiq=[expHeatLiq,d.expHeatLiq]
-      lwcVarH=[lwcVarH,d.lwcVarH]
-      twcVarH=[twcVarH,d.twcVarH]
+      lwcFixedLv=[lwcFixedLv,d.lwcFixedLv]
+      twcFixedLv=[twcFixedLv,d.twcFixedLv]
       fsspConc=[fsspConc,d.fsspConc]
       fsspLwc=[fsspLwc,d.fsspLwc]
       pvmDEff=[pvmDEff,d.pvmDEff]
@@ -189,7 +189,7 @@ inds={starti:double(0)}
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,aias,$
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
-      lwcNev2,pvmlwc,expHeatLiq,lwcVarH,twcVarH,fsspConc,lwcNev1,fsspLwc,$
+      lwcNev2,pvmlwc,expHeatLiq,lwcFixedLv,twcFixedLv,fsspConc,lwcNev1,fsspLwc,$
       pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
       cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,$
       cdpTrans,cdpTransEst,lwcnoprescor,lwcBaseline,flightSec,vlwccol,iwc
