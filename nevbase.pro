@@ -135,7 +135,7 @@ pvmDEff=loadvar('pvmre_c', filename=nclPath)
 ;liquid water content from lwc100 probe [g/m^3]
 lwc100=loadvar('lwc100', filename=nclPath)
 
-;CDP concentration
+;CDP concentration [cm-3]
 cdpconc_1_NRB=loadvar('cdpconc_1_NRB', filename=nclPath)
 
 ;liquid water content from CDP [g/m^3]

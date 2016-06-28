@@ -1,7 +1,7 @@
 pro loop
 
 level=700
-suffix=''
+suffix='Laramie'
 
 
 savename='loopdata'+suffix+'.sav'

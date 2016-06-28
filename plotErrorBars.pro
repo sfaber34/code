@@ -13,7 +13,7 @@ cgcleanup
   ;-----PLOT OPTIONS------
   
   
-  lineWidth=12
+  lineWidth=5
   xBarThick=4
   xBarStyle='-'
   
@@ -25,6 +25,7 @@ cgcleanup
   symThick=6
   colorArr=['red','green','blue','black']
   suffixArr=['400','500','600','700']
+  suffixArr='Cope'
   
   for j=0,n(suffixArr) do begin
     suffix=suffixArr[j]
@@ -32,10 +33,10 @@ cgcleanup
    
    restore,'saves/calcBins'+suffix+'.sav'
    
-   varX=pmbMed
-   varA=lwcooc
-   varAErrUp=lwcoocq1
-   varAErrLow=lwcoocq3
+   varX=vmdMed
+   varA=lwctwc
+   varAErrUp=lwctwcq3
+   varAErrLow=lwctwcq1
    varB=lwc100Vcdplwc
    
    yBarThick=6.-j*1.4
