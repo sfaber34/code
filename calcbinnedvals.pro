@@ -1,34 +1,15 @@
 pro calcBinnedVals
 
-  
+
   suffix='Cope'
-
-  plots=1
-
-  ;STARTING LEFT VALUE
-  binint=2d
-  binintstart=binint
-
-  ;WIDTH OF BINS
-  binsize=5d
-  binsizestart=binsize
+  
+  
+  restore,'saves/loopdata'+suffix+'.sav'
 
   ;LIQUID ONLY POINTS OR ALL
   liq=1
-  
-  saveName='calcBins'+suffix+'.sav'
 
-
-  ;---------------------------------------------------------------------------------------------------
-  ;---------------------------------------------------------------------------------------------------
-  ;---------------------------------------------------------------------------------------------------
-
-
-
-
-  restore,'saves/loopdata'+suffix+'.sav'
-
-  liqOnly=where(trf gt -3d and lwc gt .01 and twc gt .01)
+  liqOnly=where(trf gt -3d and lwc gt .01 and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1))
 
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -58,26 +39,39 @@ pro calcBinnedVals
     lwcnoprescor=lwcnoprescor[liqonly]
   endif
 
-  minbin=binint
+
 
 
   ;-------------------------------SET VAR---------------------------------------
-  var=vmd
-  maxX=50.
+  var=cdpconc
   ;-------------------------------SET VAR---------------------------------------
 
+  ;STARTING LEFT VALUE
+  binstart=0d
 
-  binint2=binint+binsize
+  ;WIDTH OF BINS
+  bininc=100d
+  
+  ;MAX BIN VALUE
+  binEnd=2000d
+
+  saveName='calcBins'+suffix+'.sav'
+
+  binBounds=dindgen(ceil((binEnd-binstart)/bininc),start=binstart,increment=bininc)
+  binBounds=[binBounds,binEnd]
+  
+  binInds=make_array(n1(pmb),n1(binBounds))*!values.d_nan
+
+  ;---------------------------------------------------------------------------------------------------
+  ;---------------------------------------------------------------------------------------------------
+  ;---------------------------------------------------------------------------------------------------
+
+  for i=1,n(binBounds) do begin
+    selected=where(var ge binbounds[i-1] and var le binbounds[i])
+    binInds[0:n(selected),i-1]=selected
+  endfor
 
 
-  binstart=[]
-  binend=[]
-  binindex=[]
-  binistarti=[]
-  biniendi=[]
-  binscon=[]
-  countscon=[]
-  ncountscon=[0]
   coleControlLwc=[]
   coleControlTwc=[]
   colevarLwc=[]
@@ -139,102 +133,52 @@ pro calcBinnedVals
   vmdMed=[]
   lwctwcq1=[]
   lwctwcq3=[]
-
-
-  starti=0
-  endi=0
-
-  binNum=ceil(maxX/binsize)
-
-  for i=0,binNum do begin
-    selectinds=where(var ge binint and var le binint2)
-
-    if binint lt maxX then begin
-
-      vmdGeoMean=[vmdGeoMean,(min(vmd[selectinds])+max(vmd[selectinds]))/2.]
-      lwc100Mean=[lwc100Mean,(min(lwc100[selectinds])+max(lwc100[selectinds]))/2.]
-
-      binindex=[binindex,selectinds]
-      binistarti=[binistarti,starti]
-
-      endi=starti+n_elements(selectinds)
-      biniendi=[biniendi,endi-1]
-
-    endif
-    starti=endi
-
-
-
-    binint=binint+binsize
-    binint2=binint2+binsize
-  endfor
-
-
-
-
-  for i=0,n_elements(binistarti)-1 do begin
-
-    bins=double(binindex[binistarti[i]:biniendi[i]])
-    binscon=[binscon,bins]
-    countscon=double([countscon,n_elements(bins)])
-
-  endfor
-
-
-
-
-  ncountscon=dindgen(n_elements(binistarti),start=ncountscon, increment=0)
-
+  cdpVtwcQ1=[]
+  cdpVtwcQ3=[]
+  cdpConcMean=[]
 
 
 
   ;--------------------------------------------------------------------------------------------------------
-  ;------------------------------------------LWC VS LWC,TWC DIFF-------------------------------------------
+  ;------------------------------------------CALC BINNED VALUES-------------------------------------------
   ;--------------------------------------------------------------------------------------------------------
 
 
 
+  for i=0,n(bininds[0,*]) do begin
 
-
-  zeros=dindgen(100000,start=0,increment=0)
-  twos=dindgen(100000,start=0,increment=0)
-
-  count=0.
-  for i=0,n_elements(binistarti)-1 do begin
-
-    bins=binindex[binistarti[i]:biniendi[i]]
-    binscon=[binscon,bins]
-    countscon=[countscon,n_elements(bins)]
-
-
-
-
+    preBins=bininds[*,i]
+     bins=preBins[where(finite(preBins) eq 1)]
+    if bins[0] eq -1 or finite(bins[0]) eq 0 then break
+    
+    print,min(var[bins]),'----',max(var[bins])
 
     coleControlTwc=[coleControlTwc,mean(lwc[bins])/mean(twc[bins])]
-    coleControlLwc=[coleControlLwc,mean(twc[bins])/mean(lwc[bins])]    
+    coleControlLwc=[coleControlLwc,mean(twc[bins])/mean(lwc[bins])]
     colevarTwc=[colevarTwc,mean(lwcVarE[bins])/mean(twc[bins])]
     colevarLwc=[colevarLwc,mean(twcVarE[bins])/mean(lwc[bins])]
     colevarTwcB=[colevarTwcB,mean(lwc[bins])/mean(twcVarE[bins])]
     colevarLwcB=[colevarLwcB,mean(twc[bins])/mean(lwcVarE[bins])]
     colevarbothTwc=[colevarbothTwc,mean(lwcVarE[bins])/mean(twcVarE[bins])]
     colevarbothLwc=[colevarbothLwc,mean(twcVarE[bins])/mean(lwcVarE[bins])]
-    cdpVlwc=[cdpVlwc,(mean(cdplwc[bins])-mean(lwc[bins]))/mean(cdplwc[bins])]
+    cdpVlwc=[cdpVlwc,(med(cdplwc[bins])-med(lwc[bins]))/med(lwc[bins])]
+    cdpVLwcQ1=[cdpVLwcQ1,q1((cdplwc[bins]-lwc[bins])/lwc[bins])]
+    cdpVLwcQ3=[cdpVLwcQ3,q3((cdplwc[bins]-lwc[bins])/lwc[bins])]
     lwcVCdp=[lwcVCdp,(mean(lwc[bins])-mean(cdplwc[bins]))/mean(lwc[bins])]
-    cdpVtwc=[cdpVtwc,mean(cdplwc[bins])/mean(twc[bins])]
+    cdpVtwc=[cdpVtwc,mean(cdplwc[bins])/mean(twc[bins])]    
     cdpVLwcCor=[cdpVLwcCor,mean(cdplwc[bins])/mean(lwcVarE[bins])]
     cdpVTwcCor=[cdpVTwcCor,mean(cdplwc[bins])/mean(twcVarE[bins])]
-    lwctwc=[lwctwc,med(lwc[bins])/med(twc[bins])]
-    lwctwcq1=[lwctwcq1,q1(lwc[bins]/twc[bins])]
-    lwctwcq3=[lwctwcq3,q3(lwc[bins]/twc[bins])]
+    lwctwc=[lwctwc,(med(twc[bins])-med(lwc[bins]))/abs(med(lwc[bins]))]
+    lwctwcq1=[lwctwcq1,(q1(twc[bins])-q1(lwc[bins]))/abs(q1(lwc[bins]))]
+    lwctwcq3=[lwctwcq3,(q3(twc[bins])-q3(lwc[bins]))/abs(q3(lwc[bins]))]
     lwc100Vlwc=[lwc100Vlwc,mean(lwcVarE[bins])/mean(lwc100[bins])]
     lwc100Vtwc=[lwc100Vtwc,mean(twcVarE[bins])/mean(lwc100[bins])]
     lwc100Vcdplwc=[lwc100Vcdplwc,mean(cdplwc[bins])/mean(lwc100[bins])]
     vmdMean=[vmdMean,mean(vmd[bins])]
     cdpDBarMean=[cdpDBarMean,mean(cdpdbar[bins])]
-    binGeoMean=[binGeoMean,binintstart+binsizestart*(i+1.)-.5*binsizestart]
     lwcMean=[lwcMean,mean(lwc[bins])]
     colELiqUMean=[colELiqUMean,mean(colELiqU[bins])]
-
+    cdpConcMean=[temporary(cdpConcMean),mean(cdpConc[bins])]
 
 
 
@@ -284,11 +228,8 @@ pro calcBinnedVals
     lwc100VLwcq3=[lwc100VLwcq3,lwc100Lwcsorted[n_elements(lwc100Lwcsorted)*.75]]
     lwc100VCdplwcq1=[lwc100VCdplwcq1,mean(lwc100[bins])/mean(cdplwc[bins])-lwc100KCdplwcsorted[n_elements(lwc100KCdplwcsorted)*.25]]
     lwc100VCdplwcq3=[lwc100VCdplwcq3,lwc100Lwcsorted[n_elements(lwc100KCdplwcsorted)*.75]-mean(lwc100[bins])/mean(cdplwc[bins])]
-    cdpVlwcq1=[cdpVlwcq1,cdpVLwcDistSD[n_elements(cdpVLwcDistSD)*.25]]
-    cdpVlwcq3=[cdpVlwcq3,cdpVLwcDistSD[n_elements(cdpVLwcDistSD)*.75]]
-    lwcVcdpq1=[lwcVcdpq1,lwcVCdpDistSD[n_elements(lwcVCdpDistSD)*.25]]
-    lwcVcdpq3=[lwcVcdpq3,lwcVCdpDistSD[n_elements(lwcVCdpDistSD)*.75]]
-    
+
+
     lwcOoc=[lwcOoc,(med(abs(lwcnoprescor[bins])))]
     lwcOocq1=[lwcOocq1,q1(abs(lwcnoprescor[bins]))]
     lwcOocq3=[lwcOocq3,q3(abs(lwcnoprescor[bins]))]
@@ -297,18 +238,18 @@ pro calcBinnedVals
     vmdMed=[vmdMed,mean(vmd[bins])]
 
 
-    print,binintstart+binsizestart*(i+1.),'-',n_elements(bins)
+
   endfor
 
 
-    save,filename='saves/'+saveName,coleControlLwc,coleControlTwc,vmdGeoMean,$
-      colevarLwc,colevarTwc,colevarbothLwc,colevarbothTwc,binsizestart,$
-      binintstart,cdpVlwc,cdpVtwc,cdpVLwc,cdpVTwc,colevarLwc2,pmbMed,$
-      colevarbothTwc2,lwctwc,lwctwc2,minbin,lwc100Vcdplwc,lwcMean,$
-      lwc100Vtwc,lwc100Vlwc,lwc100Vtwc,lwc100Mean,colELiqUMean,lwctwcq1,lwctwcq3,$
-      lwcq1,lwcq3,twcq1,twcq3,color,vmdMean,cdpVlwcq1,cdpVlwcq3,vmdMed,$
-      lwc100VLwcq1,lwc100VLwcq3,lwc100VCdplwcq1,lwc100VCdplwcq3,lwcOocSDev,$
-      lwcVcdpq1,lwcVcdpq3,lwcVCdp,cdpDBarMean,binGeoMean,lwcOoc,lwcOocq1,lwcOocq3
+  save,filename='saves/'+saveName,coleControlLwc,coleControlTwc,vmdGeoMean,$
+    colevarLwc,colevarTwc,colevarbothLwc,colevarbothTwc,binsizestart,$
+    binintstart,cdpVlwc,cdpVtwc,colevarLwc2,pmbMed,cdpVtwcQ1,cdpVtwcQ3,$
+    colevarbothTwc2,lwctwc,lwctwc2,minbin,lwc100Vcdplwc,lwcMean,cdpConcMean,$
+    lwc100Vtwc,lwc100Vlwc,lwc100Vtwc,lwc100Mean,colELiqUMean,lwctwcq1,lwctwcq3,$
+    lwcq1,lwcq3,twcq1,twcq3,color,vmdMean,cdpVlwcq1,cdpVlwcq3,vmdMed,$
+    lwc100VLwcq1,lwc100VLwcq3,lwc100VCdplwcq1,lwc100VCdplwcq3,lwcOocSDev,$
+    lwcVcdpq1,lwcVcdpq3,lwcVCdp,cdpDBarMean,binGeoMean,lwcOoc,lwcOocq1,lwcOocq3
 
 
 
