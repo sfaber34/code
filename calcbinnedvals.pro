@@ -9,7 +9,7 @@ pro calcBinnedVals
   ;LIQUID ONLY POINTS OR ALL
   liq=1
 
-  liqOnly=where(trf gt -3d and lwc gt .01 and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1))
+  liqOnly=where(trf gt -3d and lwc gt .01 and lwc lt 1.3 and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1))
 
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -43,17 +43,17 @@ pro calcBinnedVals
 
 
   ;-------------------------------SET VAR---------------------------------------
-  var=cdpconc
+  var=vmd
   ;-------------------------------SET VAR---------------------------------------
 
   ;STARTING LEFT VALUE
-  binstart=0d
+  binstart=2d
 
   ;WIDTH OF BINS
-  bininc=100d
+  bininc=3d
   
   ;MAX BIN VALUE
-  binEnd=2000d
+  binEnd=50d
 
   saveName='calcBins'+suffix+'.sav'
 
@@ -136,6 +136,7 @@ pro calcBinnedVals
   cdpVtwcQ1=[]
   cdpVtwcQ3=[]
   cdpConcMean=[]
+  xVarMean=[]
 
 
 
@@ -148,7 +149,7 @@ pro calcBinnedVals
   for i=0,n(bininds[0,*]) do begin
 
     preBins=bininds[*,i]
-     bins=preBins[where(finite(preBins) eq 1)]
+    bins=preBins[where(finite(preBins) eq 1)]
     if bins[0] eq -1 or finite(bins[0]) eq 0 then break
     
     print,min(var[bins]),'----',max(var[bins])
@@ -161,9 +162,9 @@ pro calcBinnedVals
     colevarLwcB=[colevarLwcB,mean(twc[bins])/mean(lwcVarE[bins])]
     colevarbothTwc=[colevarbothTwc,mean(lwcVarE[bins])/mean(twcVarE[bins])]
     colevarbothLwc=[colevarbothLwc,mean(twcVarE[bins])/mean(lwcVarE[bins])]
-    cdpVlwc=[cdpVlwc,(med(cdplwc[bins])-med(lwc[bins]))/med(lwc[bins])]
-    cdpVLwcQ1=[cdpVLwcQ1,q1((cdplwc[bins]-lwc[bins])/lwc[bins])]
-    cdpVLwcQ3=[cdpVLwcQ3,q3((cdplwc[bins]-lwc[bins])/lwc[bins])]
+    cdpVlwc=[cdpVlwc,med(lwc[bins])/med(cdplwc[bins])-1.]
+    cdpVLwcQ1=[cdpVLwcQ1,cdpVlwc[i]-stddev(lwc[bins]/cdplwc[bins]-1.,/nan)]
+    cdpVLwcQ3=[cdpVLwcQ3,cdpVlwc[i]+stddev(lwc[bins]/cdplwc[bins]-1.,/nan)]
     lwcVCdp=[lwcVCdp,(mean(lwc[bins])-mean(cdplwc[bins]))/mean(lwc[bins])]
     cdpVtwc=[cdpVtwc,mean(cdplwc[bins])/mean(twc[bins])]    
     cdpVLwcCor=[cdpVLwcCor,mean(cdplwc[bins])/mean(lwcVarE[bins])]
@@ -179,6 +180,7 @@ pro calcBinnedVals
     lwcMean=[lwcMean,mean(lwc[bins])]
     colELiqUMean=[colELiqUMean,mean(colELiqU[bins])]
     cdpConcMean=[temporary(cdpConcMean),mean(cdpConc[bins])]
+    xVarMean=[temporary(xVarMean),((binStart+binInc*(i+1.))-(binStart+binInc*i))/2.+binInc*i]
 
 
 
@@ -240,14 +242,15 @@ pro calcBinnedVals
 
 
   endfor
-
+  
+  xVar=xVarMean
 
   save,filename='saves/'+saveName,coleControlLwc,coleControlTwc,vmdGeoMean,$
     colevarLwc,colevarTwc,colevarbothLwc,colevarbothTwc,binsizestart,$
     binintstart,cdpVlwc,cdpVtwc,colevarLwc2,pmbMed,cdpVtwcQ1,cdpVtwcQ3,$
     colevarbothTwc2,lwctwc,lwctwc2,minbin,lwc100Vcdplwc,lwcMean,cdpConcMean,$
     lwc100Vtwc,lwc100Vlwc,lwc100Vtwc,lwc100Mean,colELiqUMean,lwctwcq1,lwctwcq3,$
-    lwcq1,lwcq3,twcq1,twcq3,color,vmdMean,cdpVlwcq1,cdpVlwcq3,vmdMed,$
+    lwcq1,lwcq3,twcq1,twcq3,color,vmdMean,cdpVlwcq1,cdpVlwcq3,vmdMed,xVar,$
     lwc100VLwcq1,lwc100VLwcq3,lwc100VCdplwcq1,lwc100VCdplwcq3,lwcOocSDev,$
     lwcVcdpq1,lwcVcdpq3,lwcVCdp,cdpDBarMean,binGeoMean,lwcOoc,lwcOocq1,lwcOocq3
 
