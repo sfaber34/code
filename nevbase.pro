@@ -251,19 +251,17 @@ sec=loadvar('SECOND', filename=nclPath)
 ;CDP average transit times [us]
 if cope eq 1 and calcTrans eq 1 then begin
   cdpTransB=cdpTransTime(flightDay)
+  
   cdpTrans=cdpTransB[*,0]*25d-3
+  cdpDofRej=cdpTransB[*,1] 
+  cdpTransRej=cdpTransB[*,2]
+  cdpAdcOver=cdpTransB[*,3]
 endif else begin
   cdpTrans=replicate(!VALUES.F_NAN,nPoints1)
-endelse
-
-;CDP interarival times [us]
-if cope eq 1 and calcTrans eq 1 then begin
-  cdpDofRejB=cdpTransTime(flightDay)
-  cdpDofRej=cdpDofRejB[*,1]
-endif else begin
   cdpDofRej=replicate(!VALUES.F_NAN,nPoints1)
-endelse 
-
+  cdpTransRej=replicate(!VALUES.F_NAN,nPoints1)
+  cdpAdcOver=replicate(!VALUES.F_NAN,nPoints1)
+endelse
 
 
 ;--------------------SET TIMES FOR AXIS--------------------
@@ -362,6 +360,8 @@ fsspConc=fsspConc[aStart:aEnd]
 fsspLwc=fsspLwc[aStart:aEnd]
 cdpTrans=cdpTrans[aStart:aEnd]
 cdpDofRej=cdpDofRej[aStart:aEnd]
+cdpTransRej=cdpTransRej[aStart:aEnd]
+cdpAdcOver=cdpAdcOver[aStart:aEnd]
 
 ;SET COPE ONLY VARIABLES
 if cope eq 1 then begin
@@ -808,7 +808,8 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
   pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,colELiqU:colELiqU,$
-  colELiqUP:colELiqUP,cdpTransEst:cdpTransEst,lwcBaseline:lwcBaseline,iwc:iwc}
+  colELiqUP:colELiqUP,cdpTransEst:cdpTransEst,lwcBaseline:lwcBaseline,iwc:iwc,$
+  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver}
 
 return,d
 
@@ -900,22 +901,19 @@ function cdpTransTime, flightDay
   if flightDay eq '1124' then nclPath='/Volumes/externalHD/copeRaw/20151124.c1.nc'
 
   cdpAveTransSps=loadvar('AVGTRNS_NRB', filename=nclPath)
-  cdpDofRejSps=loadvar('REJDOF_NRB', filename=nclPath)
-  cdpAveTransSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))
-  cdpAveTransSpsAve[*]=!Values.d_NAN
-  cdpDofRejSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))
-  cdpDofRejSpsAve[*]=!Values.d_NAN
+  cdpTransRejSps=loadvar('REJAT_NRB', filename=nclPath)
+  cdpDofRejSps=loadvar('REJDOF_NRB', filename=nclPath) 
+  cdpAdcOver=loadvar('OVFLW_NRB', filename=nclPath) 
+  cdpAveTransSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))*!Values.d_NAN
+  cdpTransRejSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))*!Values.d_NAN
+  cdpDofRejSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))*!Values.d_NAN
+  cdpAdcOverAve=dindgen(n_elements(cdpAveTransSps[0,*]))*!Values.d_NAN
 
-  ;
-  ;  for i=300,400 do begin
-  ;    print,i,'->',max(sps[*,i])
-  ;  endfor
 
   for i=0,n_elements(cdpAveTransSps[0,*])-1 do begin
     cdpAveTransSpsFilt=cdpAveTransSps[*,i]
     nonNull=where(cdpAveTransSpsFilt gt 0.)
     cdpAveTransSpsFiltB=cdpAveTransSpsFilt[nonNull]
-    ;cdpAveTransSpsAve[i]=mean(cdpAveTransSpsFiltB) --FOR AVE--
     s=sort(cdpAveTransSpsFiltB)
     sd=cdpAveTransSpsFiltB[s]
     cdpAveTransSpsAve[i]=median(sd,/even)
@@ -925,12 +923,24 @@ function cdpTransTime, flightDay
     nonNull=where(cdpDofRejSpsFilt gt 0.)
     cdpDofRejSpsFiltB=cdpDofRejSpsFilt[nonNull]
     cdpDofRejSpsAve[i]=mean(cdpDofRejSpsFiltB)
+    
+    cdptransRejSpsFilt=cdptransRejSps[*,i]
+    nonNull=where(cdptransRejSpsFilt gt 0.)
+    cdptransRejSpsFiltB=cdptransRejSpsFilt[nonNull]
+    cdptransRejSpsAve[i]=mean(cdptransRejSpsFiltB)
+    
+    cdpAdcOverFilt=cdpAdcOver[*,i]
+    nonNull=where(cdpAdcOverFilt gt 0.)
+    cdpAdcOverFiltB=cdpAdcOverFilt[nonNull]
+    cdpAdcOverAve[i]=mean(cdpAdcOverFiltB)
   endfor
 
   cdpAveTrans=cdpAveTransSpsAve
   cdpDofRej=cdpDofRejSpsAve
+  cdpTransRej=cdptransRejSpsAve
+  cdpAdcOver=cdpAdcOverAve
 
-  return, [[cdpAveTrans],[cdpDofRej]]
+  return, [[cdpAveTrans],[cdpDofRej],[cdpTransRej],[cdpAdcOver]]
 end
 
 

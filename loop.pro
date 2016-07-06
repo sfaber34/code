@@ -1,7 +1,7 @@
 pro loop
 
-level=700
-suffix='Laramie'
+level=400
+suffix='cope'
 
 
 savename='loopdata'+suffix+'.sav'
@@ -79,11 +79,13 @@ inds={starti:double(0)}
     smoothSignalLiq=[]
     aias=[]
     iwc=[]
+    cdpTransRej=[]
+    cdpAdcOver=[]
     
     nPoints=146852d
 
-    ;flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
-    flight=['1124','1217','0120','0125','0304','0307']
+    flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
+    ;flight=['1124','1217','0120','0125','0304','0307']
     ;flight='0725'
    
    cdpBinN=make_array(28,nPoints)
@@ -96,12 +98,6 @@ inds={starti:double(0)}
       
       d=nevBase(flight[i],'indicated',level)
       
-      cdpBinSecSumB=make_array(n_elements(d.(1)),start=0,increment=0)
-      cdpBinNB=make_array(28,n_elements(d.(1)),start=0,increment=0)
-      for j=0,n_elements(d.(1))-1 do begin
-        cdpBinSecSumB[j]=total(d.cdpdbins[*,0,j])+200
-        
-      endfor
       
       o=0
       for m=r,n_elements(d.(1))+r-2 do begin
@@ -109,7 +105,8 @@ inds={starti:double(0)}
         o++
       endfor
       
-      cdpBinSecSum=[cdpBinSecSum,cdpBinSecSumB]
+
+      cdpBinSecSum=[cdpBinSecSum,reform(total(d.cdpdbins,1))]
       lwc=[lwc,d.lwc]
       as=[as,d.as]
       pmb=[pmb,d.pmb]
@@ -166,6 +163,8 @@ inds={starti:double(0)}
       smoothSignalLiq=[smoothSignalLiq,d.smoothSignalLiq]
       aias=[aias,d.aias]
       iwc=[iwc,d.iwc]
+      cdpTransRej=[cdpTransRej,d.cdpTransRej]
+      cdpAdcOver=[cdpAdcOver,d.cdpAdcOver]
       
       r=r+n_elements(d.(1))
       inds.starti=inds.starti+n1(d.(1))
@@ -186,12 +185,12 @@ inds={starti:double(0)}
     
    
     save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,twcVarE,colETot,$
-      as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,aias,$
+      as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,aias,cdpAdcOver,$
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
       lwcNev2,pvmlwc,expHeatLiq,lwcFixedLv,twcFixedLv,fsspConc,lwcNev1,fsspLwc,$
       pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
       cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,$
-      cdpTrans,cdpTransEst,lwcnoprescor,lwcBaseline,flightSec,vlwccol,iwc
+      cdpTrans,cdpTransEst,lwcnoprescor,lwcBaseline,flightSec,vlwccol,iwc,cdpTransRej
    
 end

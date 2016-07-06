@@ -1,5 +1,5 @@
 pro baselineConfidence
-  restore,'saves/loopdataCope.sav'
+  restore,'saves/loopdatacope.sav'
   
   ;--------------------------------------SET OPTIONS---------------------------------------------------------------------------------------------
   ;----------------------------------------------------------------------------------------------------------------------------------------------
@@ -9,7 +9,7 @@ pro baselineConfidence
 
   ;liqOnly=where((cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and cdpconc lt 10 and trf gt -3d) ;Cope
   liqOnly=where(cdpconc lt 10 and trf gt -3d) ;Laramie
-  liqOnly=where(trf gt -3d and lwc gt .01 and twc gt .01)
+  liqOnly=where(trf gt -3d and lwc gt .01 and lwc lt 1.3 and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1))
 
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -37,6 +37,8 @@ pro baselineConfidence
     cdpbinbimod=cdpbinbimod[liqonly]
     cdpBinMAD=cdpBinMAD[liqonly]
     cdpBinSD=cdpBinSD[liqonly]
+    cdpdofrej=cdpdofrej[liqonly]
+    cdpadcover=cdpadcover[liqonly]
   endif
   
   s1=scatterplot(vmd,(twc/lwc),dimensions=[1400,1000],margin=50,/device,sym_filled=1,sym_size=.7,sym_transparency=30)
