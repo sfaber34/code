@@ -15,7 +15,7 @@ pro cdpreject
   liq=1
   ;----------------------------------------------------------------------------------------------------------------------------------------------
 
-  liqOnly=where((cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and trf gt -3d and lwc gt .01) ;Cope
+  liqOnly=where((cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and trf gt -3d and lwc gt .01 and lwc lt 1.3 and cdpconc lt 800) ;Cope
 
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -45,34 +45,35 @@ pro cdpreject
     cdpBinSD=cdpBinSD[liqonly]
     cdpdofrej=cdpdofrej[liqonly]
     cdpadcover=cdpadcover[liqonly]
+    cdpTransRej=cdpTransRej[liqonly]
   endif
 
   color=[color,color,color,color,color]
 
   ;-----------------------
-  xVar=cdpdofrej/(cdpacc)
-  yVar=cdplwc/lwc-1.
+  xVar=cdpacc
+  yVar=cdptrans
   ;-----------------------
   
   ;-----------------------
-  var=vmd
+  var=abs(cdplwc-lwc)/abs(lwc)
   ;-----------------------
 
   s1=scatterplot(xVar,yVar,dimensions=[1400,1000],margin=50,/device,sym_filled=1,sym_size=.4,sym_transparency=50,sym_color='black')
-;  s1.xrange=[-.5,.5]
-;  s1.yrange=[-2.,3.]
+  s1.xrange=[0,3e4]
+  ;s1.yrange=[0,3e4]
 
   
   
-  startbin=0.
-  bininc=5.
-  maxbin=50.
+  startbin=-.5
+  bininc=.1
+  maxbin=.5
   binBounds=dindgen(ceil((maxbin-startbin)/bininc),start=startbin,increment=bininc)
   binBounds=[temporary(binBounds),maxbin]
   interFitVals=[]
   slopeFitVals=[]
   zeros=dindgen(100000)*0
-  xS=dindgen(401,start=0,increment=1)
+  xS=dindgen(3e4+1.,start=0,increment=1)
 
   for i=1,n(binbounds) do begin
     print,binbounds[i-1],'-->',binbounds[i]
