@@ -1,15 +1,10 @@
-pro baselineConfidence
-  restore,'saves/loopdatacope.sav'
-  
+pro dofRefIdea
+
   ;--------------------------------------SET OPTIONS---------------------------------------------------------------------------------------------
-  ;----------------------------------------------------------------------------------------------------------------------------------------------
   liq=1
   ;----------------------------------------------------------------------------------------------------------------------------------------------
-  ;----------------------------------------------------------------------------------------------------------------------------------------------
 
-  ;liqOnly=where((cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and cdpconc lt 10 and trf gt -3d) ;Cope  
-  liqOnly=where(trf gt -3d and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and cdpacc eq 0)
-  liqOnly=where(trf gt -3d and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and lwc ge .01)
+  liqOnly=where((cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and trf gt -3d and lwc gt .01) ;Cope
 
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -37,15 +32,9 @@ pro baselineConfidence
     cdpbinbimod=cdpbinbimod[liqonly]
     cdpBinMAD=cdpBinMAD[liqonly]
     cdpBinSD=cdpBinSD[liqonly]
-    cdpdofrej=cdpdofrej[liqonly]
-    cdpadcover=cdpadcover[liqonly]
-    lwc100=lwc100[liqonly]
   endif
-  
-  s1=scatterplot(vmd,(twc/lwc),dimensions=[1400,1000],margin=50,/device,sym_filled=1,sym_size=.7,sym_transparency=30)
-  
-  lwcSort=lwc[sort(lwc)]
-  lwc95=lwcSort[n1(lwcsort)*.95]
-  
-stop
+
+s1=scatterplot(cdpacc+cdpdofrej,cdpacc/cdpacc+cdpdofrej)
+x=where(abs(cdplwc/lwc)-1. ge .2)
+s2=scatterplot(cdpacc[x]+cdpdofrej[x],cdpacc[x]/cdpacc[x]+cdpdofrej[x],sym_color='green',/overplot)
 end

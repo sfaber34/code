@@ -9,7 +9,7 @@ pro calcBinnedVals
   ;LIQUID ONLY POINTS OR ALL
   liq=1
 
-  liqOnly=where(trf gt -3d and lwc gt .01 and lwc lt 1.3 and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1))
+  liqOnly=where(trf gt -3d and lwc gt .02 and lwc lt 1.3 and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1))
 
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -31,8 +31,6 @@ pro calcBinnedVals
     lwcErrColE=lwcErrColE[liqonly]
     cdptrans=cdptrans[liqonly]
     cdpacc=cdpacc[liqonly]
-    colELiqUP=colELiqUP[liqonly]
-    colELiqU=colELiqU[liqonly]
     lwcNev1=lwcNev1[liqonly]
     flightsec=flightsec[liqonly]
     pmb=pmb[liqonly]
@@ -43,17 +41,17 @@ pro calcBinnedVals
 
 
   ;-------------------------------SET VAR---------------------------------------
-  var=vmd
+  var=cdpconc
   ;-------------------------------SET VAR---------------------------------------
 
   ;STARTING LEFT VALUE
-  binstart=2d
+  binstart=0d
 
   ;WIDTH OF BINS
-  bininc=3d
+  bininc=100d
   
   ;MAX BIN VALUE
-  binEnd=50d
+  binEnd=2000d
 
   saveName='calcBins'+suffix+'.sav'
 
@@ -165,7 +163,7 @@ pro calcBinnedVals
     cdpVlwc=[cdpVlwc,med(lwc[bins])/med(cdplwc[bins])-1.]
     cdpVLwcQ1=[cdpVLwcQ1,cdpVlwc[i]-stddev(lwc[bins]/cdplwc[bins]-1.,/nan)]
     cdpVLwcQ3=[cdpVLwcQ3,cdpVlwc[i]+stddev(lwc[bins]/cdplwc[bins]-1.,/nan)]
-    lwcVCdp=[lwcVCdp,(mean(lwc[bins])-mean(cdplwc[bins]))/mean(lwc[bins])]
+    lwcVCdp=[lwcVCdp,abs(med(cdplwc[bins])/med(lwc[bins]))-1.]
     cdpVtwc=[cdpVtwc,mean(cdplwc[bins])/mean(twc[bins])]    
     cdpVLwcCor=[cdpVLwcCor,mean(cdplwc[bins])/mean(lwcVarE[bins])]
     cdpVTwcCor=[cdpVTwcCor,mean(cdplwc[bins])/mean(twcVarE[bins])]
@@ -178,7 +176,6 @@ pro calcBinnedVals
     vmdMean=[vmdMean,mean(vmd[bins])]
     cdpDBarMean=[cdpDBarMean,mean(cdpdbar[bins])]
     lwcMean=[lwcMean,mean(lwc[bins])]
-    colELiqUMean=[colELiqUMean,mean(colELiqU[bins])]
     cdpConcMean=[temporary(cdpConcMean),mean(cdpConc[bins])]
     xVarMean=[temporary(xVarMean),((binStart+binInc*(i+1.))-(binStart+binInc*i))/2.+binInc*i]
 

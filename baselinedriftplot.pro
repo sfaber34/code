@@ -4,7 +4,7 @@ restore,'saves/loopdata400.sav'
 
 
 p1=lp(flightsec,lwc)
-p2=lp(flightsec,lwcNoPresCor,/op)
+p2=lp(flightsec,lwcNoPresCor,1)
 p2.color='blue'
 p2.xrange=[2.122d4,2.132d4]
 p2.yrange=[-.05,.3]
