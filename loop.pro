@@ -85,9 +85,9 @@ inds={starti:double(0)}
     nPoints=146852d
 
 
-    ;flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
-    flight=['1124','1217','0120','0125','0304','0307']
-    flight='0125'
+    flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
+    ;flight=['0307']
+    ;flight='0125'
 
    
    cdpBinN=make_array(28,nPoints)
@@ -96,14 +96,14 @@ inds={starti:double(0)}
     r=0
     for i=0, n_elements(flight)-1 do begin
 
-      ;if i eq 0 then inds.starti=0
+      if i eq 0 then inds.starti=0
       
       d=nevBase(flight[i],'indicated',level)
       
       
       o=0
       for m=r,n_elements(d.(1))+r-2 do begin
-        cdpBinN[*,m]=d.cdpdbins[*,0,o]
+        cdpBinN[*,m]=d.cdpdbins[*,o]
         o++
       endfor
       
@@ -159,7 +159,6 @@ inds={starti:double(0)}
       
       cdpTransEst=[cdpTransEst,d.cdpTransEst]
       lwcNoPresCor=[lwcNoPresCor,d.lwcNoPresCor]
-      lwcBaseline=[lwcBaseline,d.lwcBaseline]
       flightSec=[flightSec,d.flightSec]
       vlwccol=[vlwccol,d.vlwccol]
       smoothSignalLiq=[smoothSignalLiq,d.smoothSignalLiq]
@@ -185,7 +184,7 @@ inds={starti:double(0)}
     
     color=d.color
     
-   
+
     save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,twcVarE,colETot,$
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,aias,cdpAdcOver,$
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$

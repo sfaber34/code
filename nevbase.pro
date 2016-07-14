@@ -98,8 +98,10 @@ time=loadvar('time', filename=nclPath)
 
 ;pressure from rosemount sensor [mb]
 pmb=loadvar('pmb', filename=nclPath)
-nPoints=n(pmb)
-nPoints1=n1(pmb)
+
+nPoints=n(pmb[0,*])
+nPoints1=nPoints+1
+
 
 ;temperature from rosemount sensor [C]
 trose=loadvar('trose', filename=nclPath)
@@ -128,14 +130,14 @@ cdpacc=loadvar('cdpacc_1_NRB', filename=nclPath)
 ;CDP droplet mean diamter [um]
 cdpdbar_1_NRB=loadvar('cdpdbar_1_NRB', filename=nclPath)
 
+;CDP diameter per bin
+cdpdbins=loadvar('ACDP_1_NRB', filename=nclPath)
+
 ;Pitch [degrees]
 avpitch=loadvar('avpitch', filename=nclPath)
 
 ;roll [degrees]
 avroll=loadvar('avroll', filename=nclPath)
-
-;CDP diameter per bin
-cdpdbins=loadvar('ACDP_1_NRB', filename=nclPath)
 
 if cope eq 1 then begin
   ;FSSP total concentration
@@ -230,7 +232,7 @@ min=loadvar('MINUTE', filename=nclPath)
 sec=loadvar('SECOND', filename=nclPath)
 
 ;CDP average transit times [us]
-if cope eq 1 and calcTrans eq 1 then begin
+if calcTrans eq 1 then begin
   cdpTransB=cdpTransTime(flightDay)
   
   cdpTrans=cdpTransB[*,0]*25d-3
@@ -269,11 +271,6 @@ secstspb=strtrim(secstspb,1)
 
 timePretty=hourstspb+':'+minstspb+':'+secstspb
 
-vsig=where(vlwccol gt 4.)
-vsig=vsig[30:n_elements(vsig)-1]
-aStart=min(vsig)+40
-aEnd=max(vsig)-40
-
 
 ;--------------------SET FLIGHT STRINGS--------------------
 
@@ -309,26 +306,50 @@ if flightDay eq '0817b' then flightString='08-17-13'
 ;---------------------------------------------------------------------------------FILTER 25 HZ DATA------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-struct={a:vlwcref,b:vlwccol,c:vtwcref,d:vtwccol,e:ilwcref,f:itwccol,g:itwcref,h:ilwccol}
-;filteredVals=dindgen(n1(vlwcref)*5.*n_tags(struct))*!values.d_nan
+
+struct={a:vlwcref,b:vlwccol,c:vtwcref,d:vtwccol,e:ilwcref,f:itwccol,g:itwcref,h:ilwccol,$
+  i:trf,j:aias,k:pmb,l:trose,m:z,n:pvmlwc,o:pvmDEff,p:lwc100,q:avpitch,r:avroll,s:betaB,$
+  t:avyawr,u:alpha,v:tas}
+
 filteredVals=[]
 for i=0,n_tags(struct)-1. do begin
   filteredVals=[temporary(filteredVals),filter25(struct.(i))]
-
 endfor
-;<-----fix this shit
-inds=dindgen(n_tags(struct)-1.)*n1(vlwcref)/5.
-vlwcref=vlwcref[inds[0]:inds[1]]
-vlwccol=vlwccol[inds[1]+1.:inds[2]+1.]
-vtwcref=vtwcref[inds[2]+1.:inds[3]+1.]
-vtwccol=vtwccol[inds[3]+1.:inds[4]+1.]
-ilwcref=ilwcref[inds[4]+1.:inds[5]+1.]
-itwccol=itwccol[inds[5]+1.:inds[6]+1.]
-itwcref=itwcref[inds[6]+1.:inds[7]+1.]
-ilwccol=ilwccol[inds[7]+1.:inds[8]+1.]
 
-;--------------------FILTER VARIABLES TO FLIGHT TIME BOUNDS--------------------
-stop
+indsC=dindgen(n_tags(struct)+1.)*n1(struct.(0))/5.
+vlwcref=filteredVals[indsC[0]:indsC[1]-1.]
+vlwccol=filteredVals[indsC[1]:indsC[2]-1.]
+vtwcref=filteredVals[indsC[2]:indsC[3]-1.]
+vtwccol=filteredVals[indsC[3]:indsC[4]-1.]
+ilwcref=filteredVals[indsC[4]:indsC[5]-1.]
+itwccol=filteredVals[indsC[5]:indsC[6]-1.]
+itwcref=filteredVals[indsC[6]:indsC[7]-1.]
+ilwccol=filteredVals[indsC[7]:indsC[8]-1.]
+trf=filteredVals[indsC[8]:indsC[9]-1.]
+aias=filteredVals[indsC[9]:indsC[10]-1.]
+pmb=filteredVals[indsC[10]:indsC[11]-1.]
+trose=filteredVals[indsC[11]:indsC[12]-1.]
+z=filteredVals[indsC[12]:indsC[13]-1.]
+pvmlwc=filteredVals[indsC[13]:indsC[14]-1.]
+pvmDEff=filteredVals[indsC[14]:indsC[15]-1.]
+lwc100=filteredVals[indsC[15]:indsC[16]-1.]
+avpitch=filteredVals[indsC[16]:indsC[17]-1.]
+avroll=filteredVals[indsC[17]:indsC[18]-1.]
+betaB=filteredVals[indsC[18]:indsC[19]-1.]
+avyawr=filteredVals[indsC[19]:indsC[20]-1.]
+alpha=filteredVals[indsC[20]:indsC[21]-1.]
+tas=filteredVals[indsC[21]:indsC[22]-1.]
+
+;vsig=where(vlwccol gt 4.)
+vsig=where(vlwccol gt 2.5)
+vsig=vsig[30:n_elements(vsig)-30]
+aStart=min(vsig)
+aEnd=max(vsig)
+ind5=vsig[0:*:5]
+aStart5=aStart
+aEnd5=aEnd/5
+
+;--------------------FILTER VARIABLES TO FLIGHT TIME BOUNDS (BASED ON NEVZOROV POWER UP/DOWN)--------------------
 vlwcref=vlwcref[aStart:aEnd]
 vlwccol=vlwccol[aStart:aEnd]
 vtwcref=vtwcref[aStart:aEnd]
@@ -340,8 +361,6 @@ ilwccol=ilwccol[aStart:aEnd]
 trf=trf[aStart:aEnd]
 tas=tas[aStart:aEnd]
 aias=aias[aStart:aEnd]
-;timeForm=timeForm[aStart:aEnd]
-time=time[aStart:aEnd]
 pmb=pmb[aStart:aEnd]
 trose=trose[aStart:aEnd]
 z=z[aStart:aEnd]
@@ -355,16 +374,44 @@ avpitch=avpitch[aStart:aEnd]
 avroll=avroll[aStart:aEnd]
 avyawr=avyawr[aStart:aEnd]
 alpha=alpha[aStart:aEnd]
-cdplwc_1_NRB=cdplwc_1_NRB[aStart:aEnd]
-timeFlight=timeFlight[aStart:aEnd]
-cdpdbins=cdpdbins[*,*,aStart:aEnd]
+
+;time=time[ind5]
+;timeFlight=timeFlight[aStart5:aEnd5]
+
+cdplwc_1_NRBB=[]
+cdpdbinsB=make_array(n1(cdpdbins[*,0,0]),n1(cdpdbins[0,*,0])*n1(cdpdbins[0,0,*]))*0
+for i=0,n(cdplwc_1_NRB[0,*]) do begin
+  cdplwc_1_NRBB=[temporary(cdplwc_1_NRBB),cdplwc_1_NRB[*,i]]
+endfor
+
+
+;---->START HERE
+i=0
+j=0
+int=5
+
+for j=0, n(cdpdbins[0,0,*]) do begin
+    cdpdbinsB[*,i]=cdpdbins[*,0,j]
+    cdpdbinsB[*,i+1]=cdpdbins[*,1,j]
+    cdpdbinsB[*,i+2]=cdpdbins[*,2,j]
+    cdpdbinsB[*,i+3]=cdpdbins[*,3,j]
+    cdpdbinsB[*,i+4]=cdpdbins[*,4,j]
+    
+  i=i+int
+  ;if n1(cdpdbins[0,0,*])-i lt 5. then break
+endfor
+
+
+cdplwc_1_NRB=cdplwc_1_NRBB[aStart:aEnd]
 fsspConc=fsspConc[aStart:aEnd]
 fsspLwc=fsspLwc[aStart:aEnd]
-cdpTrans=cdpTrans[aStart:aEnd]
-cdpDofRej=cdpDofRej[aStart:aEnd]
-cdpTransRej=cdpTransRej[aStart:aEnd]
-cdpAdcOver=cdpAdcOver[aStart:aEnd]
-
+;cdpTrans=cdpTrans[aStart:aEnd]
+;cdpDofRej=cdpDofRejB[aStart:aEnd]
+;cdpTransRej=cdpTransRejB[aStart:aEnd]
+;cdpAdcOver=cdpAdcOverB[aStart:aEnd]
+cdpdbinsC=make_array(28,aEnd-aStart+1.)
+cdpdbinsC[*,*]=cdpdbinsB[*,aStart:aEnd]
+cdpdbins=cdpdbinsC
 
 
 ;SET COPE ONLY VARIABLES
@@ -391,20 +438,6 @@ endif
 ;SCALE CDP TRANSITS TO MEAN TAS
 cdpTransEst=.0002/tas
 
-nPoints=n(pmb)
-nPoints1=n1(pmb)
-
-
-;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-;---------------------------------------------------------------------------------FILTER 25 HZ DATA------------------------------------------------------------------------------
-;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-if cope ne 1 then begin
-  varsIn=[vlwcref,vlwccol,vtwcref,vtwccol]
-  
-  for i=0,n(varsIn) do begin
-    varsIn[i]=smooth(varsIn[i],5,/nan)
-  endfor
-endif
 
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -412,21 +445,24 @@ endif
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if cope eq 1 then begin
-  if (airspeedType eq 'indicated') and (level eq '900') then kLiq=(2.47292)*aiasms^(-0.273777)+(0.399143) ;900 indicated
-  if (airspeedType eq 'indicated') and (level eq '600') then kLiq=(3.73599)*aiasms^(-0.0628865)+(-1.67763) ;600 indicated
-  if (airspeedType eq 'indicated') and (level eq '400') then kLiq=(36.0089)*aiasms^(-1.26173)+(1.03362) ;400 indicated
+;  if (airspeedType eq 'indicated') and (level eq '900') then kLiq=(2.47292)*aiasms^(-0.273777)+(0.399143) ;900 indicated
+;  if (airspeedType eq 'indicated') and (level eq '600') then kLiq=(3.73599)*aiasms^(-0.0628865)+(-1.67763) ;600 indicated
+;  if (airspeedType eq 'indicated') and (level eq '400') then kLiq=(36.0089)*aiasms^(-1.26173)+(1.03362) ;400 indicated
+;
+;  if (airspeedType eq 'indicated') and (level eq '900') then kTot=(10.8603)*aiasms^(-0.675924)+(0.167331) ;900 indicated
+;  if (airspeedType eq 'indicated') and (level eq '600') then kTot=(3.39234)*aiasms^(-0.182697)+(-0.737908) ;600 indicated
+;  if (airspeedType eq 'indicated') and (level eq '400') then kTot=(224.264)*aiasms^(-1.73025)+(0.725502) ;400 indicated
+;  
+;  if (airspeedType eq 'true') and (level eq '900') then kLiq=(8.56136)*tas^(-0.0292547)+(-6.37413) ;900 true
+;  if (airspeedType eq 'true') and (level eq '600') then kLiq=(3.91644)*tas^(-0.0685396)+(-1.70073) ;600 true
+;  if (airspeedType eq 'true') and (level eq '400') then kLiq=(1280.56)*tas^(-2.00624)+(1.08139) ;400 true  
+;
+;  if (airspeedType eq 'true') and (level eq '900') then kTot=(35.0933)*tas^(-1.00354)+(0.318860) ;900 true
+;  if (airspeedType eq 'true') and (level eq '600') then kTot=(3.83487)*tas^(-0.238794)+(-0.496087) ;600 true
+;  if (airspeedType eq 'true') and (level eq '400') then kTot=(9874.83)*tas^(-2.45898)+(0.753854) ;400 true
 
-  if (airspeedType eq 'indicated') and (level eq '900') then kTot=(10.8603)*aiasms^(-0.675924)+(0.167331) ;900 indicated
-  if (airspeedType eq 'indicated') and (level eq '600') then kTot=(3.39234)*aiasms^(-0.182697)+(-0.737908) ;600 indicated
-  if (airspeedType eq 'indicated') and (level eq '400') then kTot=(224.264)*aiasms^(-1.73025)+(0.725502) ;400 indicated
-  
-  if (airspeedType eq 'true') and (level eq '900') then kLiq=(8.56136)*tas^(-0.0292547)+(-6.37413) ;900 true
-  if (airspeedType eq 'true') and (level eq '600') then kLiq=(3.91644)*tas^(-0.0685396)+(-1.70073) ;600 true
-  if (airspeedType eq 'true') and (level eq '400') then kLiq=(1280.56)*tas^(-2.00624)+(1.08139) ;400 true  
-
-  if (airspeedType eq 'true') and (level eq '900') then kTot=(35.0933)*tas^(-1.00354)+(0.318860) ;900 true
-  if (airspeedType eq 'true') and (level eq '600') then kTot=(3.83487)*tas^(-0.238794)+(-0.496087) ;600 true
-  if (airspeedType eq 'true') and (level eq '400') then kTot=(9874.83)*tas^(-2.45898)+(0.753854) ;400 true
+kLiq=(36.0089)*aiasms^(-1.26173)+(1.03362) ;400 indicated
+kTot=(224.264)*aiasms^(-1.73025)+(0.725502) ;400 indicated
 endif
 
 
@@ -449,35 +485,60 @@ endif
 ;---------------------------------------------------------------------CLEARAIR POINT DETECTION---------------------------------------------------------------------
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-correctionLiq=dindgen(nPoints1,increment=0)
-smoothSignalLiq=dindgen(nPoints1,increment=0)
+nPointsFilt=n(vlwccol)
+nPointsFilt1=n(vlwccol)+1d
 
-correctionTot=dindgen(nPoints1,increment=0)
-smoothSignalTot=dindgen(nPoints1,increment=0)
+correctionLiq=dindgen(nPointsFilt1,increment=0)
+smoothSignalLiq=dindgen(nPointsFilt1,increment=0)
+
+correctionTot=dindgen(nPointsFilt1,increment=0)
+smoothSignalTot=dindgen(nPointsFilt1,increment=0)
 
 rawSignalLiq=(vlwccol)
 rawSignalTot=(vtwccol)
 
+
+
 int=30
-for i=0,nPoints1-(int+1) do begin
-  correctionLiq[i:i+int]=min(rawSignalLiq[i:i+int])
+for i=0,nPointsFilt do begin
+  if nPointsFilt-i gt 30 then begin
+    correctionLiq[i:i+int]=min(rawSignalLiq[i:i+int])
+  endif else begin
+    correctionLiq[i:n(correctionLiq)]=min(rawSignalLiq[i:n(correctionLiq)])
+  endelse  
   i=i+int
 endfor
 
 
-for i=0,nPoints1-(int+1) do begin
-  smoothSignalLiq[i:i+int]=rawSignalLiq[i:i+int]-correctionLiq[i:i+int]
+for i=0,nPointsFilt do begin
+  
+  if nPointsFilt-i gt 30 then begin
+    smoothSignalLiq[i:i+int]=rawSignalLiq[i:i+int]-correctionLiq[i:i+int]
+  endif else begin
+    smoothSignalLiq[i:n(smoothSignalLiq)]=rawSignalLiq[i:n(smoothSignalLiq)]-correctionLiq[i:n(smoothSignalLiq)]
+  endelse
   i=i+int
 endfor
+
 
 intb=20
-for i=0,nPoints1-(intb+1) do begin
-  correctionTot[i:i+intb]=min(rawSignalTot[i:i+intb])
+for i=0,nPointsFilt do begin
+  
+  if nPointsFilt-i gt 30 then begin
+    correctionTot[i:i+intb]=min(rawSignalTot[i:i+intb])
+  endif else begin
+    correctionTot[i:n(correctionTot)]=min(rawSignalTot[i:n(correctionTot)])
+  endelse
   i=i+int
 endfor
 
-for i=0,nPoints1-(intb+1) do begin
-  smoothSignalTot[i:i+intb]=rawSignalTot[i:i+intb]-correctionTot[i:i+intb]
+for i=0,nPointsFilt do begin
+  
+  if nPointsFilt-i gt 30 then begin
+    smoothSignalTot[i:i+intb]=rawSignalTot[i:i+intb]-correctionTot[i:i+intb]
+  endif else begin
+    smoothSignalTot[i:n(smoothSignalTot)]=rawSignalTot[i:n(smoothSignalTot)]-correctionTot[i:n(smoothSignalTot)]
+  endelse
   i=i+int
 endfor
 
@@ -583,8 +644,8 @@ dEff=make_array(nPoints1)
 vvd=make_array(nPoints1)
 vmd=make_array(nPoints1)
 diff=make_array(nPoints1)
-if n_elements(cdpdbins[*,0,0]) eq 28 then diam=[1.5,2.5,3.5,4.5,5.5,6.5,7.5,9.,11.,13.,15.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
-if n_elements(cdpdbins[*,0,0]) eq 27 then diam=[1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,10.5,14.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
+if n_elements(cdpdbins[*,0]) eq 28 then diam=[1.5,2.5,3.5,4.5,5.5,6.5,7.5,9.,11.,13.,15.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
+if n_elements(cdpdbins[*,0]) eq 27 then diam=[1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,10.5,14.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
 
 
 dEff=[]
@@ -598,28 +659,43 @@ cdpBinBimod=[]
 cdpBinMAD=[]
 cdpBinSD=[]
 s=0
-for m=0, nPoints do begin
+
+
+for m=0, n(cdpdbins[0,*]) do begin
   xa=[]
   xb=[]
   xc=[]
   xe=[]
   meanDiff=[]
-  for j=0,n_elements(cdpdbins[*,0,0])-1 do begin
-    xe=[xe,(diam[j])*(cdpdbins[j,0,m])]
-    xa=[xa,(diam[j])^2.*(cdpdbins[j,0,m])]
-    xb=[xb,(diam[j])^3.*(cdpdbins[j,0,m])]
-    xc=[xc,(diam[j])^4.*(cdpdbins[j,0,m])]
+  for j=0,n(cdpdbins[*,0]) do begin
+    xe=[xe,(diam[j])*(cdpdbins[j,m])]
+    xa=[xa,(diam[j])^2.*(cdpdbins[j,m])]
+    xb=[xb,(diam[j])^3.*(cdpdbins[j,m])]
+    xc=[xc,(diam[j])^4.*(cdpdbins[j,m])]
   endfor  
-  dEff=[dEff,total(xb)/total(xa)]
-  dBarB=[dBarB,total(xe)/total(cdpdbins[*,0,m])]
-  vvd=[vvd,(total(xb)/total(cdpdbins[*,0,m]))^(1./3.)]
-  vmd=[vmd,total(xc)/total(xb)]
+  
+  dEffB=total(xb)/total(xa)
+  dEff=[dEff,dEffB]
+  ;if finite(dEffB) eq 1 then dEff=[dEff,dEffB] else dEff=[dEff,0]
+  
+  dBarBB=total(xe)/total(cdpdbins[*,m])
+  dBarB=[dBarB,dBarBB]
+  ;if finite(dBarBB) eq 1 then dBarB=[dBarB,dBarBB] else dBarB=[dBarB,0]
+  
+  vvdB=(total(xb)/total(cdpdbins[*,m]))^(1./3.)
+  vvd=[vvd,vvdB]
+  ;if finite(vvdB) eq 1 then vvd=[vvd,vvdB] else vvd=[vvd,0]
+  
+  vmdB=total(xc)/total(xb)
+  vmd=[vmd,vmdB]
+  ;if finite(vmdB) eq 1 then vmd=[vmd,vmdB] else vmd=[vmd,0]
+  
 
-  gtZInd=where(cdpdbins[*,0,m] gt 0)
+  gtZInd=where(cdpdbins[*,m] gt 0)
   binRedist=[]
   for y=0,n_elements(gtZInd)-1 do begin
     if min(gtZInd) gt 0d then begin
-      binRedist=[binRedist,replicate(diam[gtZInd[y]],cdpdbins[gtZInd[y],0,m])]
+      binRedist=[binRedist,replicate(diam[gtZInd[y]],cdpdbins[gtZInd[y],m])]
     endif else begin
       binRedist=!values.d_nan
     endelse
@@ -639,7 +715,6 @@ for m=0, nPoints do begin
   cdpBinBimod=[cdpBinBimod,((skewnessB)^(2d)+1d)/kurtosisB]
   cdpBinMAD=[cdpBinMAD,meanAbsDeviation]  
 endfor
-
 
 
 
@@ -800,7 +875,7 @@ lwcBL=lwc[clearairLiq]
 lwcBL=lwcBL[where(lwcBL gt 0.)]
 lwcBLThresh=mean(lwcBL)*1.2
 
-lwcBaseline=where(lwc lt lwcBLThresh)+inds.starti
+;lwcBaseline=where(lwc lt lwcBLThresh)+inds.starti
 
 
 flightSec=dindgen(nPoints1,start=startsec,increment=1)
@@ -830,7 +905,7 @@ d={as:as, pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
   pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,$
-  cdpTransEst:cdpTransEst,lwcBaseline:lwcBaseline,iwc:iwc,$
+  cdpTransEst:cdpTransEst,iwc:iwc,$
   cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver}
 
 return,d
@@ -914,16 +989,16 @@ function cdpTransTime, flightDay
   if flightDay eq '0817a' then nclPath='/Volumes/externalHD/copeRaw/20130817a_raw.nc'
   if flightDay eq '0817b' then nclPath='/Volumes/externalHD/copeRaw/20130817b_raw.nc'
 
-  if flightDay eq '0120' then nclPath='/Volumes/externalHD/copeRaw/20160120.c1.nc'
-  if flightDay eq '0125' then nclPath='/Volumes/externalHD/copeRaw/20160125.c1.nc'
-  if flightDay eq '0304' then nclPath='/Volumes/externalHD/copeRaw/20160304.c1.nc'
-  if flightDay eq '0307' then nclPath='/Volumes/externalHD/copeRaw/20160307.c1.nc'
-  if flightDay eq '1217' then nclPath='/Volumes/externalHD/copeRaw/20151217.c1.nc'
-  if flightDay eq '1112' then nclPath='/Volumes/externalHD/copeRaw/20151112.c1.nc'
-  if flightDay eq '1124' then nclPath='/Volumes/externalHD/copeRaw/20151124.c1.nc'
+  if flightDay eq '0120' then nclPath='/Volumes/externalHD/copeRaw/20160120_raw.nc'
+  if flightDay eq '0125' then nclPath='/Volumes/externalHD/copeRaw/20160125_raw.nc'
+  if flightDay eq '0304' then nclPath='/Volumes/externalHD/copeRaw/20160304_raw.nc'
+  if flightDay eq '0307' then nclPath='/Volumes/externalHD/copeRaw/20160307_raw.nc'
+  if flightDay eq '1217' then nclPath='/Volumes/externalHD/copeRaw/20151217_raw.nc'
+  if flightDay eq '1112' then nclPath='/Volumes/externalHD/copeRaw/20151112_raw.nc'
+  if flightDay eq '1124' then nclPath='/Volumes/externalHD/copeRaw/20151124_raw.nc'
 
   cdpAveTransSps=loadvar('AVGTRNS_NRB', filename=nclPath)
-  cdpTransRejSps=loadvar('REJAT_NRB', filename=nclPath)
+  ;cdpTransRejSps=loadvar('REJAT_NRB', filename=nclPath)
   cdpDofRejSps=loadvar('REJDOF_NRB', filename=nclPath) 
   cdpAdcOver=loadvar('OVFLW_NRB', filename=nclPath) 
   cdpAveTransSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))*!Values.d_NAN
@@ -946,10 +1021,10 @@ function cdpTransTime, flightDay
     cdpDofRejSpsFiltB=cdpDofRejSpsFilt[nonNull]
     cdpDofRejSpsAve[i]=mean(cdpDofRejSpsFiltB)
     
-    cdptransRejSpsFilt=cdptransRejSps[*,i]
-    nonNull=where(cdptransRejSpsFilt gt 0.)
-    cdptransRejSpsFiltB=cdptransRejSpsFilt[nonNull]
-    cdptransRejSpsAve[i]=mean(cdptransRejSpsFiltB)
+    ;cdptransRejSpsFilt=cdptransRejSps[*,i]
+;    nonNull=where(cdptransRejSpsFilt gt 0.)
+;    cdptransRejSpsFiltB=cdptransRejSpsFilt[nonNull]
+;    cdptransRejSpsAve[i]=mean(cdptransRejSpsFiltB)
     
     cdpAdcOverFilt=cdpAdcOver[*,i]
     nonNull=where(cdpAdcOverFilt gt 0.)
@@ -959,10 +1034,11 @@ function cdpTransTime, flightDay
 
   cdpAveTrans=cdpAveTransSpsAve
   cdpDofRej=cdpDofRejSpsAve
-  cdpTransRej=cdptransRejSpsAve
+  ;cdpTransRej=cdptransRejSpsAve
   cdpAdcOver=cdpAdcOverAve
 
-  return, [[cdpAveTrans],[cdpDofRej],[cdpTransRej],[cdpAdcOver]]
+  ;return, [[cdpAveTrans],[cdpDofRej],[cdpTransRej],[cdpAdcOver]]
+  return, [[cdpAveTrans],[cdpDofRej],[dindgen(n1(cdpDofRej))*0],[cdpAdcOver]]
 end
 
 
