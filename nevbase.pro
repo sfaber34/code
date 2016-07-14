@@ -20,7 +20,7 @@ calcTrans=1
 ;---------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------FILEPATHS---------------------------------------------------------------------
 ;---------------------------------------------------------------------------------------------------------------------------------------------------
-
+  ;COPE
   if flightDay eq '0709' then nclPath='../data/20130709.c1.nc'
   if flightDay eq '0710' then nclPath='../data/20130710.c1.nc'
   if flightDay eq '0725' then nclPath='../data/20130725.c1.nc'
@@ -32,20 +32,22 @@ calcTrans=1
   if flightDay eq '0815' then nclPath='../data/20130815.c1.nc'
   if flightDay eq '0802' then nclPath='../data/20130802.c1.nc'
   if flightDay eq '0803' then nclPath='../data/20130803.c1.nc'
-  if flightDay eq '0304' then nclPath='../data/20160304.c1.nc'
-  if flightDay eq '0307' then nclPath='../data/20160307.c1.nc'
-  if flightDay eq '1217' then nclPath='../data/20151217.c1.nc'
-  if flightDay eq '1112' then nclPath='../data/20151112.c1.nc'
-  if flightDay eq '1124' then nclPath='../data/20151124.c1.nc'
   if flightDay eq '0806' then nclPath='../data/20130806.c1.nc'  
   if flightDay eq '0813' then nclPath='../data/20130813.c1.nc'
   if flightDay eq '0817' then nclPath='../data/20130817.c1.nc'
   if flightDay eq '0722' then nclPath='../data/20130722.c1.nc'
   if flightDay eq '0718' then nclPath='../data/20130718.c1.nc'
-  if flightDay eq '0120' then nclPath='../data/20160120.c1.nc'
-  if flightDay eq '0125' then nclPath='../data/20160125.c1.nc'
   if flightDay eq '0817a' then nclPath='../data/20130817a.c1.nc'
   if flightDay eq '0817b' then nclPath='../data/20130817b.c1.nc'
+  
+  ;LARAMIE
+  if flightDay eq '1124' then nclPath='../data/20151124.c25.nc'
+  if flightDay eq '1217' then nclPath='../data/20151217.c25.nc'
+  if flightDay eq '1112' then nclPath='../data/20151112.c25.nc'
+  if flightDay eq '0120' then nclPath='../data/20160120.c25.nc'
+  if flightDay eq '0125' then nclPath='../data/20160125.c25.nc'
+  if flightDay eq '0304' then nclPath='../data/20160304.c25.nc'
+  if flightDay eq '0307' then nclPath='../data/20160307.c25.nc'
 
 
 if strmatch(nclpath,'*2013*') eq 1 then cope=1
@@ -56,24 +58,6 @@ if strmatch(nclpath,'*2016*') eq 1 then cope=2
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------LOAD VARIABLES---------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------
-
-;nRows=n_elements(loadvar('time',filename=nclPath))
-;
-;
-;inputVars=['vlwcref','vlwccol','vtwcref','vtwccol','ilwcref','ilwccol','itwcref','itwccol','trf','tas','aias','TIME','time','pmb','trose','z',$
-;  'pvmlwc','pvmre_c','lwc100','cdpconc_1_NRB','cdplwc_1_NRB','cdpacc_1_NRB','cdpdbar_1_NRB','avpitch','avroll','ACDP_1_NRB','CONCF_IBL','PLWCF_IBL',$
-;  'hivs','CONC0_mod_cip_IBR','CONC1_mod_cip_IBR','CONC2_mod_cip_IBR','nevlwc1',$
-;  'nevlwc2','nevtwc','beta','avyawr','alpha','HOUR','MINUTE','SECOND']
-;
-;NCDF_get, nclPath,inputVars,ncdfFile,found=found,missing=missing,/quiet
-;
-;for i=0,n_elements(missing)-1 do begin
-;  nanFill=replicate(!VALUES.F_NAN,nRows)
-;  
-;  fu=execute('missing[i]=',make_array(1))
-;  fu=execute('missing[i]=replicate(!VALUES.F_NAN,nRows)')
-;  
-;endfor
 
 
 ;liquid reference voltage [V]
@@ -108,9 +92,6 @@ tas=loadvar('tas', filename=nclPath)
 
 ;indicated airspeed [knot]
 aias=loadvar('aias', filename=nclPath)
-
-;time formatted
-timeForm=loadvar('TIME', filename=nclPath)
 
 ;time seconds since 2015-01-01 00:00:00 +0000
 time=loadvar('time', filename=nclPath)
@@ -288,8 +269,6 @@ secstspb=strtrim(secstspb,1)
 
 timePretty=hourstspb+':'+minstspb+':'+secstspb
 
-t={hour:hour,min:min,sec:sec,timeForm:timeForm}
-
 vsig=where(vlwccol gt 4.)
 vsig=vsig[30:n_elements(vsig)-1]
 aStart=min(vsig)+40
@@ -325,8 +304,31 @@ if flightDay eq '0817a' then flightString='08-17-13'
 if flightDay eq '0817b' then flightString='08-17-13'
 
 
-;--------------------FILTER VARIABLES TO FLIGHT TIME BOUNDS--------------------
 
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------------------FILTER 25 HZ DATA------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+struct={a:vlwcref,b:vlwccol,c:vtwcref,d:vtwccol,e:ilwcref,f:itwccol,g:itwcref,h:ilwccol}
+;filteredVals=dindgen(n1(vlwcref)*5.*n_tags(struct))*!values.d_nan
+filteredVals=[]
+for i=0,n_tags(struct)-1. do begin
+  filteredVals=[temporary(filteredVals),filter25(struct.(i))]
+
+endfor
+;<-----fix this shit
+inds=dindgen(n_tags(struct)-1.)*n1(vlwcref)/5.
+vlwcref=vlwcref[inds[0]:inds[1]]
+vlwccol=vlwccol[inds[1]+1.:inds[2]+1.]
+vtwcref=vtwcref[inds[2]+1.:inds[3]+1.]
+vtwccol=vtwccol[inds[3]+1.:inds[4]+1.]
+ilwcref=ilwcref[inds[4]+1.:inds[5]+1.]
+itwccol=itwccol[inds[5]+1.:inds[6]+1.]
+itwcref=itwcref[inds[6]+1.:inds[7]+1.]
+ilwccol=ilwccol[inds[7]+1.:inds[8]+1.]
+
+;--------------------FILTER VARIABLES TO FLIGHT TIME BOUNDS--------------------
+stop
 vlwcref=vlwcref[aStart:aEnd]
 vlwccol=vlwccol[aStart:aEnd]
 vtwcref=vtwcref[aStart:aEnd]
@@ -338,8 +340,6 @@ ilwccol=ilwccol[aStart:aEnd]
 trf=trf[aStart:aEnd]
 tas=tas[aStart:aEnd]
 aias=aias[aStart:aEnd]
-timeForm=timeForm[aStart:aEnd]
-time=time[aStart:aEnd]
 pmb=pmb[aStart:aEnd]
 trose=trose[aStart:aEnd]
 z=z[aStart:aEnd]
@@ -362,6 +362,8 @@ cdpTrans=cdpTrans[aStart:aEnd]
 cdpDofRej=cdpDofRej[aStart:aEnd]
 cdpTransRej=cdpTransRej[aStart:aEnd]
 cdpAdcOver=cdpAdcOver[aStart:aEnd]
+
+
 
 ;SET COPE ONLY VARIABLES
 if cope eq 1 then begin
@@ -389,6 +391,9 @@ cdpTransEst=.0002/tas
 
 nPoints=n(pmb)
 nPoints1=n1(pmb)
+
+
+
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------K AIRSPEED DEPENDANCE PARAMETERIZATION---------------------------------------------------------------------
@@ -765,10 +770,15 @@ twcErrColE=twcVarE-twc
 iwc=twc-lwc
 
 
-;--------------------UNCERTAINTY--------------------
+;--------------------ERROR CALCULATIONS--------------------
 
-colELiqUP=1.-colEliq
-colELiqU=abs(lwc)*colELiqUP
+;-----------------LWC-----------------
+
+;----------CONTRIBUTIONS---------
+lwcColEUnc=(1./colEliq)
+lwcRandFluct=2d-3
+
+;----------CALCULATIONS---------
 
 
 
@@ -790,7 +800,7 @@ flightSec=dindgen(nPoints1,start=startsec,increment=1)
 
 color=['black','firebrick','navy','dark green','magenta','coral','indian red','dodger blue','orange','olive drab','medium violet red']
 
-d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch, $
+d={as:as, pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
   pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcVarE:twcVarE,$
   clearairLiq:clearairLiqB, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
   flightString:flightString, kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,$
@@ -807,8 +817,8 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,cdpTrans:cdpTrans,$
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
   pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
-  cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,colELiqU:colELiqU,$
-  colELiqUP:colELiqUP,cdpTransEst:cdpTransEst,lwcBaseline:lwcBaseline,iwc:iwc,$
+  cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,$
+  cdpTransEst:cdpTransEst,lwcBaseline:lwcBaseline,iwc:iwc,$
   cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver}
 
 return,d
