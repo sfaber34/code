@@ -14,7 +14,7 @@ if inds.starti gt 0 then startsec=inds.starti
 ;AIRSPEED TYPE/LEVEL OVERRIDES
 airspeedType='indicated'
 
-calcTrans=1
+calcTrans=0
 
 
 ;---------------------------------------------------------------------------------------------------------------------------------------------------
