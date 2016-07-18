@@ -396,35 +396,43 @@ nPoints1=n1(pmb)
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if cope eq 1 then begin
-  if (airspeedType eq 'indicated') and (level eq '900') then kLiq=(2.47292)*aiasms^(-0.273777)+(0.399143) ;900 indicated
-  if (airspeedType eq 'indicated') and (level eq '600') then kLiq=(3.73599)*aiasms^(-0.0628865)+(-1.67763) ;600 indicated
-  if (airspeedType eq 'indicated') and (level eq '400') then kLiq=(36.0089)*aiasms^(-1.26173)+(1.03362) ;400 indicated
-
-  if (airspeedType eq 'indicated') and (level eq '900') then kTot=(10.8603)*aiasms^(-0.675924)+(0.167331) ;900 indicated
-  if (airspeedType eq 'indicated') and (level eq '600') then kTot=(3.39234)*aiasms^(-0.182697)+(-0.737908) ;600 indicated
-  if (airspeedType eq 'indicated') and (level eq '400') then kTot=(224.264)*aiasms^(-1.73025)+(0.725502) ;400 indicated
+  kLiq=(36.0089)*aiasms^(-1.26173)+(1.03362) ;400 indicated
+  kTot=(224.264)*aiasms^(-1.73025)+(0.725502) ;400 indicated
   
-  if (airspeedType eq 'true') and (level eq '900') then kLiq=(8.56136)*tas^(-0.0292547)+(-6.37413) ;900 true
-  if (airspeedType eq 'true') and (level eq '600') then kLiq=(3.91644)*tas^(-0.0685396)+(-1.70073) ;600 true
-  if (airspeedType eq 'true') and (level eq '400') then kLiq=(1280.56)*tas^(-2.00624)+(1.08139) ;400 true  
-
-  if (airspeedType eq 'true') and (level eq '900') then kTot=(35.0933)*tas^(-1.00354)+(0.318860) ;900 true
-  if (airspeedType eq 'true') and (level eq '600') then kTot=(3.83487)*tas^(-0.238794)+(-0.496087) ;600 true
-  if (airspeedType eq 'true') and (level eq '400') then kTot=(9874.83)*tas^(-2.45898)+(0.753854) ;400 true
+;  if (airspeedType eq 'indicated') and (level eq '900') then kLiq=(2.47292)*aiasms^(-0.273777)+(0.399143) ;900 indicated
+;  if (airspeedType eq 'indicated') and (level eq '600') then kLiq=(3.73599)*aiasms^(-0.0628865)+(-1.67763) ;600 indicated
+;  if (airspeedType eq 'indicated') and (level eq '400') then kLiq=(36.0089)*aiasms^(-1.26173)+(1.03362) ;400 indicated
+;
+;  if (airspeedType eq 'indicated') and (level eq '900') then kTot=(10.8603)*aiasms^(-0.675924)+(0.167331) ;900 indicated
+;  if (airspeedType eq 'indicated') and (level eq '600') then kTot=(3.39234)*aiasms^(-0.182697)+(-0.737908) ;600 indicated
+;  if (airspeedType eq 'indicated') and (level eq '400') then kTot=(224.264)*aiasms^(-1.73025)+(0.725502) ;400 indicated
+;  
+;  if (airspeedType eq 'true') and (level eq '900') then kLiq=(8.56136)*tas^(-0.0292547)+(-6.37413) ;900 true
+;  if (airspeedType eq 'true') and (level eq '600') then kLiq=(3.91644)*tas^(-0.0685396)+(-1.70073) ;600 true
+;  if (airspeedType eq 'true') and (level eq '400') then kLiq=(1280.56)*tas^(-2.00624)+(1.08139) ;400 true  
+;
+;  if (airspeedType eq 'true') and (level eq '900') then kTot=(35.0933)*tas^(-1.00354)+(0.318860) ;900 true
+;  if (airspeedType eq 'true') and (level eq '600') then kTot=(3.83487)*tas^(-0.238794)+(-0.496087) ;600 true
+;  if (airspeedType eq 'true') and (level eq '400') then kTot=(9874.83)*tas^(-2.45898)+(0.753854) ;400 true
 endif
 
 
 
 if cope eq 2 or cope eq 0 then begin
-  if (level eq '700') then kLiq=(-0.0126704)*tas^(0.698457)+(2.01460)
-  if (level eq '600') then kLiq=(-0.00956550)*tas^(0.753178)+(2.00092)
-  if (level eq '500') then kLiq=(-0.135222)*tas^(0.375551)+(2.43805)
-  if (level eq '400') then kLiq=(-0.0810470)*tas^(0.436789)+(2.28769)
   
-  if (level eq '700') then kTot=(-0.0258749)*aiasms^(0.711242)+(1.37937)
-  if (level eq '600') then kTot=(-0.104706)*aiasms^(0.468563)+(1.64276)
-  if (level eq '500') then kTot=(-0.0249307)*aiasms^(0.698422)+(1.39464)
-  if (level eq '400') then kTot=(-0.0700741)*aiasms^(0.512351)+(1.56121)
+  ;-----FOR 700 MB K------
+  kLiq=(-0.013967617)*aiasms^(0.68162048)+(2.0206156)
+  kTot=(-0.021831390)*aiasms^(0.74086404)+(1.3568519)
+  
+;  if (level eq '700') then kLiq=(-0.0126704)*tas^(0.698457)+(2.01460)
+;  if (level eq '600') then kLiq=(-0.00956550)*tas^(0.753178)+(2.00092)
+;  if (level eq '500') then kLiq=(-0.135222)*tas^(0.375551)+(2.43805)
+;  if (level eq '400') then kLiq=(-0.0810470)*tas^(0.436789)+(2.28769)
+;  
+;  if (level eq '700') then kTot=(-0.0258749)*aiasms^(0.711242)+(1.37937)
+;  if (level eq '600') then kTot=(-0.104706)*aiasms^(0.468563)+(1.64276)
+;  if (level eq '500') then kTot=(-0.0249307)*aiasms^(0.698422)+(1.39464)
+;  if (level eq '400') then kTot=(-0.0700741)*aiasms^(0.512351)+(1.56121)
 endif
 
 

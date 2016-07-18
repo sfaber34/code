@@ -1,7 +1,7 @@
 pro loop1hz
 
 level=700
-suffix='laramie1hz'
+suffix='laramieOldParm'
 
 
 savename='loopdata'+suffix+'.sav'
@@ -85,7 +85,7 @@ inds={starti:double(0)}
     nPoints=146852d
 
     flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
-    flight=['1124','1217','0120','0125','0304','0307']
+    flight=['1124','1217','0120','0125','0307']
     
     ;flight='1217'
    
