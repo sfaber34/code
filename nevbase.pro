@@ -21,24 +21,24 @@ calcTrans=0
 ;---------------------------------------------------------------------FILEPATHS---------------------------------------------------------------------
 ;---------------------------------------------------------------------------------------------------------------------------------------------------
   ;COPE
-  if flightDay eq '0709' then nclPath='../data/20130709.c1.nc'
-  if flightDay eq '0710' then nclPath='../data/20130710.c1.nc'
-  if flightDay eq '0725' then nclPath='../data/20130725.c1.nc'
-  if flightDay eq '0727' then nclPath='../data/20130727.c1.nc'
-  if flightDay eq '0728' then nclPath='../data/20130728.c1.nc'
-  if flightDay eq '0729' then nclPath='../data/20130729.c1.nc'
-  if flightDay eq '0807' then nclPath='../data/20130807.c1.nc'
-  if flightDay eq '0814' then nclPath='../data/20130814.c1.nc'
-  if flightDay eq '0815' then nclPath='../data/20130815.c1.nc'
-  if flightDay eq '0802' then nclPath='../data/20130802.c1.nc'
-  if flightDay eq '0803' then nclPath='../data/20130803.c1.nc'
-  if flightDay eq '0806' then nclPath='../data/20130806.c1.nc'  
-  if flightDay eq '0813' then nclPath='../data/20130813.c1.nc'
-  if flightDay eq '0817' then nclPath='../data/20130817.c1.nc'
-  if flightDay eq '0722' then nclPath='../data/20130722.c1.nc'
-  if flightDay eq '0718' then nclPath='../data/20130718.c1.nc'
-  if flightDay eq '0817a' then nclPath='../data/20130817a.c1.nc'
-  if flightDay eq '0817b' then nclPath='../data/20130817b.c1.nc'
+  if flightDay eq '0709' then nclPath='../data/20130709.c25.nc'
+  if flightDay eq '0710' then nclPath='../data/20130710.c25.nc'
+  if flightDay eq '0725' then nclPath='../data/20130725.c25.nc'
+  if flightDay eq '0727' then nclPath='../data/20130727.c25.nc'
+  if flightDay eq '0728' then nclPath='../data/20130728.c25.nc'
+  if flightDay eq '0729' then nclPath='../data/20130729.c25.nc'
+  if flightDay eq '0807' then nclPath='../data/20130807.c25.nc'
+  if flightDay eq '0814' then nclPath='../data/20130814.c25.nc'
+  if flightDay eq '0815' then nclPath='../data/20130815.c25.nc'
+  if flightDay eq '0802' then nclPath='../data/20130802.c25.nc'
+  if flightDay eq '0803' then nclPath='../data/20130803.c25.nc'
+  if flightDay eq '0806' then nclPath='../data/20130806.c25.nc'  
+  if flightDay eq '0813' then nclPath='../data/20130813.c25.nc'
+  if flightDay eq '0817' then nclPath='../data/20130817.c25.nc'
+  if flightDay eq '0722' then nclPath='../data/20130722.c25.nc'
+  if flightDay eq '0718' then nclPath='../data/20130718.c25.nc'
+  if flightDay eq '0817a' then nclPath='../data/20130817a.c25.nc'
+  if flightDay eq '0817b' then nclPath='../data/20130817b.c25.nc'
   
   ;LARAMIE
   if flightDay eq '1124' then nclPath='../data/20151124.c25.nc'
@@ -157,6 +157,7 @@ if cope ne 1 then hivs=!VALUES.F_NAN
 
 cipmod=1
 if flightday eq '0814' eq 1 then cipmod=0
+
 
 ;CIP MOD0 CONC [/liter]
 if cope eq 1 and cipmod eq 1 then begin

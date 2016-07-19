@@ -1,7 +1,7 @@
 pro loop
 
 level=700
-suffix='laramie5hz'
+suffix='cope5hz'
 
 savename='loopdata'+suffix+'.sav'
 
