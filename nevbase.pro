@@ -84,6 +84,32 @@ itwcref=loadvar('itwcref', filename=nclPath)
 ;total collector current [A]
 itwccol=loadvar('itwccol', filename=nclPath)
 
+
+;------------LWC COL/REF SIGNALS ARE BACKWARDS FOR 0307---------------------
+
+if flightDay eq '0307' then begin
+  vlwcrefB=vlwcref
+  vlwccolB=vlwccol
+  vtwcrefB=vtwcref
+  vtwccolB=vtwccol
+  ilwcrefB=ilwcref
+  ilwccolB=ilwccol
+  itwcrefB=itwcref
+  itwccolB=itwccol
+
+  vlwccol=vlwcrefB
+  vlwcref=vlwccolB
+  vtwccol=vtwcrefB
+  vtwcref=vtwccolB
+  ilwccol=ilwcrefB
+  ilwcref=ilwccolB
+  itwccol=itwcrefB
+  itwcref=itwccolB
+endif
+
+;------------------------------------------------------------------------
+
+
 ;reverse flow static temperature [C]
 trf=loadvar('trf', filename=nclPath)
 
@@ -473,7 +499,7 @@ if cope eq 2 or cope eq 0 then begin
   kLiq=(-0.013967617)*aiasms^(0.68162048)+(2.0206156)
   kTot=(-0.021831390)*aiasms^(0.74086404)+(1.3568519)
   
-;  if (level eq '700') then kLiq=(-0.0126704)*tas^(0.698457)+(2.01460)
+;  if (level eq '700') then kLiq=(-0.013967617)*aiasms^(0.68162048)+(2.0206156)
 ;  if (level eq '600') then kLiq=(-0.00956550)*tas^(0.753178)+(2.00092)
 ;  if (level eq '500') then kLiq=(-0.135222)*tas^(0.375551)+(2.43805)
 ;  if (level eq '400') then kLiq=(-0.0810470)*tas^(0.436789)+(2.28769)
@@ -504,9 +530,9 @@ rawSignalTot=(vtwccol)
 
 
 
-int=30
+int=150
 for i=0,nPointsFilt do begin
-  if nPointsFilt-i gt 30 then begin
+  if nPointsFilt-i gt 150 then begin
     correctionLiq[i:i+int]=min(rawSignalLiq[i:i+int])
   endif else begin
     correctionLiq[i:n(correctionLiq)]=min(rawSignalLiq[i:n(correctionLiq)])
@@ -517,7 +543,7 @@ endfor
 
 for i=0,nPointsFilt do begin
   
-  if nPointsFilt-i gt 30 then begin
+  if nPointsFilt-i gt 150 then begin
     smoothSignalLiq[i:i+int]=rawSignalLiq[i:i+int]-correctionLiq[i:i+int]
   endif else begin
     smoothSignalLiq[i:n(smoothSignalLiq)]=rawSignalLiq[i:n(smoothSignalLiq)]-correctionLiq[i:n(smoothSignalLiq)]
@@ -539,7 +565,7 @@ endfor
 
 for i=0,nPointsFilt do begin
   
-  if nPointsFilt-i gt 30 then begin
+  if nPointsFilt-i gt 150 then begin
     smoothSignalTot[i:i+intb]=rawSignalTot[i:i+intb]-correctionTot[i:i+intb]
   endif else begin
     smoothSignalTot[i:n(smoothSignalTot)]=rawSignalTot[i:n(smoothSignalTot)]-correctionTot[i:n(smoothSignalTot)]
@@ -552,7 +578,7 @@ uLiq2=sort(smoothSignalLiq)
 uLiq=diffLiq[uLiq2]
 uLiq=uLiq[where(uLiq gt 0)]
 
-threshLiq=q3(uLiq)
+threshLiq=q1(uLiq)
 
 diffTot=smoothSignalTot
 threshtot=0.
@@ -575,9 +601,17 @@ clearairLiqiB=findgen(nPoints1,start=0.,increment=0.)
 clearairToti=findgen(nPoints1,start=0.,increment=0.)
     
 for i=0,nPoints do begin
-  if abs(diffLiq[i]) le threshLiq and shift(abs(diffLiq[i]),1) le threshLiq and $
-    shift(abs(diffLiq[i]),-1) le threshLiq and shift(abs(diffLiq[i]),2) le threshLiq and $
-    shift(abs(diffLiq[i]),-2) le threshLiq then clearairLiqi[i]=1
+  if abs(diffLiq[i]) le threshLiq and shift(abs(diffLiq[i]),1) le threshLiq and shift(abs(diffLiq[i]),-1) le threshLiq $
+     and shift(abs(diffLiq[i]),2) le threshLiq and shift(abs(diffLiq[i]),-2) le threshLiq $
+     and shift(abs(diffLiq[i]),3) le threshLiq and shift(abs(diffLiq[i]),-3) le threshLiq $
+     and shift(abs(diffLiq[i]),4) le threshLiq and shift(abs(diffLiq[i]),-4) le threshLiq $
+     and shift(abs(diffLiq[i]),5) le threshLiq and shift(abs(diffLiq[i]),-5) le threshLiq $
+     and shift(abs(diffLiq[i]),6) le threshLiq and shift(abs(diffLiq[i]),-6) le threshLiq $
+     and shift(abs(diffLiq[i]),7) le threshLiq and shift(abs(diffLiq[i]),-7) le threshLiq $
+     and shift(abs(diffLiq[i]),8) le threshLiq and shift(abs(diffLiq[i]),-8) le threshLiq $
+     and shift(abs(diffLiq[i]),9) le threshLiq and shift(abs(diffLiq[i]),-9) le threshLiq $
+     and shift(abs(diffLiq[i]),10) le threshLiq and shift(abs(diffLiq[i]),-10) le threshLiq $
+     then clearairLiqi[i]=1
 
   
   if abs(diffTot[i]) le threshTot and abs(shift(diffTot[i],1)) le threshTot and $
@@ -824,22 +858,22 @@ expHeatIce=expHeatLiq
 
 ;--------------------POWER CALCULATIONS--------------------
 pLiq=vlwccol*ilwccol-kLiq*vlwcref*ilwcref
-pLiqNoPresCor=pLiq
-lwcNoPresCor=pLiq/(1d*tas*aLiq*expHeatLiq)
+pLiqNpc=pLiq
+lwcNpc=pLiq/(1d*tas*aLiq*expHeatLiq)
 
 pTot=vtwccol*itwccol-kTot*vtwcref*itwcref
-pTotNoPresCor=pTot
-twcNoPresCor=pTot/(1d*tas*aTot*expHeatIce)
+pTotNpc=pTot
+twcNpc=pTot/(1d*tas*aTot*expHeatIce)
 
 
 
 ;--------------------POWER PRESSURE CORRECTION--------------------
 
-linPresCorLiq=linfit(pmb[clearairLiq],pLiqNoPresCor[clearairLiq])
-pLiq=pLiqNoPresCor - ( linPresCorLiq[1]*pmb + linPresCorLiq[0] )
+linPresCorLiq=linfit(pmb[clearairLiq],pLiqNpc[clearairLiq])
+pLiq=pLiqNpc - ( linPresCorLiq[1]*pmb + linPresCorLiq[0] )
 
-linPresCorTot=linfit(pmb[clearairTot],pTotNoPresCor[clearairTot])
-pTot=pTotNoPresCor - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
+linPresCorTot=linfit(pmb[clearairTot],pTotNpc[clearairTot])
+pTot=pTotNpc - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
 
 
 ;--------------------FINAL CALCULATIONS--------------------
@@ -880,10 +914,13 @@ lwcBL=lwc[clearairLiq]
 lwcBL=lwcBL[where(lwcBL gt 0.)]
 lwcBLThresh=mean(lwcBL)*1.2
 
+lwcClearAir=lwc[clearairLiq]
+lwcNpcClearAir=lwcNpc[clearairLiq]
+
 ;lwcBaseline=where(lwc lt lwcBLThresh)+inds.starti
 
 
-flightSec=dindgen(nPoints1,start=startsec,increment=1)
+flightSec=dindgen(n1(lwc),start=startsec,increment=1)
 
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -893,15 +930,15 @@ flightSec=dindgen(nPoints1,start=startsec,increment=1)
 color=['black','firebrick','navy','dark green','magenta','coral','indian red','dodger blue','orange','olive drab','medium violet red']
 
 d={as:as, pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
-  pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcVarE:twcVarE,$
-  clearairLiq:clearairLiqB, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
+  pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNpc:lwcNpc, twcVarE:twcVarE,$
+  clearairLiq:clearairLiq, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
   flightString:flightString, kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,$
-  aias:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNoPresCor:twcNoPresCor,$
+  aias:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNpc:twcNpc,$
   vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf, threshTot:threshTot,$
   lwc100:lwc100, cdpdbar:cdpdbar_1_NRB,lwcnev2:lwcnev2, timePretty:timePretty,cdpDofRej:cdpDofRej,$
-  avyaw:avyawr,pvmlwc:pvmlwc,cdplwc:cdplwc_1_NRB,pLiqNoPresCor:pLiqNoPresCor,$
+  avyaw:avyawr,pvmlwc:pvmlwc,cdplwc:cdplwc_1_NRB,pLiqNpc:pLiqNpc,$
   rawSignalLiq:rawSignalLiq, smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,flightSec:flightSec,$
-  rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNoPresCor:pTotNoPresCor,$
+  rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNpc:pTotNpc,$
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,expHeatIce:expHeatIce,$
   signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,$
   dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcFixedLv:lwcFixedLv,twcFixedLv:twcFixedLv,$
@@ -910,8 +947,8 @@ d={as:as, pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
   pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,$
-  cdpTransEst:cdpTransEst,iwc:iwc,$
-  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver}
+  cdpTransEst:cdpTransEst,iwc:iwc,lwcClearAir:lwcClearAir,$
+  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,lwcNpcClearAir:lwcNpcClearAir}
 
 return,d
 
@@ -919,6 +956,24 @@ end
 
 
 
+
+
+;---------------------------------------------------------------------------------------------------------------------------------------------------------
+;----------------------------------------------------------------FILTER 25HZ DATA -> 5HZ------------------------------------------------------------------
+;---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+function filter25, varC
+  varB=smooth(varC,5)
+
+  varFilt=[]
+
+  for i=0,n(varC[0,*]) do begin
+    varFilt=[temporary(varFilt),varB[0,i],varB[6,i],varB[11,i],varB[16,i],varB[21,i]]
+  endfor
+
+  return,varFilt
+end
 
 
 
