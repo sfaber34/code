@@ -26,18 +26,18 @@ pro ploterrorbars
   symThick=2
   colorArr=['red','green','blue','black']
   suffixArr=['400','500','600','700']
-  suffixArr='Cope'
+  suffixArr=['lar400','lar500','lar600','lar700']
   
   for j=0,n(suffixArr) do begin
     suffix=suffixArr[j]
-    colorSet=colorArr[0]
+    colorSet=colorArr[j]
    
    restore,'saves/calcBins'+suffix+'.sav'
    
    varX=xVar
-   varA=cdpVlwc
-   varAErrUp=cdpVlwcq3
-   varAErrLow=cdpVlwcq1
+   varA=lwcCAEMed
+   varAErrUp=lwcCAEq3
+   varAErrLow=lwcCAEq1
    
    yBarThick=6.-j*1.4
    yBarThick=1.

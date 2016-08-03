@@ -1,7 +1,7 @@
 pro loop
 
 level=700
-suffix='0307'
+suffix='lar700'
 
 savename='loopdata'+suffix+'.sav'
 
@@ -87,15 +87,15 @@ inds={starti:double(0)}
     cdpAdcOver=[]
     lwcClearAir=[]
     pliqnpc=[]
+    lwcClearAirI=[]
+    
+    startSec=0
     
     nPoints=146852d
 
 
     ;flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
     flight=['1124','1217','0120','0125','0307']
-    
-    ;flight=['0307']
-    flight='0307'
 
    
    cdpBinN=make_array(28,nPoints)
@@ -181,9 +181,11 @@ inds={starti:double(0)}
       lwcClearAir=[lwcClearAir,d.lwcClearAir]
       lwcNpcClearAir=[lwcNpcClearAir,d.lwcNpcClearAir]
       pliqnpc=[pliqnpc,d.pliqnpc]
+      lwcClearAirI=[lwcClearAirI,d.lwcClearAirI]
       
       r=r+n_elements(d.(1))
       inds.starti=inds.starti+n1(d.(1))
+      startSec=startSec+n1(pmb)
     endfor
     
     cdpBinNB=make_array(28,n_elements(pmb))
@@ -207,6 +209,6 @@ inds={starti:double(0)}
       lwcNev2,pvmlwc,expHeatLiq,lwcFixedLv,twcFixedLv,fsspConc,lwcNev1,fsspLwc,pliqnpc,$
       pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
       cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,lwcClearAir,$
-      cdpTrans,cdpTransEst,lwcNpc,lwcBaseline,flightSec,vlwccol,iwc,cdpTransRej,lwcNpcClearAir
+      cdpTrans,cdpTransEst,lwcNpc,lwcBaseline,flightSec,vlwccol,iwc,cdpTransRej,lwcNpcClearAir,lwcClearAirI
    
 end

@@ -127,7 +127,7 @@ pmb=loadvar('pmb', filename=nclPath)
 
 nPoints=n(pmb[0,*])
 nPoints1=nPoints+1
-
+nPoints5=nPoints1*5.-1.
 
 ;temperature from rosemount sensor [C]
 trose=loadvar('trose', filename=nclPath)
@@ -495,10 +495,26 @@ endif
 
 
 if cope eq 2 or cope eq 0 then begin
-  ;-----FOR 700 MB K------
-  kLiq=(-0.013967617)*aiasms^(0.68162048)+(2.0206156)
-  kTot=(-0.021831390)*aiasms^(0.74086404)+(1.3568519)
-  
+
+  case level of
+    '700':begin
+      kLiq=(-0.012776721)*aiasms^(0.69763350)+(2.0156803)
+      kTot=(-0.21580388)*aiasms^(0.36077845)+(1.8761804)
+     end
+     '600':begin
+      kLiq=(-0.012817372)*aiasms^(0.70410877)+(2.0212555)
+      kTot=(-0.025032176)*aiasms^(0.70502084)+(1.3777112)
+     end
+     '500':begin
+      kLiq=(-0.13853586)*aiasms^(0.37353295)+(2.4487758)
+      kTot=(-0.021063767)*aiasms^(0.72729421)+(1.3726227)
+     end
+     '400':begin
+      kLiq=(-0.072750166)*aiasms^(0.45564073)+(2.2735922)
+      kTot=(-0.070773095)*aiasms^(0.51056445)+(1.5625662)
+     end 
+  endcase
+
 ;  if (level eq '700') then kLiq=(-0.013967617)*aiasms^(0.68162048)+(2.0206156)
 ;  if (level eq '600') then kLiq=(-0.00956550)*tas^(0.753178)+(2.00092)
 ;  if (level eq '500') then kLiq=(-0.135222)*tas^(0.375551)+(2.43805)
@@ -596,11 +612,11 @@ if (cope eq 0 or cope eq 2) and threshTot lt .003 then threshTot=.004
 if cope eq 1 then threshTot=0.0025*mean(uTot[0:50])
 
 
-clearairLiqi=findgen(nPoints1,start=0.,increment=0.)
-clearairLiqiB=findgen(nPoints1,start=0.,increment=0.)
-clearairToti=findgen(nPoints1,start=0.,increment=0.)
+clearairLiqi=findgen(nPoints5,start=0.,increment=0.)
+clearairLiqiB=findgen(nPoints5,start=0.,increment=0.)
+clearairToti=findgen(nPoints5,start=0.,increment=0.)
     
-for i=0,nPoints do begin
+for i=0,n(diffLiq) do begin
   if abs(diffLiq[i]) le threshLiq and shift(abs(diffLiq[i]),1) le threshLiq and shift(abs(diffLiq[i]),-1) le threshLiq $
      and shift(abs(diffLiq[i]),2) le threshLiq and shift(abs(diffLiq[i]),-2) le threshLiq $
      and shift(abs(diffLiq[i]),3) le threshLiq and shift(abs(diffLiq[i]),-3) le threshLiq $
@@ -917,6 +933,8 @@ lwcBLThresh=mean(lwcBL)*1.2
 lwcClearAir=lwc[clearairLiq]
 lwcNpcClearAir=lwcNpc[clearairLiq]
 
+lwcClearAirI=clearairLiq+startsec
+
 ;lwcBaseline=where(lwc lt lwcBLThresh)+inds.starti
 
 
@@ -948,7 +966,8 @@ d={as:as, pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
   pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,$
   cdpTransEst:cdpTransEst,iwc:iwc,lwcClearAir:lwcClearAir,$
-  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,lwcNpcClearAir:lwcNpcClearAir}
+  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,lwcNpcClearAir:lwcNpcClearAir,$
+  lwcClearAirI:lwcClearAirI}
 
 return,d
 

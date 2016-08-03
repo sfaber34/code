@@ -42,8 +42,13 @@ pro calcLaramieK
   avpitch=loadvar('avpitch', filename=nclPath)
   
   
+
+  ;inds=[1262:2210] ;700 mb
+  inds=[2478:3437] ;600 mb
+  ;inds=[3755:4847] ;500 mb
+  ;inds=[5288:6930] ;400 mb
   
-  inds=[1262:2210]
+  
   
   vlwcref=vlwcref[inds]
   vlwccol=vlwccol[inds]
@@ -57,13 +62,41 @@ pro calcLaramieK
   pmb=pmb[inds]
   avroll=avroll[inds]
   avpitch=avpitch[inds]
-    
   
-  as1=[249,276]
-  as2=[385,412]
-  as3=[538,570]
-  as4=[677,715]
-  as5=[915,948]
+  p1=plot(aias,margin=50,/device,dimensions=[1400,1100])
+  
+;  p2=plot(avroll,margin=50,/device,dimensions=[1400,1100],layout=[1,2,1],'b')
+;  p3=plot(avpitch,margin=50,/device,dimensions=[1400,1100],layout=[1,2,2],'r',/current)
+    
+    
+    
+  ;--700mb--  
+;  as1=[228,278]
+;  as2=[385,412]
+;  as3=[538,588]
+;  as4=[650,700]
+;  as5=[839,889]
+
+;--600mb--
+  as1=[148,198]
+  as2=[320,370]
+  as3=[490,540]
+  as4=[723,773]
+  as5=[492,493]
+  
+  ;--500mb--
+;  as1=[80,130]
+;  as2=[250,300]
+;  as3=[365,415]
+;  as4=[590,640]
+;  as5=[706,756]
+  
+  ;--400mb--
+;  as1=[90,140]
+;  as2=[265,315]
+;  as3=[410,460]
+;  as4=[411,412]
+;  as5=[1380,1430]
  
   
   filtInds=[dindgen(as1[1]-as1[0]+1,start=as1[0]), dindgen(as2[1]-as2[0]+1,start=as2[0]), dindgen(as3[1]-as3[0]+1,start=as3[0]), $
@@ -100,3 +133,4 @@ pro calcLaramieK
   p2=plot(aias,yfitb,'green',/overplot)
   stop
 end
+

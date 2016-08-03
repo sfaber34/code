@@ -1,15 +1,16 @@
 pro calcBinnedVals
 
 
-  suffix='Cope'
+  suffix='lar700'
   
   
   restore,'saves/loopdata'+suffix+'.sav'
 
   ;LIQUID ONLY POINTS OR ALL
-  liq=1
+  liq=0
 
-  liqOnly=where(trf gt -3d and lwc gt .02 and lwc lt 1.3 and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1))
+  ;liqOnly=where(trf gt -3d and lwc gt .02 and lwc lt 1.3 and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1))
+  liqOnly=where((cipmodconc0 lt .1 and finite(cipmodconc0) eq 1))
 
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -34,24 +35,27 @@ pro calcBinnedVals
     lwcNev1=lwcNev1[liqonly]
     flightsec=flightsec[liqonly]
     pmb=pmb[liqonly]
-    lwcnoprescor=lwcnoprescor[liqonly]
+    ;lwcnoprescor=lwcnoprescor[liqonly]
+    tas=tas[liqonly]
+    aias=aias[liqonly]
+    lwcClearAir=lwcclearair[liqonly]
   endif
 
 
 
 
   ;-------------------------------SET VAR---------------------------------------
-  var=cdpconc
+  var=tas
   ;-------------------------------SET VAR---------------------------------------
 
   ;STARTING LEFT VALUE
-  binstart=0d
+  binstart=80d
 
   ;WIDTH OF BINS
-  bininc=100d
+  bininc=10d
   
   ;MAX BIN VALUE
-  binEnd=2000d
+  binEnd=110d
 
   saveName='calcBins'+suffix+'.sav'
 
@@ -135,6 +139,9 @@ pro calcBinnedVals
   cdpVtwcQ3=[]
   cdpConcMean=[]
   xVarMean=[]
+  lwcCAEMed=[]
+  lwcCAEq1=[]
+  lwcCAEq3=[]
 
 
 
@@ -177,7 +184,7 @@ pro calcBinnedVals
     cdpDBarMean=[cdpDBarMean,mean(cdpdbar[bins])]
     lwcMean=[lwcMean,mean(lwc[bins])]
     cdpConcMean=[temporary(cdpConcMean),mean(cdpConc[bins])]
-    xVarMean=[temporary(xVarMean),((binStart+binInc*(i+1.))-(binStart+binInc*i))/2.+binInc*i]
+    ;xVarMean=[temporary(xVarMean),((binStart+binInc*(i+1.))-(binStart+binInc*i))/2.+binInc*i]
 
 
 
@@ -229,17 +236,24 @@ pro calcBinnedVals
     lwc100VCdplwcq3=[lwc100VCdplwcq3,lwc100Lwcsorted[n_elements(lwc100KCdplwcsorted)*.75]-mean(lwc100[bins])/mean(cdplwc[bins])]
 
 
-    lwcOoc=[lwcOoc,(med(abs(lwcnoprescor[bins])))]
-    lwcOocq1=[lwcOocq1,q1(abs(lwcnoprescor[bins]))]
-    lwcOocq3=[lwcOocq3,q3(abs(lwcnoprescor[bins]))]
-    lwcOocSDev=[lwcOocSDev,(stddev(abs(lwcnoprescor[bins])))]
-    pmbMed=[pmbMed,mean(pmb[bins])]
-    vmdMed=[vmdMed,mean(vmd[bins])]
+;    lwcOoc=[lwcOoc,(med(abs(lwcnoprescor[bins])))]
+;    lwcOocq1=[lwcOocq1,q1(abs(lwcnoprescor[bins]))]
+;    lwcOocq3=[lwcOocq3,q3(abs(lwcnoprescor[bins]))]
+;    lwcOocSDev=[lwcOocSDev,(stddev(abs(lwcnoprescor[bins])))]
+;    pmbMed=[pmbMed,mean(pmb[bins])]
+;    vmdMed=[vmdMed,mean(vmd[bins])]
+    
+    match,bins,lwcclearairi,amatch,bmatch
+    matched=bins[amatch]
+    lwcCAEMed=[lwcCAEMed,mean(abs(lwcnpc[matched]))]
+    lwcCAEq1=[lwcCAEq1,q1(abs(lwcnpc[matched]))]
+    lwcCAEq3=[lwcCAEq3,q3(abs(lwcnpc[matched]))]
 
 
 
   endfor
-  
+  xVarMean=(binBounds+shift(binBounds,-1))/2.
+  xVarMean=xVarMean[0:n1(xVarMean,-2)]
   xVar=xVarMean
 
   save,filename='saves/'+saveName,coleControlLwc,coleControlTwc,vmdGeoMean,$
@@ -249,7 +263,8 @@ pro calcBinnedVals
     lwc100Vtwc,lwc100Vlwc,lwc100Vtwc,lwc100Mean,colELiqUMean,lwctwcq1,lwctwcq3,$
     lwcq1,lwcq3,twcq1,twcq3,color,vmdMean,cdpVlwcq1,cdpVlwcq3,vmdMed,xVar,$
     lwc100VLwcq1,lwc100VLwcq3,lwc100VCdplwcq1,lwc100VCdplwcq3,lwcOocSDev,$
-    lwcVcdpq1,lwcVcdpq3,lwcVCdp,cdpDBarMean,binGeoMean,lwcOoc,lwcOocq1,lwcOocq3
+    lwcVcdpq1,lwcVcdpq3,lwcVCdp,cdpDBarMean,binGeoMean,lwcOoc,lwcOocq1,lwcOocq3,$
+    lwcCAEMed,lwcCAEq1,lwcCAEq3
 
 
 
