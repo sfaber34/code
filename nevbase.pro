@@ -123,7 +123,7 @@ aias=loadvar('aias', filename=nclPath)
 time=loadvar('time', filename=nclPath)
 
 ;pressure from rosemount sensor [mb]
-pmb=loadvar('pmb', filename=nclPath)
+pmb=loadvar('ps_hads_a', filename=nclPath)
 
 nPoints=n(pmb[0,*])
 nPoints1=nPoints+1
@@ -952,7 +952,7 @@ d={as:as, pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
   clearairLiq:clearairLiq, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
   flightString:flightString, kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,$
   aias:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNpc:twcNpc,$
-  vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf, threshTot:threshTot,$
+  vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf,trose:trose, threshTot:threshTot,$
   lwc100:lwc100, cdpdbar:cdpdbar_1_NRB,lwcnev2:lwcnev2, timePretty:timePretty,cdpDofRej:cdpDofRej,$
   avyaw:avyawr,pvmlwc:pvmlwc,cdplwc:cdplwc_1_NRB,pLiqNpc:pLiqNpc,$
   rawSignalLiq:rawSignalLiq, smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,flightSec:flightSec,$
@@ -967,7 +967,7 @@ d={as:as, pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,$
   cdpTransEst:cdpTransEst,iwc:iwc,lwcClearAir:lwcClearAir,$
   cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,lwcNpcClearAir:lwcNpcClearAir,$
-  lwcClearAirI:lwcClearAirI}
+  lwcClearAirI:lwcClearAirI,alpha:alpha}
 
 return,d
 

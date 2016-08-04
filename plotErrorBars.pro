@@ -25,7 +25,6 @@ pro ploterrorbars
   symSize=1.8
   symThick=2
   colorArr=['red','green','blue','black']
-  suffixArr=['400','500','600','700']
   suffixArr=['lar400','lar500','lar600','lar700']
   
   for j=0,n(suffixArr) do begin

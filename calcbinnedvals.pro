@@ -45,17 +45,28 @@ pro calcBinnedVals
 
 
   ;-------------------------------SET VAR---------------------------------------
-  var=tas
+  var=pmb
   ;-------------------------------SET VAR---------------------------------------
 
   ;STARTING LEFT VALUE
-  binstart=80d
+  binstart=500d
 
   ;WIDTH OF BINS
-  bininc=10d
+  bininc=25d
   
   ;MAX BIN VALUE
-  binEnd=110d
+  binEnd=750d
+  
+  
+  
+  
+  ;-----------------------------------------------------------------------------
+  
+  
+  
+  
+  
+  
 
   saveName='calcBins'+suffix+'.sav'
 
