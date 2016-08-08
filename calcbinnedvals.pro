@@ -52,7 +52,7 @@ pro calcBinnedVals
   binstart=500d
 
   ;WIDTH OF BINS
-  bininc=25d
+  bininc=50d
   
   ;MAX BIN VALUE
   binEnd=750d
@@ -153,6 +153,7 @@ pro calcBinnedVals
   lwcCAEMed=[]
   lwcCAEq1=[]
   lwcCAEq3=[]
+  lwcCAEStdDev=[]
 
 
 
@@ -185,9 +186,9 @@ pro calcBinnedVals
     cdpVtwc=[cdpVtwc,mean(cdplwc[bins])/mean(twc[bins])]    
     cdpVLwcCor=[cdpVLwcCor,mean(cdplwc[bins])/mean(lwcVarE[bins])]
     cdpVTwcCor=[cdpVTwcCor,mean(cdplwc[bins])/mean(twcVarE[bins])]
-    lwctwc=[lwctwc,(med(twc[bins])-med(lwc[bins]))/abs(med(lwc[bins]))]
-    lwctwcq1=[lwctwcq1,(q1(twc[bins])-q1(lwc[bins]))/abs(q1(lwc[bins]))]
-    lwctwcq3=[lwctwcq3,(q3(twc[bins])-q3(lwc[bins]))/abs(q3(lwc[bins]))]
+    ;lwctwc=[lwctwc,(med(twc[bins])-med(lwc[bins]))/abs(med(lwc[bins]))]
+    ;lwctwcq1=[lwctwcq1,(q1(twc[bins])-q1(lwc[bins]))/abs(q1(lwc[bins]))]
+    ;lwctwcq3=[lwctwcq3,(q3(twc[bins])-q3(lwc[bins]))/abs(q3(lwc[bins]))]
     lwc100Vlwc=[lwc100Vlwc,mean(lwcVarE[bins])/mean(lwc100[bins])]
     lwc100Vtwc=[lwc100Vtwc,mean(twcVarE[bins])/mean(lwc100[bins])]
     lwc100Vcdplwc=[lwc100Vcdplwc,mean(cdplwc[bins])/mean(lwc100[bins])]
@@ -259,7 +260,7 @@ pro calcBinnedVals
     lwcCAEMed=[lwcCAEMed,mean(abs(lwcnpc[matched]))]
     lwcCAEq1=[lwcCAEq1,q1(abs(lwcnpc[matched]))]
     lwcCAEq3=[lwcCAEq3,q3(abs(lwcnpc[matched]))]
-
+    lwcCAEStdDev=[lwcCAEStdDev,stddev(abs(lwcnpc[matched]))]
 
 
   endfor
@@ -275,7 +276,7 @@ pro calcBinnedVals
     lwcq1,lwcq3,twcq1,twcq3,color,vmdMean,cdpVlwcq1,cdpVlwcq3,vmdMed,xVar,$
     lwc100VLwcq1,lwc100VLwcq3,lwc100VCdplwcq1,lwc100VCdplwcq3,lwcOocSDev,$
     lwcVcdpq1,lwcVcdpq3,lwcVCdp,cdpDBarMean,binGeoMean,lwcOoc,lwcOocq1,lwcOocq3,$
-    lwcCAEMed,lwcCAEq1,lwcCAEq3
+    lwcCAEMed,lwcCAEq1,lwcCAEq3,lwcCAEStdDev
 
 
 

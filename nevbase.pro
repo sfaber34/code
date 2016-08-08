@@ -546,114 +546,87 @@ rawSignalTot=(vtwccol)
 
 
 
-int=150
-for i=0,nPointsFilt do begin
-  if nPointsFilt-i gt 150 then begin
-    correctionLiq[i:i+int]=min(rawSignalLiq[i:i+int])
-  endif else begin
-    correctionLiq[i:n(correctionLiq)]=min(rawSignalLiq[i:n(correctionLiq)])
-  endelse  
-  i=i+int
-endfor
+;int=150
+;for i=0,nPointsFilt do begin
+;  if nPointsFilt-i gt 150 then begin
+;    correctionLiq[i:i+int]=min(rawSignalLiq[i:i+int])
+;  endif else begin
+;    correctionLiq[i:n(correctionLiq)]=min(rawSignalLiq[i:n(correctionLiq)])
+;  endelse  
+;  i=i+int
+;endfor
 
 
+;try w/ lowpass filter
+
+correctionLiqB=[]
+correctionLiqBX=[]
+int=50
 for i=0,nPointsFilt do begin
-  
-  if nPointsFilt-i gt 150 then begin
-    smoothSignalLiq[i:i+int]=rawSignalLiq[i:i+int]-correctionLiq[i:i+int]
+  if nPointsFilt-i gt 50 then begin
+    correctionLiqB=[correctionLiqB,min(rawSignalLiq[i:i+int])]
+    correctionLiqBX=[correctionLiqBX,where(rawSignalLiq[i:i+int] eq min(rawSignalLiq[i:i+int]))+i]
   endif else begin
-    smoothSignalLiq[i:n(smoothSignalLiq)]=rawSignalLiq[i:n(smoothSignalLiq)]-correctionLiq[i:n(smoothSignalLiq)]
+    correctionLiqB=[correctionLiqB,min(rawSignalLiq[i:n(correctionLiq)])]
+    correctionLiqBX=[correctionLiqBX,where(rawSignalLiq[i:n(correctionLiq)] eq min(rawSignalLiq[i:n(correctionLiq)]))+i]
   endelse
   i=i+int
 endfor
 
+smLiq=ts_smooth(correctionLiqB,5)
 
-intb=20
+for i=0,n(correctionLiqBX)-1 do begin
+  smoothfit=linfit([correctionLiqBX[i],correctionLiqBX[i+1]],[smLiq[i],smLiq[i+1]]) 
+  for j=correctionLiqBX[i],correctionLiqBX[i+1] do begin
+    smoothSignalLiq[j]=rawSignalLiq[j]-(smoothfit[0]+smoothfit[1]*(j))
+  endfor
+endfor
+
+
+
+correctionTotB=[]
+correctionTotBX=[]
+int=50
 for i=0,nPointsFilt do begin
-  
-  if nPointsFilt-i gt 30 then begin
-    correctionTot[i:i+intb]=min(rawSignalTot[i:i+intb])
+  if nPointsFilt-i gt 50 then begin
+    correctionTotB=[correctionTotB,min(rawSignalTot[i:i+int])]
+    correctionTotBX=[correctionTotBX,where(rawSignalTot[i:i+int] eq min(rawSignalTot[i:i+int]))+i]
   endif else begin
-    correctionTot[i:n(correctionTot)]=min(rawSignalTot[i:n(correctionTot)])
+    correctionTotB=[correctionTotB,min(rawSignalTot[i:n(correctionTot)])]
+    correctionTotBX=[correctionTotBX,where(rawSignalTot[i:n(correctionTot)] eq min(rawSignalTot[i:n(correctionTot)]))+i]
   endelse
   i=i+int
 endfor
 
-for i=0,nPointsFilt do begin
-  
-  if nPointsFilt-i gt 150 then begin
-    smoothSignalTot[i:i+intb]=rawSignalTot[i:i+intb]-correctionTot[i:i+intb]
-  endif else begin
-    smoothSignalTot[i:n(smoothSignalTot)]=rawSignalTot[i:n(smoothSignalTot)]-correctionTot[i:n(smoothSignalTot)]
-  endelse
-  i=i+int
+smTot=ts_smooth(correctionTotB,5)
+
+for i=0,n(correctionTotBX)-1 do begin
+  smoothfit=linfit([correctionTotBX[i],correctionTotBX[i+1]],[smTot[i],smTot[i+1]])
+  for j=correctionTotBX[i],correctionTotBX[i+1] do begin
+    smoothSignalTot[j]=rawSignalTot[j]-(smoothfit[0]+smoothfit[1]*(j))
+  endfor
 endfor
 
-diffLiq=smoothSignalLiq
-uLiq2=sort(smoothSignalLiq)
-uLiq=diffLiq[uLiq2]
-uLiq=uLiq[where(uLiq gt 0)]
-
-threshLiq=q1(uLiq)
-
-diffTot=smoothSignalTot
-threshtot=0.
-uTot2=sort(diffTot)
-uTot3=reverse(uTot2)
-uTot=diffTot[uTot3]
-u1Tot=uTot[0]
-u2Tot=uTot[50]
-
-x1Tot=min([u1Tot,u2Tot])
-x2Tot=max([u1Tot,u2Tot])
-if cope eq 0 or cope eq 2 then threshTot=.085*mean(uTot[0:50])
-if (cope eq 0 or cope eq 2) and threshTot lt .003 then threshTot=.004
-
-if cope eq 1 then threshTot=0.0025*mean(uTot[0:50])
-
-
-clearairLiqi=findgen(nPoints5,start=0.,increment=0.)
-clearairLiqiB=findgen(nPoints5,start=0.,increment=0.)
-clearairToti=findgen(nPoints5,start=0.,increment=0.)
-    
-for i=0,n(diffLiq) do begin
-  if abs(diffLiq[i]) le threshLiq and shift(abs(diffLiq[i]),1) le threshLiq and shift(abs(diffLiq[i]),-1) le threshLiq $
-     and shift(abs(diffLiq[i]),2) le threshLiq and shift(abs(diffLiq[i]),-2) le threshLiq $
-     and shift(abs(diffLiq[i]),3) le threshLiq and shift(abs(diffLiq[i]),-3) le threshLiq $
-     and shift(abs(diffLiq[i]),4) le threshLiq and shift(abs(diffLiq[i]),-4) le threshLiq $
-     and shift(abs(diffLiq[i]),5) le threshLiq and shift(abs(diffLiq[i]),-5) le threshLiq $
-     and shift(abs(diffLiq[i]),6) le threshLiq and shift(abs(diffLiq[i]),-6) le threshLiq $
-     and shift(abs(diffLiq[i]),7) le threshLiq and shift(abs(diffLiq[i]),-7) le threshLiq $
-     and shift(abs(diffLiq[i]),8) le threshLiq and shift(abs(diffLiq[i]),-8) le threshLiq $
-     and shift(abs(diffLiq[i]),9) le threshLiq and shift(abs(diffLiq[i]),-9) le threshLiq $
-     and shift(abs(diffLiq[i]),10) le threshLiq and shift(abs(diffLiq[i]),-10) le threshLiq $
-     then clearairLiqi[i]=1
-
-  
-  if abs(diffTot[i]) le threshTot and abs(shift(diffTot[i],1)) le threshTot and $
-     abs(shift(diffTot[i],-1)) le threshTot and abs(shift(diffTot[i],2)) le threshTot and $
-     abs(shift(diffTot[i],-2)) le threshTot then clearairToti[i]=1
-endfor    
-    
-clearairLiq=where(clearairLiqi eq 1)
-
-for i=0,nPoints do begin
-  if vlwccol[i] lt (stddev(vlwccol[clearairliq])*2.5+mean(vlwccol[clearairliq])) and clearairLiqi[i] eq 1 then clearairLiqiB[i]=1
-endfor
-clearairLiqS2=where(clearairLiqiB eq 1)
+threshLiq=q1(smoothSignalLiq)
+threshTot=q1(smoothSignalTot)
 
 
 
-clearairLiqB=double(clearairLiqS2+startsec)
-clearairTot=where(clearairToti eq 1)
-
-signalLiq=where(clearairLiqi eq 0)
-signalTot=where(clearairToti eq 0)
+clearairLiq=where(smoothSignalLiq lt threshliq)
+clearairTot=where(smoothSignalTot lt threshTot)
 
 
-clearairTotsort=sort(vtwccol[clearairTot])
-clearairTotsortsorted=clearairTot[clearairTotsort]
-clearairTotsortsorted=clearairTotsortsorted[n_elements(clearairTotsortsorted)*.01:n_elements(clearairTotsortsorted)*.99]
+
+
+
+
+;signalLiq=where(clearairLiqi eq 0)
+;signalTot=where(clearairToti eq 0)
+
+
+;clearairTotsort=sort(vtwccol[clearairTot])
+;clearairTotsortsorted=clearairTot[clearairTotsort]
+;clearairTotsortsorted=clearairTotsortsorted[n_elements(clearairTotsortsorted)*.01:n_elements(clearairTotsortsorted)*.99]
 
 
 
@@ -934,6 +907,7 @@ lwcClearAir=lwc[clearairLiq]
 lwcNpcClearAir=lwcNpc[clearairLiq]
 
 lwcClearAirI=clearairLiq+startsec
+twcClearAirI=clearairTot+startsec
 
 ;lwcBaseline=where(lwc lt lwcBLThresh)+inds.starti
 
@@ -954,11 +928,11 @@ d={as:as, pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
   aias:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNpc:twcNpc,$
   vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf,trose:trose, threshTot:threshTot,$
   lwc100:lwc100, cdpdbar:cdpdbar_1_NRB,lwcnev2:lwcnev2, timePretty:timePretty,cdpDofRej:cdpDofRej,$
-  avyaw:avyawr,pvmlwc:pvmlwc,cdplwc:cdplwc_1_NRB,pLiqNpc:pLiqNpc,$
+  avyaw:avyawr,pvmlwc:pvmlwc,cdplwc:cdplwc_1_NRB,pLiqNpc:pLiqNpc,twcClearAirI:twcClearAirI,$
   rawSignalLiq:rawSignalLiq, smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,flightSec:flightSec,$
   rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNpc:pTotNpc,$
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,expHeatIce:expHeatIce,$
-  signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,$
+  cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,$
   dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcFixedLv:lwcFixedLv,twcFixedLv:twcFixedLv,$
   twc:twc,colETot:colETot,dBarB:dBarB,colEtot2:colEtot2,coletot3:coletot3,$
   cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,cdpTrans:cdpTrans,$
@@ -967,7 +941,7 @@ d={as:as, pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,$
   cdpTransEst:cdpTransEst,iwc:iwc,lwcClearAir:lwcClearAir,$
   cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,lwcNpcClearAir:lwcNpcClearAir,$
-  lwcClearAirI:lwcClearAirI,alpha:alpha}
+  lwcClearAirI:lwcClearAirI,alpha:alpha,correctionLiq:correctionLiq}
 
 return,d
 
