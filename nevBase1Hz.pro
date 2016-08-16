@@ -14,7 +14,7 @@ if inds.starti gt 0 then startsec=inds.starti
 ;AIRSPEED TYPE/LEVEL OVERRIDES
 airspeedType='indicated'
 
-calcTrans=0
+calcTrans=1
 
 
 ;---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -216,7 +216,7 @@ noNev1=1
 if cope eq 1 and nonev1 eq 1 then begin
   lwcNev1=loadvar('nevlwc1', filename=nclPath)
 endif else begin
-  lwcNev1=replicate(!VALUES.F_NAN,nPoints1)
+  ;lwcNev1=replicate(!VALUES.F_NAN,nPoints1)
 endelse  
 
 ;liquid water content from Nevzorov probe [g/m^3]
@@ -291,8 +291,11 @@ timePretty=hourstspb+':'+minstspb+':'+secstspb
 t={hour:hour,min:min,sec:sec,timeForm:timeForm}
 
 ;vsig=where(vlwccol gt 4.)
-vsig=where(vlwccol gt 2.5)
-vsig=vsig[30:n_elements(vsig)-30]
+;x=q1(vlwccol)
+x=3.
+vsig=where(vlwccol gt x and shift(vlwccol,1) gt x and shift(vlwccol,2) gt x and shift(vlwccol,3) gt x and shift(vlwccol,4) gt x and shift(vlwccol,5) gt x $
+   and shift(vlwccol,6) gt x and shift(vlwccol,7) gt x and shift(vlwccol,8) gt x and shift(vlwccol,9) gt x and shift(vlwccol,10) gt x)
+vsig=vsig[300:n_elements(vsig)-300]
 aStart=min(vsig)
 aEnd=max(vsig)
 
@@ -396,35 +399,34 @@ nPoints1=n1(pmb)
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if cope eq 1 then begin
-  kLiq=(36.0089)*aiasms^(-1.26173)+(1.03362) ;400 indicated
-  kTot=(224.264)*aiasms^(-1.73025)+(0.725502) ;400 indicated
-  
-;  if (airspeedType eq 'indicated') and (level eq '900') then kLiq=(2.47292)*aiasms^(-0.273777)+(0.399143) ;900 indicated
-;  if (airspeedType eq 'indicated') and (level eq '600') then kLiq=(3.73599)*aiasms^(-0.0628865)+(-1.67763) ;600 indicated
-;  if (airspeedType eq 'indicated') and (level eq '400') then kLiq=(36.0089)*aiasms^(-1.26173)+(1.03362) ;400 indicated
-;
-;  if (airspeedType eq 'indicated') and (level eq '900') then kTot=(10.8603)*aiasms^(-0.675924)+(0.167331) ;900 indicated
-;  if (airspeedType eq 'indicated') and (level eq '600') then kTot=(3.39234)*aiasms^(-0.182697)+(-0.737908) ;600 indicated
-;  if (airspeedType eq 'indicated') and (level eq '400') then kTot=(224.264)*aiasms^(-1.73025)+(0.725502) ;400 indicated
-;  
-;  if (airspeedType eq 'true') and (level eq '900') then kLiq=(8.56136)*tas^(-0.0292547)+(-6.37413) ;900 true
-;  if (airspeedType eq 'true') and (level eq '600') then kLiq=(3.91644)*tas^(-0.0685396)+(-1.70073) ;600 true
-;  if (airspeedType eq 'true') and (level eq '400') then kLiq=(1280.56)*tas^(-2.00624)+(1.08139) ;400 true  
-;
-;  if (airspeedType eq 'true') and (level eq '900') then kTot=(35.0933)*tas^(-1.00354)+(0.318860) ;900 true
-;  if (airspeedType eq 'true') and (level eq '600') then kTot=(3.83487)*tas^(-0.238794)+(-0.496087) ;600 true
-;  if (airspeedType eq 'true') and (level eq '400') then kTot=(9874.83)*tas^(-2.45898)+(0.753854) ;400 true
+  kLiq=(0.860351)*(0.969536)^aiasms+(1.10449)
+  kTot=(1.13654)*(0.989413)^aiasms+(0.309623)
 endif
 
 
 
 if cope eq 2 or cope eq 0 then begin
-  
-  ;-----FOR 700 MB K------
-  kLiq=(-0.013967617)*aiasms^(0.68162048)+(2.0206156)
-  kTot=(-0.021831390)*aiasms^(0.74086404)+(1.3568519)
-  
-;  if (level eq '700') then kLiq=(-0.0126704)*tas^(0.698457)+(2.01460)
+
+  case level of
+    '700':begin
+      kLiq=(0.75332308)*(0.99547708)^aiasms+(1.2198560)
+      kTot=(1.13654)*(0.989413)^aiasms+(0.309623)
+     end
+     '600':begin
+      kLiq=(0.989776)*(0.996765)^aiasms+(0.977116)
+      kTot=(1.35180)*(0.974671)^aiasms+(0.651032)
+     end
+     '500':begin
+      kLiq=(0.989940)*(0.974684)^aiasms+(1.60661)
+      kTot=(1.04426)*(0.990708)^aiasms+(0.366638)
+     end
+     '400':begin
+      kLiq=(2.33354)*(0.954685)^aiasms+(1.67697)
+      kTot=(0.981726)*(0.981146)^aiasms+(0.683709)
+     end 
+  endcase
+
+;  if (level eq '700') then kLiq=(-0.013967617)*aiasms^(0.68162048)+(2.0206156)
 ;  if (level eq '600') then kLiq=(-0.00956550)*tas^(0.753178)+(2.00092)
 ;  if (level eq '500') then kLiq=(-0.135222)*tas^(0.375551)+(2.43805)
 ;  if (level eq '400') then kLiq=(-0.0810470)*tas^(0.436789)+(2.28769)
@@ -436,6 +438,10 @@ if cope eq 2 or cope eq 0 then begin
 endif
 
 
+;finKLiq=where(finite(kLiq) eq 0)
+;for i=0,n(finKLiq) do begin
+;  kLiq[finKLiq[i]]=mean(kLiq[finKLiq[i-1]],kLiq[finKLiq[i]])
+;endfor
 
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------CLEARAIR POINT DETECTION---------------------------------------------------------------------
@@ -736,8 +742,10 @@ expHeatIce=expHeatLiq
 
 ;--------------------POWER CALCULATIONS--------------------
 pLiq=vlwccol*ilwccol-kLiq*vlwcref*ilwcref
+pLiqFix=vlwccol*ilwccol-1.1735*vlwcref*ilwcref
 pLiqNoPresCor=pLiq
 lwcNoPresCor=pLiq/(1d*tas*aLiq*expHeatLiq)
+lwcPLiqFix=pLiqFix/(1d*tas*aLiq*expHeatLiq)
 
 pTot=vtwccol*itwccol-kTot*vtwcref*itwcref
 pTotNoPresCor=pTot
@@ -800,7 +808,7 @@ flightSec=dindgen(nPoints1,start=startsec,increment=1)
 color=['black','firebrick','navy','dark green','magenta','coral','indian red','dodger blue','orange','olive drab','medium violet red']
 
 d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch, $
-  pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcVarE:twcVarE,$
+  pLiq:pLiq, lwcVarE:lwcVarE, lwcNev:lwcNev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcVarE:twcVarE,$
   clearairLiq:clearairLiqB, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
   flightString:flightString, kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,$
   aias:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNoPresCor:twcNoPresCor,$
@@ -818,7 +826,7 @@ d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch,
   pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,colELiqU:colELiqU,$
   colELiqUP:colELiqUP,cdpTransEst:cdpTransEst,lwcBaseline:lwcBaseline,iwc:iwc,$
-  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver}
+  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,lwcPLiqFix:lwcPLiqFix}
 
 return,d
 
@@ -922,26 +930,34 @@ function cdpTransTime, flightDay
   for i=0,n_elements(cdpAveTransSps[0,*])-1 do begin
     cdpAveTransSpsFilt=cdpAveTransSps[*,i]
     nonNull=where(cdpAveTransSpsFilt gt 0.)
-    cdpAveTransSpsFiltB=cdpAveTransSpsFilt[nonNull]
-    s=sort(cdpAveTransSpsFiltB)
-    sd=cdpAveTransSpsFiltB[s]
-    cdpAveTransSpsAve[i]=median(sd,/even)
+    if nonNull[0] ge 0 then begin
+      cdpAveTransSpsFiltB=cdpAveTransSpsFilt[nonNull]
+      cdpAveTransSpsAve[i]=mean(cdpAveTransSpsFiltB)
+    endif
+    
 
 
     cdpDofRejSpsFilt=cdpDofRejSps[*,i]
     nonNull=where(cdpDofRejSpsFilt gt 0.)
-    cdpDofRejSpsFiltB=cdpDofRejSpsFilt[nonNull]
-    cdpDofRejSpsAve[i]=mean(cdpDofRejSpsFiltB)
+    if nonNull[0] ge 0 then begin
+      cdpDofRejSpsFiltB=cdpDofRejSpsFilt[nonNull]
+      cdpDofRejSpsAve[i]=mean(cdpDofRejSpsFiltB)
+    endif
     
     cdptransRejSpsFilt=cdptransRejSps[*,i]
     nonNull=where(cdptransRejSpsFilt gt 0.)
-    cdptransRejSpsFiltB=cdptransRejSpsFilt[nonNull]
-    cdptransRejSpsAve[i]=mean(cdptransRejSpsFiltB)
-    
+    if nonNull[0] ge 0 then begin
+      cdptransRejSpsFiltB=cdptransRejSpsFilt[nonNull]
+      cdptransRejSpsAve[i]=mean(cdptransRejSpsFiltB)
+    endif
+
     cdpAdcOverFilt=cdpAdcOver[*,i]
     nonNull=where(cdpAdcOverFilt gt 0.)
-    cdpAdcOverFiltB=cdpAdcOverFilt[nonNull]
-    cdpAdcOverAve[i]=mean(cdpAdcOverFiltB)
+    if nonNull[0] ge 0 then begin
+      cdpAdcOverFiltB=cdpAdcOverFilt[nonNull]
+      cdpAdcOverAve[i]=mean(cdpAdcOverFiltB)
+    endif
+
   endfor
 
   cdpAveTrans=cdpAveTransSpsAve

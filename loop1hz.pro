@@ -1,7 +1,7 @@
 pro loop1hz
 
-level=700
-suffix='03071hz'
+level=400
+suffix='cope'
 
 
 savename='loopdata'+suffix+'.sav'
@@ -48,8 +48,8 @@ inds={starti:double(0)}
     cipmodconc2=[]
     lwc100=[]
     lwcErrColE=[]
-    lwcNev1=[]
-    lwcNev2=[]
+    lwcNev=[]
+    twcNev=[]
     pvmlwc=[]
     expHeatLiq=[]
     lwcFixedLv=[]
@@ -81,6 +81,8 @@ inds={starti:double(0)}
     iwc=[]
     cdpTransRej=[]
     cdpAdcOver=[]
+    vtwccol=[]
+    lwcPLiqFix=[]
     
     nPoints=146852d
 
@@ -88,7 +90,7 @@ inds={starti:double(0)}
     flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815']
     ;flight=['1124','1217','0120','0125','0307']
     
-    ;flight='0307'
+    ;flight='0710'
    
    cdpBinN=make_array(28,nPoints)
    cdpBinN[*,*]=!values.d_nan
@@ -136,8 +138,8 @@ inds={starti:double(0)}
       cipmodconc2=[cipmodconc2,d.cipmodconc2]
       lwc100=[lwc100,d.lwc100]
       lwcErrColE=[lwcErrColE,d.lwcErrColE]
-      lwcNev1=[lwcNev1,d.lwcNev1]
-      lwcNev2=[lwcNev2,d.lwcNev2]
+      lwcNev=[lwcNev,d.lwcNev]
+      twcNev=[twcNev,d.twcNev]
       pvmlwc=[pvmlwc,d.pvmlwc]
       expHeatLiq=[expHeatLiq,d.expHeatLiq]
       lwcFixedLv=[lwcFixedLv,d.lwcFixedLv]
@@ -162,11 +164,13 @@ inds={starti:double(0)}
       lwcBaseline=[lwcBaseline,d.lwcBaseline]
       flightSec=[flightSec,d.flightSec]
       vlwccol=[vlwccol,d.vlwccol]
+      vtwccol=[vtwccol,d.vtwccol]
       smoothSignalLiq=[smoothSignalLiq,d.smoothSignalLiq]
       aias=[aias,d.aias]
       iwc=[iwc,d.iwc]
       cdpTransRej=[cdpTransRej,d.cdpTransRej]
       cdpAdcOver=[cdpAdcOver,d.cdpAdcOver]
+      lwcPLiqFix=[lwcPLiqFix,d.lwcPLiqFix]
       
       r=r+n_elements(d.(1))
       inds.starti=inds.starti+n1(d.(1))
@@ -190,9 +194,9 @@ inds={starti:double(0)}
       as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,aias,cdpAdcOver,$
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,$
-      lwcNev2,pvmlwc,expHeatLiq,lwcFixedLv,twcFixedLv,fsspConc,lwcNev1,fsspLwc,$
+      twcNev,pvmlwc,expHeatLiq,lwcFixedLv,twcFixedLv,fsspConc,lwcNev,fsspLwc,$
       pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
-      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,$
-      cdpTrans,cdpTransEst,lwcnoprescor,lwcBaseline,flightSec,vlwccol,iwc,cdpTransRej
+      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,lwcPLiqFix,$
+      cdpTrans,cdpTransEst,lwcnoprescor,lwcBaseline,flightSec,vlwccol,vtwccol,iwc,cdpTransRej
    
 end

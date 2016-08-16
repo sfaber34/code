@@ -2,7 +2,14 @@ pro collectionEffJustification
   restore,'saves/loopdata.sav'
   
   ;l1=lp(vmd,coleliq) --- coleff liq gt .9 5 - 35 vmd
-  
+  x=sort(vmd)
+  vmd=vmd[x]
+  coleliq=coleliq[x]
+  coletot=coletot[x]
+  p1=plot(vmd,coleliq,dimensions=[1200,1000],thick=3,'--')
+  p2=plot(vmd,coletot,dimensions=[1200,1000],thick=3,'--r',/overplot)
+  p1.xrange=[2,48]
+  p1.yrange=[0,1]
   cdpbinnsum=[]
   for i=0,n(cdpbinn[0,*]) do begin
     cdpbinnsum=[cdpbinnsum,total(cdpbinn[*,i])]
@@ -20,7 +27,7 @@ pro collectionEffJustification
   all=less+over
   
   x=where(lwc gt .02)
-  h1=hist(vmd[x],minval=1,binsize=1)
+  h1=hist(vmd[x],min=1,size=1)
   h1B=histogram(vmd,min=2)
   stop
 end

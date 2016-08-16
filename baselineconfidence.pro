@@ -8,8 +8,8 @@ pro baselineConfidence
   ;----------------------------------------------------------------------------------------------------------------------------------------------
 
   ;liqOnly=where((cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and cdpconc lt 10 and trf gt -3d) ;Cope  
-  liqOnly=where(trf gt -3d and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and cdpacc eq 0)
-  liqOnly=where(trf gt -3d and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and lwc ge .01)
+  ;liqOnly=where(trf gt -3d and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and cdpacc eq 0)
+  liqOnly=where(trf gt -3d and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and lwc gt .01 and cdplwc gt .01 and cdpconc gt 0 and cdpconc lt 600)
 
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -42,7 +42,7 @@ pro baselineConfidence
     lwc100=lwc100[liqonly]
   endif
   
-  s1=scatterplot(vmd,(twc/lwc),dimensions=[1400,1000],margin=50,/device,sym_filled=1,sym_size=.7,sym_transparency=30)
+  s1=scatterplot(lwc,cdplwc/lwc-1.,dimensions=[1400,1000],margin=50,/device,sym_filled=1,sym_size=.7,sym_transparency=30)
   
   lwcSort=lwc[sort(lwc)]
   lwc95=lwcSort[n1(lwcsort)*.95]

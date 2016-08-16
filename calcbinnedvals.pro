@@ -1,7 +1,7 @@
 pro calcBinnedVals
 
 
-  suffix='lar700'
+  suffix='lar400'
   
   
   restore,'saves/loopdata'+suffix+'.sav'
@@ -52,10 +52,10 @@ pro calcBinnedVals
   binstart=500d
 
   ;WIDTH OF BINS
-  bininc=50d
+  bininc=25d
   
   ;MAX BIN VALUE
-  binEnd=750d
+  binEnd=700d
   
   
   

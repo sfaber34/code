@@ -16,7 +16,7 @@ pro cdpreject
   ;----------------------------------------------------------------------------------------------------------------------------------------------
 
 
-  liqOnly=where((cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and trf gt -3d and lwc gt .01 and lwc lt 1.3 and cdpconc lt 800) ;Cope
+  liqOnly=where(trf gt -3d and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and lwc gt .01 and cdplwc gt .01 and cdpconc gt 0 and cdpconc lt 600)
 
 
   if liq eq 1 then begin
@@ -53,23 +53,26 @@ pro cdpreject
   color=[color,color,color,color,color]
 
   ;-----------------------
-  xVar=cdpacc
-  yVar=cdptrans
+  xVar=lwc
+  yVar=cdplwc/lwc-1.
   ;-----------------------
   
   ;-----------------------
-  var=abs(cdplwc-lwc)/abs(lwc)
+  var=cdpconc
   ;-----------------------
 
   s1=scatterplot(xVar,yVar,dimensions=[1400,1000],margin=50,/device,sym_filled=1,sym_size=.4,sym_transparency=50,sym_color='black')
-  s1.xrange=[0,3e4]
-  ;s1.yrange=[0,3e4]
+  ;s1.yrange=[0,2.163e4]
+  ;s1.xrange=[0,3.118e4]
+  
+;  s1.xrange=[-.5,.5]
+;  s1.yrange=[.3,.8]
 
   
   
-  startbin=-.5
-  bininc=.1
-  maxbin=.5
+  startbin=0
+  bininc=100.
+  maxbin=1400.
   binBounds=dindgen(ceil((maxbin-startbin)/bininc),start=startbin,increment=bininc)
   binBounds=[temporary(binBounds),maxbin]
   interFitVals=[]
@@ -98,33 +101,33 @@ pro cdpreject
     slopeFitVals=[temporary(slopeFitVals),fit[1]]
   endfor
   
-  for i=0,n(interFitVals) do begin
-    fitPlot=plot(xS,interFitVals[i]+xS*slopeFitVals[i],color='black',thick=4,transparency=60,/overplot)
-    fitPlot=plot(xS,interFitVals[i]+xS*slopeFitVals[i],color=color[i+1],thick=2,/overplot)
-  endfor
+;  for i=0,n(interFitVals) do begin
+;    fitPlot=plot(xS,interFitVals[i]+xS*slopeFitVals[i],color='black',thick=4,transparency=60,/overplot)
+;    fitPlot=plot(xS,interFitVals[i]+xS*slopeFitVals[i],color=color[i+1],thick=2,/overplot)
+;  endfor
 
-=======
+
   xVar=vmd
   yVar=cdpdofrej
 
-  s1=scatterplot(xVar,yVar,dimensions=[1400,1000],margin=50,/device,sym_filled=1,sym_size=.4,sym_transparency=50,sym_color='black')
+  ;s1=scatterplot(xVar,yVar,dimensions=[1400,1000],margin=50,/device,sym_filled=1,sym_size=.4,sym_transparency=50,sym_color='black')
 ;  s1.xrange=[-.5,.5]
 ;  s1.yrange=[-2.,3.]
 
 
-  var=cdplwc/lwc-1.
-  startbin=-1.
-  bininc=1.
-  maxbin=1.
-  binBounds=dindgen(ceil((maxbin-startbin)/bininc),start=startbin,increment=bininc)
-  binBounds=[temporary(binBounds),maxbin]
-
-
-  for i=1,n(binbounds) do begin
-    sel=where(var ge binbounds[i-1] and var le binbounds[i])
-    s1=scatterplot(xVar[sel],yVar[sel],sym_filled=1,sym_size=.4,sym_transparency=10,sym_color=color[i],/overplot)
-  endfor
+;  var=cdplwc/lwc-1.
+;  startbin=-1.
+;  bininc=1.
+;  maxbin=1.
+;  binBounds=dindgen(ceil((maxbin-startbin)/bininc),start=startbin,increment=bininc)
+;  binBounds=[temporary(binBounds),maxbin]
+;
+;
+;  for i=1,n(binbounds) do begin
+;    sel=where(var ge binbounds[i-1] and var le binbounds[i])
+;    s1=scatterplot(xVar[sel],yVar[sel],sym_filled=1,sym_size=.4,sym_transparency=10,sym_color=color[i],/overplot)
+;  endfor
 
   stop
->>>>>>> Stashed changes
+
 end

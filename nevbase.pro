@@ -14,8 +14,9 @@ if inds.starti gt 0 then startsec=inds.starti
 ;AIRSPEED TYPE/LEVEL OVERRIDES
 airspeedType='indicated'
 
-calcTrans=0
-
+calcTrans=0 ;calculate cdp vars from raw files
+cipmod=0 ;include Jason's cip calculations
+noNev1=0 ; incude Korolev's second set of Nev calculations
 
 ;---------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------FILEPATHS---------------------------------------------------------------------
@@ -181,7 +182,7 @@ endelse
 if cope eq 1 then hivs=loadvar('hivs', filename=nclPath)
 if cope ne 1 then hivs=!VALUES.F_NAN
 
-cipmod=1
+
 if flightday eq '0814' eq 1 then cipmod=0
 
 
@@ -220,7 +221,7 @@ endif else begin
 endelse
 
 
-noNev1=1
+
 
 ;liquid water content from Nevzorov probe [g/m^3]
 if cope eq 1 and nonev1 eq 1 then begin
@@ -472,8 +473,8 @@ cdpTransEst=.0002/tas
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if cope eq 1 then begin
-  kLiq=(36.0089)*aiasms^(-1.26173)+(1.03362) ;400 indicated
-  kTot=(224.264)*aiasms^(-1.73025)+(0.725502) ;400 indicated
+  kLiq=(0.860351)*(0.969536)^aiasms+(1.10449)
+  kTot=(1.13654)*(0.989413)^aiasms+(0.309623)
   
 ;  if (airspeedType eq 'indicated') and (level eq '900') then kLiq=(2.47292)*aiasms^(-0.273777)+(0.399143) ;900 indicated
 ;  if (airspeedType eq 'indicated') and (level eq '600') then kLiq=(3.73599)*aiasms^(-0.0628865)+(-1.67763) ;600 indicated
@@ -498,20 +499,20 @@ if cope eq 2 or cope eq 0 then begin
 
   case level of
     '700':begin
-      kLiq=(-0.012776721)*aiasms^(0.69763350)+(2.0156803)
-      kTot=(-0.21580388)*aiasms^(0.36077845)+(1.8761804)
+      kLiq=(0.75332308)*(0.99547708)^aiasms+(1.2198560)
+      kTot=(1.13654)*(0.989413)^aiasms+(0.309623)
      end
      '600':begin
-      kLiq=(-0.012817372)*aiasms^(0.70410877)+(2.0212555)
-      kTot=(-0.025032176)*aiasms^(0.70502084)+(1.3777112)
+      kLiq=(0.989776)*(0.996765)^aiasms+(0.977116)
+      kTot=(1.35180)*(0.974671)^aiasms+(0.651032)
      end
      '500':begin
-      kLiq=(-0.13853586)*aiasms^(0.37353295)+(2.4487758)
-      kTot=(-0.021063767)*aiasms^(0.72729421)+(1.3726227)
+      kLiq=(0.989940)*(0.974684)^aiasms+(1.60661)
+      kTot=(1.04426)*(0.990708)^aiasms+(0.366638)
      end
      '400':begin
-      kLiq=(-0.072750166)*aiasms^(0.45564073)+(2.2735922)
-      kTot=(-0.070773095)*aiasms^(0.51056445)+(1.5625662)
+      kLiq=(2.33354)*(0.954685)^aiasms+(1.67697)
+      kTot=(0.981726)*(0.981146)^aiasms+(0.683709)
      end 
   endcase
 
@@ -544,20 +545,6 @@ smoothSignalTot=dindgen(nPointsFilt1,increment=0)
 rawSignalLiq=(vlwccol)
 rawSignalTot=(vtwccol)
 
-
-
-;int=150
-;for i=0,nPointsFilt do begin
-;  if nPointsFilt-i gt 150 then begin
-;    correctionLiq[i:i+int]=min(rawSignalLiq[i:i+int])
-;  endif else begin
-;    correctionLiq[i:n(correctionLiq)]=min(rawSignalLiq[i:n(correctionLiq)])
-;  endelse  
-;  i=i+int
-;endfor
-
-
-;try w/ lowpass filter
 
 correctionLiqB=[]
 correctionLiqBX=[]
@@ -932,7 +919,7 @@ d={as:as, pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
   rawSignalLiq:rawSignalLiq, smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,flightSec:flightSec,$
   rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNpc:pTotNpc,$
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,expHeatIce:expHeatIce,$
-  cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,$
+  cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,smLiq:smLiq,smLiqX:correctionLiqBX,$
   dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcFixedLv:lwcFixedLv,twcFixedLv:twcFixedLv,$
   twc:twc,colETot:colETot,dBarB:dBarB,colEtot2:colEtot2,coletot3:coletot3,$
   cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,cdpTrans:cdpTrans,$
@@ -1063,26 +1050,33 @@ function cdpTransTime, flightDay
   for i=0,n_elements(cdpAveTransSps[0,*])-1 do begin
     cdpAveTransSpsFilt=cdpAveTransSps[*,i]
     nonNull=where(cdpAveTransSpsFilt gt 0.)
-    cdpAveTransSpsFiltB=cdpAveTransSpsFilt[nonNull]
-    s=sort(cdpAveTransSpsFiltB)
-    sd=cdpAveTransSpsFiltB[s]
-    cdpAveTransSpsAve[i]=median(sd,/even)
+    if nonNull[0] ge 0 then begin
+      cdpAveTransSpsFiltB=cdpAveTransSpsFilt[nonNull]
+      cdpAveTransSpsAve[i]=mean(cdpAveTransSpsFiltB)
+    endif
+    
 
 
     cdpDofRejSpsFilt=cdpDofRejSps[*,i]
     nonNull=where(cdpDofRejSpsFilt gt 0.)
-    cdpDofRejSpsFiltB=cdpDofRejSpsFilt[nonNull]
-    cdpDofRejSpsAve[i]=mean(cdpDofRejSpsFiltB)
+    if nonNull[0] ge 0 then begin
+      cdpDofRejSpsFiltB=cdpDofRejSpsFilt[nonNull]
+      cdpDofRejSpsAve[i]=mean(cdpDofRejSpsFiltB)
+    endif
     
-    ;cdptransRejSpsFilt=cdptransRejSps[*,i]
-;    nonNull=where(cdptransRejSpsFilt gt 0.)
-;    cdptransRejSpsFiltB=cdptransRejSpsFilt[nonNull]
-;    cdptransRejSpsAve[i]=mean(cdptransRejSpsFiltB)
-    
+    cdptransRejSpsFilt=cdptransRejSps[*,i]
+    nonNull=where(cdptransRejSpsFilt gt 0.)
+    if nonNull[0] ge 0 then begin
+      cdptransRejSpsFiltB=cdptransRejSpsFilt[nonNull]
+      cdptransRejSpsAve[i]=mean(cdptransRejSpsFiltB)
+    endif
+
     cdpAdcOverFilt=cdpAdcOver[*,i]
     nonNull=where(cdpAdcOverFilt gt 0.)
-    cdpAdcOverFiltB=cdpAdcOverFilt[nonNull]
-    cdpAdcOverAve[i]=mean(cdpAdcOverFiltB)
+    if nonNull[0] ge 0 then begin
+      cdpAdcOverFiltB=cdpAdcOverFilt[nonNull]
+      cdpAdcOverAve[i]=mean(cdpAdcOverFiltB)
+    endif
   endfor
 
   cdpAveTrans=cdpAveTransSpsAve

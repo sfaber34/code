@@ -1,5 +1,5 @@
 pro cdpTransit
-  restore,'loopdata.sav'
+  restore,'saves/loopdatacope1hzB.sav'
   cgcleanup
   
   
@@ -9,14 +9,14 @@ pro cdpTransit
   
   
   liq=1
-  liqonly=where(lwc gt .02 and cdpconc gt 1 and cdpTransScaled lt 50)
+  liqonly=where(cdpconc gt 1 and cdpconc lt 300. and trf gt -3. and lwc lt 1.3)
   
   if liq eq 1 then begin
     lwc=lwc[liqonly]
     twc=twc[liqonly]
     cdpdbar=cdpdbar[liqonly]
     cdpconc=cdpconc[liqonly]
-    cdpTransScaled=cdpTransScaled[liqonly]
+    cdpTrans=cdpTrans[liqonly]
     dEff=dEff[liqonly]
     vvd=vvd[liqonly]
     vmd=vmd[liqonly]
@@ -30,27 +30,31 @@ pro cdpTransit
     coleliq=coleliq[liqonly]
     coletot=coletot[liqonly]
     lwcErrColE=lwcErrColE[liqonly]
-    cdptrans=cdptrans[liqonly]
     cdpacc=cdpacc[liqonly]
     colELiqUP=colELiqUP[liqonly]
     colELiqU=colELiqU[liqonly]
+    cdpDofRej=cdpDofRej[liqonly]
+    vlwccol=vlwccol[liqonly]
+    vtwccol=vtwccol[liqonly]
   endif
   
-  cdpLwcDiff=(cdplwc-lwc)/lwc
+  cdpLwcDiff=(cdplwc/lwc-1.)*100.
   
-  xVar=cdpconc
+  s1=scatterplot(vmd,vtwccol/vlwccol-1.)
+  
+  xVar=cdpacc
   xVar2=0
-  yVar=cdpTransScaled
-  yVar2=cdpTransScaled
+  yVar=cdpDofRej
+  yVar2=cdpTrans
   
   
   
   ;fu=ladfit(xvar,yVar)
   subsetVar=cdpLwcDiff
-  inds=[-10000.,0.,10000.]
+  inds=[0,25]
   
-  xrange=[0,500]
-  yrange=[1,7]
+  ;xrange=[0,800]
+  yrange=[0,6]
   ;----------------------------------------------------------------------------------------------------------------------------------------------
   ;----------------------------------------------------------------------------------------------------------------------------------------------
   
@@ -58,8 +62,8 @@ pro cdpTransit
 
     p1=scatterplot(xVar,yVar,dimensions=[1600,1200],margin=50,/device,/sym_filled,sym_transparency=62,sym_size=.5)
     ;p1=scatterplot(xVar,yVar2,dimensions=[1600,1200],margin=50,/device,/sym_filled,sym_transparency=70,sym_size=.5,/overplot,sym_color='blue')
-    p1.xrange=xrange
-    p1.yrange=yrange
+    ;p1.xrange=xrange
+    ;p1.yrange=yrange
     
     xs=dindgen(2000,start=0,increment=1)
     
