@@ -3,7 +3,7 @@
 ;
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function nevbase, flightDay, airspeedType, level
+function nevbase, flightDay, level
 
 common t,t
 common inds,inds
@@ -11,8 +11,6 @@ common inds,inds
 if inds.starti eq 0 then startsec=0
 if inds.starti gt 0 then startsec=inds.starti
 
-;AIRSPEED TYPE/LEVEL OVERRIDES
-airspeedType='indicated'
 
 calcTrans=0 ;calculate cdp vars from raw files
 cipmod=0 ;include Jason's cip calculations
@@ -21,6 +19,8 @@ noNev1=0 ; incude Korolev's second set of Nev calculations
 ;---------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------FILEPATHS---------------------------------------------------------------------
 ;---------------------------------------------------------------------------------------------------------------------------------------------------
+  cope=99
+  
   ;COPE
   if flightDay eq '0709' then nclPath='../data/20130709.c25.nc'
   if flightDay eq '0710' then nclPath='../data/20130710.c25.nc'
@@ -49,6 +49,9 @@ noNev1=0 ; incude Korolev's second set of Nev calculations
   if flightDay eq '0125' then nclPath='../data/20160125.c25.nc'
   if flightDay eq '0304' then nclPath='../data/20160304.c25.nc'
   if flightDay eq '0307' then nclPath='../data/20160307.c25.nc'
+  
+  ;PACMICE
+  if flightDay eq '081816' then nclPath='../data/20160818.c25.nc'
 
 
 if strmatch(nclpath,'*2013*') eq 1 then cope=1
@@ -86,27 +89,35 @@ itwcref=loadvar('itwcref', filename=nclPath)
 itwccol=loadvar('itwccol', filename=nclPath)
 
 
-;------------LWC COL/REF SIGNALS ARE BACKWARDS FOR 0307---------------------
+;------------LWC COL/REF SIGNALS ARE BACKWARDS FOR A FEW LAR FLIGHTS---------------------
 
-if flightDay eq '0307' then begin
-  vlwcrefB=vlwcref
-  vlwccolB=vlwccol
-  vtwcrefB=vtwcref
-  vtwccolB=vtwccol
-  ilwcrefB=ilwcref
-  ilwccolB=ilwccol
-  itwcrefB=itwcref
-  itwccolB=itwccol
-
-  vlwccol=vlwcrefB
-  vlwcref=vlwccolB
-  vtwccol=vtwcrefB
-  vtwcref=vtwccolB
-  ilwccol=ilwcrefB
-  ilwcref=ilwccolB
-  itwccol=itwcrefB
-  itwcref=itwccolB
-endif
+      if mean(vlwccol) lt mean(vlwcref) then begin
+        vlwccolB=vlwccol
+        vlwcrefB=vlwcref
+        vlwccol=vlwcrefB
+        vlwcref=vlwccolB
+      endif
+      
+      if mean(ilwccol) lt mean(ilwcref) then begin
+        ilwccolB=ilwccol
+        ilwcrefB=ilwcref
+        ilwccol=ilwcrefB
+        ilwcref=ilwccolB
+      endif
+      
+      if mean(vtwccol) gt mean(vtwcref) then begin
+        vtwccolB=vtwccol
+        vtwcrefB=vtwcref
+        vtwccol=vtwcrefB
+        vtwcref=vtwccolB
+      endif
+      
+      if mean(itwccol) gt mean(itwcref) then begin
+        itwccolB=itwccol
+        itwcrefB=itwcref
+        itwccol=itwcrefB
+        itwcref=itwccolB
+      endif
 
 ;------------------------------------------------------------------------
 
@@ -248,7 +259,7 @@ endelse
 betaB=loadvar('beta', filename=nclPath)
 
 ;Yaw [deg]
-avyawr=loadvar('avyawr', filename=nclPath)
+avyawr=loadvar('avyawr', filename=nclPath)*!RADEG
 
 ;Attack Angle [rad]
 alpha=loadvar('alpha', filename=nclPath)
@@ -298,35 +309,6 @@ minstspb=strtrim(minstspb,1)
 secstspb=strtrim(secstspb,1)
 
 timePretty=hourstspb+':'+minstspb+':'+secstspb
-
-
-;--------------------SET FLIGHT STRINGS--------------------
-
-if flightDay eq '0807' then flightString='08-07-13'
-if flightDay eq '0806' then flightString='08-06-13'
-if flightDay eq '0814' then flightString='08-14-13'
-if flightDay eq '0710' then flightString='07-10-13'
-if flightDay eq '0725' then flightString='07-25-13'
-if flightDay eq '0727' then flightString='07-27-13'
-if flightDay eq '0728' then flightString='07-28-13'
-if flightDay eq '0729' then flightString='07-29-13'
-if flightDay eq '0815' then flightString='08-15-13'
-if flightDay eq '0803' then flightString='08-03-13'
-if flightDay eq '0304' then flightString='03-04-16'
-if flightDay eq '0307' then flightString='03-07-16'
-if flightDay eq '1217' then flightString='12-17-15'
-if flightDay eq '1124' then flightString='11-24-15'  
-if flightDay eq '0821' then flightString='08-21-13'
-if flightDay eq '0802' then flightString='08-02-13'
-if flightDay eq '0722' then flightString='07-22-13'
-if flightDay eq '0718' then flightString='07-18-13'
-if flightDay eq '0813' then flightString='08-13-13'
-if flightDay eq '0722' then flightString='07-21-13'
-if flightDay eq '0718' then flightString='07-18-13'
-if flightDay eq '0120' then flightString='01-20-15'
-if flightDay eq '0125' then flightString='01-25-15'
-if flightDay eq '0817a' then flightString='08-17-13'
-if flightDay eq '0817b' then flightString='08-17-13'
 
 
 
@@ -402,6 +384,7 @@ avpitch=avpitch[aStart:aEnd]
 avroll=avroll[aStart:aEnd]
 avyawr=avyawr[aStart:aEnd]
 alpha=alpha[aStart:aEnd]
+betaB=betaB[aStart:aEnd]
 
 ;time=time[ind5]
 ;timeFlight=timeFlight[aStart5:aEnd5]
@@ -455,14 +438,6 @@ endif
 ;CONVERT INDICATED AIRSPEED TO M/S
 aiasMs=aias*.514444
 
-if airspeedType eq 'true' then begin
-  as=tas
-endif
-
-if airspeedType eq 'indicated' then begin
-  as=aiasMs
-endif
-
 ;SCALE CDP TRANSITS TO MEAN TAS
 cdpTransEst=.0002/tas
 
@@ -473,24 +448,11 @@ cdpTransEst=.0002/tas
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if cope eq 1 then begin
-  kLiq=(0.860351)*(0.969536)^aiasms+(1.10449)
-  kTot=(1.13654)*(0.989413)^aiasms+(0.309623)
+  kLiq=(1.03672)*(0.965516)^aiasms+(1.11339)
   
-;  if (airspeedType eq 'indicated') and (level eq '900') then kLiq=(2.47292)*aiasms^(-0.273777)+(0.399143) ;900 indicated
-;  if (airspeedType eq 'indicated') and (level eq '600') then kLiq=(3.73599)*aiasms^(-0.0628865)+(-1.67763) ;600 indicated
-;  if (airspeedType eq 'indicated') and (level eq '400') then kLiq=(36.0089)*aiasms^(-1.26173)+(1.03362) ;400 indicated
-;
-;  if (airspeedType eq 'indicated') and (level eq '900') then kTot=(10.8603)*aiasms^(-0.675924)+(0.167331) ;900 indicated
-;  if (airspeedType eq 'indicated') and (level eq '600') then kTot=(3.39234)*aiasms^(-0.182697)+(-0.737908) ;600 indicated
-;  if (airspeedType eq 'indicated') and (level eq '400') then kTot=(224.264)*aiasms^(-1.73025)+(0.725502) ;400 indicated
-;  
-;  if (airspeedType eq 'true') and (level eq '900') then kLiq=(8.56136)*tas^(-0.0292547)+(-6.37413) ;900 true
-;  if (airspeedType eq 'true') and (level eq '600') then kLiq=(3.91644)*tas^(-0.0685396)+(-1.70073) ;600 true
-;  if (airspeedType eq 'true') and (level eq '400') then kLiq=(1280.56)*tas^(-2.00624)+(1.08139) ;400 true  
-;
-;  if (airspeedType eq 'true') and (level eq '900') then kTot=(35.0933)*tas^(-1.00354)+(0.318860) ;900 true
-;  if (airspeedType eq 'true') and (level eq '600') then kTot=(3.83487)*tas^(-0.238794)+(-0.496087) ;600 true
-;  if (airspeedType eq 'true') and (level eq '400') then kTot=(9874.83)*tas^(-2.45898)+(0.753854) ;400 true
+  
+;  kLiq=(0.860351)*(0.969536)^aiasms+(1.10449)
+  kTot=(1.13654)*(0.989413)^aiasms+(0.309623)
 endif
 
 
@@ -499,19 +461,23 @@ if cope eq 2 or cope eq 0 then begin
 
   case level of
     '700':begin
-      kLiq=(0.75332308)*(0.99547708)^aiasms+(1.2198560)
+      ;kLiq=(0.75332308)*(0.99547708)^aiasms+(1.2198560) ;1hz
+      kLiq=(0.841483)*(0.996200)^aiasms+(1.12379) ;5hz
       kTot=(1.13654)*(0.989413)^aiasms+(0.309623)
      end
      '600':begin
-      kLiq=(0.989776)*(0.996765)^aiasms+(0.977116)
+      ;kLiq=(0.989776)*(0.996765)^aiasms+(0.977116) ;1hz
+      kLiq=(0.982622)*(0.996785)^aiasms+(0.981679) ;5hz
       kTot=(1.35180)*(0.974671)^aiasms+(0.651032)
      end
      '500':begin
-      kLiq=(0.989940)*(0.974684)^aiasms+(1.60661)
+      ;kLiq=(0.989940)*(0.974684)^aiasms+(1.60661) ;1hz
+      kLiq=(1.00388)*(0.974276)^aiasms+(1.60898) ;5hz
       kTot=(1.04426)*(0.990708)^aiasms+(0.366638)
      end
      '400':begin
-      kLiq=(2.33354)*(0.954685)^aiasms+(1.67697)
+      ;kLiq=(2.33354)*(0.954685)^aiasms+(1.67697) ;1hz
+      kLiq=(2.21180)*(0.955577)^aiasms+(1.67575) ;5hz
       kTot=(0.981726)*(0.981146)^aiasms+(0.683709)
      end 
   endcase
@@ -542,7 +508,7 @@ smoothSignalLiq=dindgen(nPointsFilt1,increment=0)
 correctionTot=dindgen(nPointsFilt1,increment=0)
 smoothSignalTot=dindgen(nPointsFilt1,increment=0)
 
-rawSignalLiq=(vlwccol)
+rawSignalLiq=(vlwccol/vlwcref)
 rawSignalTot=(vtwccol)
 
 
@@ -562,7 +528,7 @@ endfor
 
 smLiq=ts_smooth(correctionLiqB,5)
 
-for i=0,n(correctionLiqBX)-1 do begin
+for i=0,n(correctionLiqB)-1 do begin
   smoothfit=linfit([correctionLiqBX[i],correctionLiqBX[i+1]],[smLiq[i],smLiq[i+1]]) 
   for j=correctionLiqBX[i],correctionLiqBX[i+1] do begin
     smoothSignalLiq[j]=rawSignalLiq[j]-(smoothfit[0]+smoothfit[1]*(j))
@@ -594,15 +560,17 @@ for i=0,n(correctionTotBX)-1 do begin
   endfor
 endfor
 
-threshLiq=q1(smoothSignalLiq)
-threshTot=q1(smoothSignalTot)
+threshLiq=q1(smoothSignalLiq[where(smoothSignalLiq gt 0)])
+threshTot=q1(smoothSignalTot[where(smoothSignalTot gt 0)])
 
 
 
 clearairLiq=where(smoothSignalLiq lt threshliq)
 clearairTot=where(smoothSignalTot lt threshTot)
 
-
+selSig=rawSignalLiq[clearairLiq]
+clearairLiqSort=clearairLiq[sort(selSig)]
+clearairLiq=clearairLiqSort[0:n1(clearairLiq)*.95]
 
 
 
@@ -845,10 +813,10 @@ twcNpc=pTot/(1d*tas*aTot*expHeatIce)
 
 ;--------------------POWER PRESSURE CORRECTION--------------------
 
-linPresCorLiq=linfit(pmb[clearairLiq],pLiqNpc[clearairLiq])
+linPresCorLiq=ladfit(pmb[clearairLiq],pLiqNpc[clearairLiq])
 pLiq=pLiqNpc - ( linPresCorLiq[1]*pmb + linPresCorLiq[0] )
 
-linPresCorTot=linfit(pmb[clearairTot],pTotNpc[clearairTot])
+linPresCorTot=ladfit(pmb[clearairTot],pTotNpc[clearairTot])
 pTot=pTotNpc - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
 
 
@@ -908,10 +876,10 @@ flightSec=dindgen(n1(lwc),start=startsec,increment=1)
 
 color=['black','firebrick','navy','dark green','magenta','coral','indian red','dodger blue','orange','olive drab','medium violet red']
 
-d={as:as, pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
+d={pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
   pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNpc:lwcNpc, twcVarE:twcVarE,$
   clearairLiq:clearairLiq, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
-  flightString:flightString, kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,$
+  kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,betaAng:betaB,$
   aias:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNpc:twcNpc,$
   vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf,trose:trose, threshTot:threshTot,$
   lwc100:lwc100, cdpdbar:cdpdbar_1_NRB,lwcnev2:lwcnev2, timePretty:timePretty,cdpDofRej:cdpDofRej,$
@@ -1003,6 +971,7 @@ end
 
 function cdpTransTime, flightDay
 
+  ;COPE
   if flightDay eq '0709' then nclPath='/Volumes/externalHD/copeRaw/20130709_raw.nc'
   if flightDay eq '0710' then nclPath='/Volumes/externalHD/copeRaw/20130710_raw.nc'
   if flightDay eq '0725' then nclPath='/Volumes/externalHD/copeRaw/20130725_raw.nc'
@@ -1029,6 +998,7 @@ function cdpTransTime, flightDay
   if flightDay eq '0817a' then nclPath='/Volumes/externalHD/copeRaw/20130817a_raw.nc'
   if flightDay eq '0817b' then nclPath='/Volumes/externalHD/copeRaw/20130817b_raw.nc'
 
+  ;LARAMIE
   if flightDay eq '0120' then nclPath='/Volumes/externalHD/copeRaw/20160120_raw.nc'
   if flightDay eq '0125' then nclPath='/Volumes/externalHD/copeRaw/20160125_raw.nc'
   if flightDay eq '0304' then nclPath='/Volumes/externalHD/copeRaw/20160304_raw.nc'
@@ -1036,7 +1006,10 @@ function cdpTransTime, flightDay
   if flightDay eq '1217' then nclPath='/Volumes/externalHD/copeRaw/20151217_raw.nc'
   if flightDay eq '1112' then nclPath='/Volumes/externalHD/copeRaw/20151112_raw.nc'
   if flightDay eq '1124' then nclPath='/Volumes/externalHD/copeRaw/20151124_raw.nc'
-
+  
+  ;PACMICE
+  if flightDay eq '081816' then nclPath='/Volumes/externalHD/copeRaw/20160818_raw.nc'
+  
   cdpAveTransSps=loadvar('AVGTRNS_NRB', filename=nclPath)
   ;cdpTransRejSps=loadvar('REJAT_NRB', filename=nclPath)
   cdpDofRejSps=loadvar('REJDOF_NRB', filename=nclPath) 

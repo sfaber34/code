@@ -1,6 +1,6 @@
 pro calcLaramieK
 
-  nclPath='../data/20130709.c1.nc'
+  nclPath='../data/20160304.c1.nc'
 
   ;liquid reference voltage [V]
   vlwcref=loadvar('vlwcref', filename=nclPath)
@@ -44,11 +44,11 @@ pro calcLaramieK
   
 
   ;inds=[1262:2210] ;700 mb
-  ;inds=[2478:3437] ;600 mb
+  inds=[2478:3437] ;600 mb
   ;inds=[3755:4847] ;500 mb
   ;inds=[5288:6930] ;400 mb
   
-  inds=[2000:4000] ;COPE 400 mb
+  ;inds=[2130:3500] ;COPE 400 mb
   
   xVals=dindgen(max(inds)-min(inds),start=0)
   
@@ -84,11 +84,11 @@ pro calcLaramieK
 ;  as5=[839,889]
 
 ;--600mb--
-;  as1=[148,198]
-;  as2=[320,370]
-;  as3=[490,540]
-;  as4=[723,773]
-;  as5=[492,493]
+  as1=[148,198]
+  as2=[320,370]
+  as3=[490,540]
+  as4=[723,773]
+  as5=[492,493]
   
   ;--500mb--
 ;  as1=[80,130]
@@ -107,11 +107,11 @@ pro calcLaramieK
 
 
 ;--COPE 400mb--
-  as1=[265,305]
-  as2=[430,470]
-  as3=[570,610]
-  as4=[872,912]
-  as5=[995,1035]
+;  as1=[135,185]
+;  as2=[290,350]
+;  as3=[420,480]
+;  as4=[700,760]
+;  as5=[886,946]
  
   
   filtInds=[dindgen(as1[1]-as1[0]+1,start=as1[0]), dindgen(as2[1]-as2[0]+1,start=as2[0]), dindgen(as3[1]-as3[0]+1,start=as3[0]), $
@@ -133,22 +133,21 @@ pro calcLaramieK
     
     
     
-  lwcColP=vlwccol*ilwccol
-  lwcRefP=vlwcRef*ilwcRef
+  lwcColP=vtwccol*itwccol
+  lwcRefP=vtwcRef*itwcRef
   lwcK=lwcColP/lwcRefP
   
   
-  p1=scatterplot(aias,lwcK,dimensions=[1200,1600],sym_filled=0,sym_size=1.5,sym_transparency=30)
+  p1=scatterplot(aias,lwcK,dimensions=[900,740],sym_filled=1,sym_size=1.2,sym_transparency=65)
+;  p1.xrange=[62,96]
+;  p1.yrange=[1.68,1.8]
+  p1.font_size=26
   
-  ;poly=poly_fit(aias,lwcK,2,yfit=yfit)
-  ;p2=plot(aias,yfit,'red',/overplot)
-  
-  ;p3=plot(aias,(0.98457)*(1.)^aias+(1.),/overplot)
   exp=comfit(aias,lwcK,[1.,1.,1.],/exponential,yfit=yfitb,itmax=400,status=x)
 
   fitx=dindgen(1001,start=min(aias),increment=span(aias)/1000.)
   fity=exp[0]*exp[1]^fitx+exp[2]
   p2=plot(fitx,fity,'red',thick=2,/overplot)
   print,exp
-
+stop
 end

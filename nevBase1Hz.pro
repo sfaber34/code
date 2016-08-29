@@ -100,6 +100,40 @@ itwcref=loadvar('itwcref', filename=nclPath)
 ;total collector current [A]
 itwccol=loadvar('itwccol', filename=nclPath)
 
+
+;------------LWC COL/REF SIGNALS ARE BACKWARDS FOR A FEW LAR FLIGHTS---------------------
+
+if mean(vlwccol) lt mean(vlwcref) then begin
+  vlwccolB=vlwccol
+  vlwcrefB=vlwcref
+  vlwccol=vlwcrefB
+  vlwcref=vlwccolB
+endif
+
+if mean(ilwccol) lt mean(ilwcref) then begin
+  ilwccolB=ilwccol
+  ilwcrefB=ilwcref
+  ilwccol=ilwcrefB
+  ilwcref=ilwccolB
+endif
+
+if mean(vtwccol) gt mean(vtwcref) then begin
+  vtwccolB=vtwccol
+  vtwcrefB=vtwcref
+  vtwccol=vtwcrefB
+  vtwcref=vtwccolB
+endif
+
+if mean(itwccol) gt mean(itwcref) then begin
+  itwccolB=itwccol
+  itwcrefB=itwcref
+  itwccol=itwcrefB
+  itwcref=itwccolB
+endif
+
+;------------------------------------------------------------------------
+
+
 ;reverse flow static temperature [C]
 trf=loadvar('trf', filename=nclPath)
 
@@ -237,7 +271,7 @@ endelse
 betaB=loadvar('beta', filename=nclPath)
 
 ;Yaw [deg]
-avyawr=loadvar('avyawr', filename=nclPath)
+avyawr=loadvar('avyawr', filename=nclPath)*!RADEG
 
 ;Attack Angle [rad]
 alpha=loadvar('alpha', filename=nclPath)
@@ -399,7 +433,10 @@ nPoints1=n1(pmb)
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if cope eq 1 then begin
-  kLiq=(0.860351)*(0.969536)^aiasms+(1.10449)
+  kLiq=(1.03672)*(0.965516)^aiasms+(1.11339)
+  
+  
+;  kLiq=(0.860351)*(0.969536)^aiasms+(1.10449)
   kTot=(1.13654)*(0.989413)^aiasms+(0.309623)
 endif
 
@@ -447,97 +484,76 @@ endif
 ;---------------------------------------------------------------------CLEARAIR POINT DETECTION---------------------------------------------------------------------
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-correctionLiq=dindgen(nPoints1,increment=0)
-smoothSignalLiq=dindgen(nPoints1,increment=0)
+nPointsFilt=n(vlwccol)
+nPointsFilt1=n(vlwccol)+1d
 
-correctionTot=dindgen(nPoints1,increment=0)
-smoothSignalTot=dindgen(nPoints1,increment=0)
+correctionLiq=dindgen(nPointsFilt1,increment=0)
+smoothSignalLiq=dindgen(nPointsFilt1,increment=0)
 
-rawSignalLiq=(vlwccol)
+correctionTot=dindgen(nPointsFilt1,increment=0)
+smoothSignalTot=dindgen(nPointsFilt1,increment=0)
+
+rawSignalLiq=(vlwccol/vlwcref)
 rawSignalTot=(vtwccol)
 
-int=30
-for i=0,nPoints1-(int+1) do begin
-  correctionLiq[i:i+int]=min(rawSignalLiq[i:i+int])
+correctionLiqB=[]
+correctionLiqBX=[]
+int=5
+for i=0,nPointsFilt do begin
+  if nPointsFilt-i gt 5 then begin
+    correctionLiqB=[correctionLiqB,min(rawSignalLiq[i:i+int])]
+    correctionLiqBX=[correctionLiqBX,where(rawSignalLiq[i:i+int] eq min(rawSignalLiq[i:i+int]))+i]
+  endif else begin
+    correctionLiqB=[correctionLiqB,min(rawSignalLiq[i:n(correctionLiq)])]
+    correctionLiqBX=[correctionLiqBX,where(rawSignalLiq[i:n(correctionLiq)] eq min(rawSignalLiq[i:n(correctionLiq)]))+i]
+  endelse
   i=i+int
 endfor
 
+smLiq=ts_smooth(correctionLiqB,3)
+for i=0,n(correctionLiqB)-1 do begin
+  smoothfit=linfit([correctionLiqBX[i],correctionLiqBX[i+1]],[smLiq[i],smLiq[i+1]]) 
+  for j=correctionLiqBX[i],correctionLiqBX[i+1] do begin
+    smoothSignalLiq[j]=rawSignalLiq[j]-(smoothfit[0]+smoothfit[1]*(j))
+  endfor
+endfor
 
-for i=0,nPoints1-(int+1) do begin
-  smoothSignalLiq[i:i+int]=rawSignalLiq[i:i+int]-correctionLiq[i:i+int]
+
+
+correctionTotB=[]
+correctionTotBX=[]
+int=10
+for i=0,nPointsFilt do begin
+  if nPointsFilt-i gt 10 then begin
+    correctionTotB=[correctionTotB,min(rawSignalTot[i:i+int])]
+    correctionTotBX=[correctionTotBX,where(rawSignalTot[i:i+int] eq min(rawSignalTot[i:i+int]))+i]
+  endif else begin
+    correctionTotB=[correctionTotB,min(rawSignalTot[i:n(correctionTot)])]
+    correctionTotBX=[correctionTotBX,where(rawSignalTot[i:n(correctionTot)] eq min(rawSignalTot[i:n(correctionTot)]))+i]
+  endelse
   i=i+int
 endfor
 
-intb=20
-for i=0,nPoints1-(intb+1) do begin
-  correctionTot[i:i+intb]=min(rawSignalTot[i:i+intb])
-  i=i+int
+smTot=ts_smooth(correctionTotB,3)
+smTot=correctionTotB
+for i=0,n(correctionTotB)-1 do begin
+  smoothfit=linfit([correctionTotBX[i],correctionTotBX[i+1]],[smTot[i],smTot[i+1]])
+  for j=correctionTotBX[i],correctionTotBX[i+1] do begin
+    smoothSignalTot[j]=rawSignalTot[j]-(smoothfit[0]+smoothfit[1]*(j))
+  endfor
 endfor
 
-for i=0,nPoints1-(intb+1) do begin
-  smoothSignalTot[i:i+intb]=rawSignalTot[i:i+intb]-correctionTot[i:i+intb]
-  i=i+int
-endfor
-
-diffLiq=smoothSignalLiq
-uLiq2=sort(smoothSignalLiq)
-uLiq=diffLiq[uLiq2]
-uLiq=uLiq[where(uLiq gt 0)]
-
-threshLiq=q3(uLiq)
-
-diffTot=smoothSignalTot
-threshtot=0.
-uTot2=sort(diffTot)
-uTot3=reverse(uTot2)
-uTot=diffTot[uTot3]
-u1Tot=uTot[0]
-u2Tot=uTot[50]
-
-x1Tot=min([u1Tot,u2Tot])
-x2Tot=max([u1Tot,u2Tot])
-if cope eq 0 or cope eq 2 then threshTot=.085*mean(uTot[0:50])
-if (cope eq 0 or cope eq 2) and threshTot lt .003 then threshTot=.004
-
-if cope eq 1 then threshTot=0.0025*mean(uTot[0:50])
-
-
-clearairLiqi=findgen(nPoints1,start=0.,increment=0.)
-clearairLiqiB=findgen(nPoints1,start=0.,increment=0.)
-clearairToti=findgen(nPoints1,start=0.,increment=0.)
-    
-for i=0,nPoints do begin
-  if abs(diffLiq[i]) le threshLiq and shift(abs(diffLiq[i]),1) le threshLiq and $
-    shift(abs(diffLiq[i]),-1) le threshLiq and shift(abs(diffLiq[i]),2) le threshLiq and $
-    shift(abs(diffLiq[i]),-2) le threshLiq then clearairLiqi[i]=1
-
-  
-  if abs(diffTot[i]) le threshTot and abs(shift(diffTot[i],1)) le threshTot and $
-     abs(shift(diffTot[i],-1)) le threshTot and abs(shift(diffTot[i],2)) le threshTot and $
-     abs(shift(diffTot[i],-2)) le threshTot then clearairToti[i]=1
-endfor    
-    
-clearairLiq=where(clearairLiqi eq 1)
-
-for i=0,nPoints do begin
-  if vlwccol[i] lt (stddev(vlwccol[clearairliq])*2.5+mean(vlwccol[clearairliq])) and clearairLiqi[i] eq 1 then clearairLiqiB[i]=1
-endfor
-clearairLiqS2=where(clearairLiqiB eq 1)
+threshLiq=q1(smoothSignalLiq[where(smoothSignalLiq gt 0)])
+threshTot=q1(smoothSignalTot[where(smoothSignalTot gt 0)])
 
 
 
-clearairLiqB=double(clearairLiqS2+startsec)
-clearairTot=where(clearairToti eq 1)
+clearairLiq=where(smoothSignalLiq lt threshliq)
+clearairTot=where(smoothSignalTot lt threshTot)
 
-signalLiq=where(clearairLiqi eq 0)
-signalTot=where(clearairToti eq 0)
-
-
-clearairTotsort=sort(vtwccol[clearairTot])
-clearairTotsortsorted=clearairTot[clearairTotsort]
-clearairTotsortsorted=clearairTotsortsorted[n_elements(clearairTotsortsorted)*.01:n_elements(clearairTotsortsorted)*.99]
-
-
+selSig=rawSignalLiq[clearairLiq]
+clearairLiqSort=clearairLiq[sort(selSig)]
+clearairLiq=clearairLiqSort[0:n1(clearairLiq)*.95]
 
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------MISC. POINT DETECTION---------------------------------------------------------------------
@@ -743,23 +759,23 @@ expHeatIce=expHeatLiq
 ;--------------------POWER CALCULATIONS--------------------
 pLiq=vlwccol*ilwccol-kLiq*vlwcref*ilwcref
 pLiqFix=vlwccol*ilwccol-1.1735*vlwcref*ilwcref
-pLiqNoPresCor=pLiq
-lwcNoPresCor=pLiq/(1d*tas*aLiq*expHeatLiq)
+pLiqNpc=pLiq
+lwcNpc=pLiq/(1d*tas*aLiq*expHeatLiq)
 lwcPLiqFix=pLiqFix/(1d*tas*aLiq*expHeatLiq)
 
 pTot=vtwccol*itwccol-kTot*vtwcref*itwcref
-pTotNoPresCor=pTot
-twcNoPresCor=pTot/(1d*tas*aTot*expHeatIce)
+pTotNpc=pTot
+twcNpc=pTot/(1d*tas*aTot*expHeatIce)
 
 
 
 ;--------------------POWER PRESSURE CORRECTION--------------------
 
-linPresCorLiq=linfit(pmb[clearairLiq],pLiqNoPresCor[clearairLiq])
-pLiq=pLiqNoPresCor - ( linPresCorLiq[1]*pmb + linPresCorLiq[0] )
+linPresCorLiq=ladfit(pmb[clearairLiq],pLiqNpc[clearairLiq])
+pLiq=pLiqNpc - ( linPresCorLiq[1]*pmb + linPresCorLiq[0] )
 
-linPresCorTot=linfit(pmb[clearairTot],pTotNoPresCor[clearairTot])
-pTot=pTotNoPresCor - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
+linPresCorTot=ladfit(pmb[clearairTot],pTotNpc[clearairTot])
+pTot=pTotNpc - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
 
 
 ;--------------------FINAL CALCULATIONS--------------------
@@ -797,6 +813,8 @@ lwcBLThresh=mean(lwcBL)*1.2
 
 lwcBaseline=where(lwc lt lwcBLThresh)+inds.starti
 
+lwcClearAirI=clearairLiq+startsec
+twcClearAirI=clearairTot+startsec
 
 flightSec=dindgen(nPoints1,start=startsec,increment=1)
 
@@ -808,25 +826,25 @@ flightSec=dindgen(nPoints1,start=startsec,increment=1)
 color=['black','firebrick','navy','dark green','magenta','coral','indian red','dodger blue','orange','olive drab','medium violet red']
 
 d={as:as, pmb:pmb, time:time, timeForm:timeForm, avroll:avroll, avpitch:avpitch, $
-  pLiq:pLiq, lwcVarE:lwcVarE, lwcNev:lwcNev1, twcNev:twcNev, lwcNoPresCor:lwcNoPresCor, twcVarE:twcVarE,$
-  clearairLiq:clearairLiqB, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
+  pLiq:pLiq, lwcVarE:lwcVarE, lwcNev:lwcNev1, twcNev:twcNev, lwcNpc:lwcNpc, twcVarE:twcVarE,$
+  levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,hivs:hivs,$
   flightString:flightString, kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,$
-  aias:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNoPresCor:twcNoPresCor,$
+  aias:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNpc:twcNpc,$
   vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf, threshTot:threshTot,$
   lwc100:lwc100, cdpdbar:cdpdbar_1_NRB,lwcnev2:lwcnev2, timePretty:timePretty,cdpDofRej:cdpDofRej,$
-  avyaw:avyawr,pvmlwc:pvmlwc,cdplwc:cdplwc_1_NRB,pLiqNoPresCor:pLiqNoPresCor,$
-  rawSignalLiq:rawSignalLiq, smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,flightSec:flightSec,$
-  rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNoPresCor:pTotNoPresCor,$
+  avyaw:avyawr,pvmlwc:pvmlwc,cdplwc:cdplwc_1_NRB,pLiqNpc:pLiqNpc,$
+  smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,flightSec:flightSec,$
+  smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNpc:pTotNpc,$
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,expHeatIce:expHeatIce,$
-  signalTot:signalTot,signalLiq:signalLiq,cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,$
+  cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,smLiq:smLiq,smLiqX:correctionLiqBX,$
   dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcFixedLv:lwcFixedLv,twcFixedLv:twcFixedLv,$
   twc:twc,colETot:colETot,dBarB:dBarB,colEtot2:colEtot2,coletot3:coletot3,$
   cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,cdpTrans:cdpTrans,$
   cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
   pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,colELiqU:colELiqU,$
-  colELiqUP:colELiqUP,cdpTransEst:cdpTransEst,lwcBaseline:lwcBaseline,iwc:iwc,$
-  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,lwcPLiqFix:lwcPLiqFix}
+  colELiqUP:colELiqUP,cdpTransEst:cdpTransEst,lwcBaseline:lwcBaseline,iwc:iwc,beta:betaB,$
+  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,lwcPLiqFix:lwcPLiqFix,lwcClearAirI:lwcClearAirI}
 
 return,d
 

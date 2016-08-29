@@ -1,7 +1,7 @@
 pro loop
 
 level=400
-suffix='lar700'
+suffix='cope'
 
 savename='loopdata'+suffix+'.sav'
 
@@ -80,6 +80,10 @@ inds={starti:double(0)}
     ilwccol=[]
     vlwcref=[]
     ilwcref=[]
+    vtwccol=[]
+    itwccol=[]
+    vtwcref=[]
+    itwcref=[]
     smoothSignalLiq=[]
     aias=[]
     iwc=[]
@@ -92,9 +96,12 @@ inds={starti:double(0)}
     alpha=[]
     correctionLiq=[]
     threshLiq=[]
-    vtwccol=[]
     smLiq=[]
     smLiqX=[]
+    avroll=[]
+    avpitch=[]
+    betaAng=[]
+    avyaw=[]
     
     startSec=0
     
@@ -102,9 +109,9 @@ inds={starti:double(0)}
 
 
     ;flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
-    flight=['1124','1217','0120','0125','0307']
-    flight='0307'
-    ;flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815']
+    ;flight=['1124','1217','0120','0125','0307']
+    ;flight='0304'
+    flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815']
 
    
    cdpBinN=make_array(28,nPoints)
@@ -115,7 +122,7 @@ inds={starti:double(0)}
 
       if i eq 0 then inds.starti=0
       
-      d=nevBase(flight[i],'indicated',level)
+      d=nevBase(flight[i],level)
       
       
       o=0
@@ -127,7 +134,6 @@ inds={starti:double(0)}
 
       cdpBinSecSum=[cdpBinSecSum,reform(total(d.cdpdbins,1))]
       lwc=[lwc,d.lwc]
-      as=[as,d.as]
       pmb=[pmb,d.pmb]
       cdplwc=[cdplwc,d.cdplwc]
       twc=[twc,d.twc]
@@ -180,6 +186,10 @@ inds={starti:double(0)}
       ilwccol=[ilwccol,d.ilwccol]
       vlwcref=[vlwcref,d.vlwcref]
       ilwcref=[ilwcref,d.ilwcref]
+      vtwccol=[vtwccol,d.vtwccol]
+      itwccol=[itwccol,d.itwccol]
+      vtwcref=[vtwcref,d.vtwcref]
+      itwcref=[itwcref,d.itwcref]
       smoothSignalLiq=[smoothSignalLiq,d.smoothSignalLiq]
       aias=[aias,d.aias]
       iwc=[iwc,d.iwc]
@@ -192,13 +202,18 @@ inds={starti:double(0)}
       alpha=[alpha,d.alpha]
       correctionLiq=[correctionLiq,d.correctionLiq]
       threshLiq=[threshLiq,d.threshLiq]
-      vtwccol=[vtwccol,d.vtwccol]
       twcClearAiri=[twcClearAiri,d.twcClearAiri]
       smLiq=[smLiq,d.smLiq]
       smLiqX=[smLiqX,d.smLiqX]
+      avroll=[avroll,d.avroll]
+      avpitch=[avpitch,d.avpitch]
+      betaAng=[betaAng,d.betaAng]
+      avyaw=[avyaw,d.avyaw]
+      
+      
       
       r=r+n_elements(d.(1))
-      inds.starti=inds.starti+n1(d.(1))
+      inds.starti=inds.starti+n1(d.(1)) 
       startSec=startSec+n1(pmb)
     endfor
     
@@ -216,13 +231,13 @@ inds={starti:double(0)}
     color=d.color
     
 
-    save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,twcVarE,colETot,correctionLiq,$
-      as,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,aias,cdpAdcOver,threshliq,$
+    save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,twcVarE,colETot,correctionLiqitwc,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,aias,cdpAdcOver,threshliq,$
       signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,ilwccol,vlwcref,twcClearAiri,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,ilwcref,alpha,smLiqX,$
       lwcNev2,pvmlwc,expHeatLiq,lwcFixedLv,twcFixedLv,fsspConc,lwcNev1,fsspLwc,pliqnpc,smLiq,$
-      pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,vtwccol,$
+      pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
       cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,lwcClearAir,$
-      cdpTrans,cdpTransEst,lwcNpc,lwcBaseline,flightSec,vlwccol,iwc,cdpTransRej,lwcNpcClearAir,lwcClearAirI
+      cdpTrans,cdpTransEst,lwcNpc,lwcBaseline,flightSec,vlwccol,iwc,cdpTransRej,lwcNpcClearAir,lwcClearAirI,$
+      itwccol,vtwccol,itwcref,vtwcref,avroll,avpitch,betaAng,avyaw
    
 end
