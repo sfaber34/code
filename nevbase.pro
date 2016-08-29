@@ -52,6 +52,7 @@ noNev1=0 ; incude Korolev's second set of Nev calculations
   
   ;PACMICE
   if flightDay eq '081816' then nclPath='../data/20160818.c25.nc'
+  if flightDay eq '082516' then nclPath='../data/20160825.c25.nc'
 
 
 if strmatch(nclpath,'*2013*') eq 1 then cope=1
@@ -171,11 +172,18 @@ cdpdbar_1_NRB=loadvar('cdpdbar_1_NRB', filename=nclPath)
 ;CDP diameter per bin
 cdpdbins=loadvar('ACDP_1_NRB', filename=nclPath)
 
+;CDP diameter per bin
+cdpdbinsTest=loadvar('ACDP_1_NRB', filename=nclPath)
+
 ;Pitch [degrees]
 avpitch=loadvar('avpitch', filename=nclPath)
 
 ;roll [degrees]
 avroll=loadvar('avroll', filename=nclPath)
+
+;2DP concentration [liter-1]
+twodp=loadvar('twodp', filename=nclPath)
+;twodp=dindgen(n1(pmb))*!values.d_nan
 
 if cope eq 1 then begin
   ;FSSP total concentration
@@ -315,42 +323,64 @@ timePretty=hourstspb+':'+minstspb+':'+secstspb
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------------------FILTER 25 HZ DATA------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+vlwcref=filter25(vlwcref)
+vlwccol=filter25(vlwccol)
+vtwcref=filter25(vtwcref)
+vtwccol=filter25(vtwccol)
+ilwcref=filter25(ilwcref)
+itwccol=filter25(itwccol)
+itwcref=filter25(itwcref)
+ilwccol=filter25(ilwccol)
+trf=filter25(trf)
+aias=filter25(aias)
+pmb=filter25(pmb)
+trose=filter25(trose)
+z=filter25(z)
+pvmlwc=filter25(pvmlwc)
+pvmDEff=filter25(pvmDEff)
+lwc100=filter25(lwc100)
+avpitch=filter25(avpitch)
+avroll=filter25(avroll)
+betaB=filter25(betaB)
+avyawr=filter25(avyawr)
+alpha=filter25(alpha)
+tas=filter25(tas)
 
 
-struct={a:vlwcref,b:vlwccol,c:vtwcref,d:vtwccol,e:ilwcref,f:itwccol,g:itwcref,h:ilwccol,$
-  i:trf,j:aias,k:pmb,l:trose,m:z,n:pvmlwc,o:pvmDEff,p:lwc100,q:avpitch,r:avroll,s:betaB,$
-  t:avyawr,u:alpha,v:tas}
 
-filteredVals=[]
-for i=0,n_tags(struct)-1. do begin
-  filteredVals=[temporary(filteredVals),filter25(struct.(i))]
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------------------------FILTER 10 HZ DATA------------------------------------------------------------------------------
+;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+twodp=filter10(twodp)
+
+
+
+
+i=double(0)
+j=double(0)
+int=double(5)
+
+cdpdbinsB=make_array(n1(cdpdbins[*,0,0]),n1(cdpdbins[0,*,0])*n1(cdpdbins[0,0,*]))*0
+for j=0, n(cdpdbins[0,0,*]) do begin
+  cdpdbinsB[*,i]=cdpdbins[*,0,j]
+  cdpdbinsB[*,i+1]=cdpdbins[*,1,j]
+  cdpdbinsB[*,i+2]=cdpdbins[*,2,j]
+  cdpdbinsB[*,i+3]=cdpdbins[*,3,j]
+  cdpdbinsB[*,i+4]=cdpdbins[*,4,j]
+
+  i=i+int
 endfor
 
-indsC=dindgen(n_tags(struct)+1.)*n1(struct.(0))/5.
-vlwcref=filteredVals[indsC[0]:indsC[1]-1.]
-vlwccol=filteredVals[indsC[1]:indsC[2]-1.]
-vtwcref=filteredVals[indsC[2]:indsC[3]-1.]
-vtwccol=filteredVals[indsC[3]:indsC[4]-1.]
-ilwcref=filteredVals[indsC[4]:indsC[5]-1.]
-itwccol=filteredVals[indsC[5]:indsC[6]-1.]
-itwcref=filteredVals[indsC[6]:indsC[7]-1.]
-ilwccol=filteredVals[indsC[7]:indsC[8]-1.]
-trf=filteredVals[indsC[8]:indsC[9]-1.]
-aias=filteredVals[indsC[9]:indsC[10]-1.]
-pmb=filteredVals[indsC[10]:indsC[11]-1.]
-trose=filteredVals[indsC[11]:indsC[12]-1.]
-z=filteredVals[indsC[12]:indsC[13]-1.]
-pvmlwc=filteredVals[indsC[13]:indsC[14]-1.]
-pvmDEff=filteredVals[indsC[14]:indsC[15]-1.]
-lwc100=filteredVals[indsC[15]:indsC[16]-1.]
-avpitch=filteredVals[indsC[16]:indsC[17]-1.]
-avroll=filteredVals[indsC[17]:indsC[18]-1.]
-betaB=filteredVals[indsC[18]:indsC[19]-1.]
-avyawr=filteredVals[indsC[19]:indsC[20]-1.]
-alpha=filteredVals[indsC[20]:indsC[21]-1.]
-tas=filteredVals[indsC[21]:indsC[22]-1.]
+cdplwc_1_NRBB=[]
+for i=0,n(cdplwc_1_NRB[0,*]) do begin
+  cdplwc_1_NRBB=[temporary(cdplwc_1_NRBB),cdplwc_1_NRB[*,i]]
+endfor
 
-;vsig=where(vlwccol gt 4.)
+
+
+
 vsig=where(vlwccol gt 2.5)
 vsig=vsig[30:n_elements(vsig)-30]
 aStart=min(vsig)
@@ -385,44 +415,29 @@ avroll=avroll[aStart:aEnd]
 avyawr=avyawr[aStart:aEnd]
 alpha=alpha[aStart:aEnd]
 betaB=betaB[aStart:aEnd]
+twodp=twodp[aStart:aEnd]
+cdplwc_1_NRB=cdplwc_1_NRBB[aStart:aEnd]
+fsspConc=fsspConc[aStart:aEnd]
+fsspLwc=fsspLwc[aStart:aEnd]
+cdpdbins=cdpdbinsB[*,aStart:aEnd]
 
 ;time=time[ind5]
 ;timeFlight=timeFlight[aStart5:aEnd5]
 
-cdplwc_1_NRBB=[]
-cdpdbinsB=make_array(n1(cdpdbins[*,0,0]),n1(cdpdbins[0,*,0])*n1(cdpdbins[0,0,*]))*0
-for i=0,n(cdplwc_1_NRB[0,*]) do begin
-  cdplwc_1_NRBB=[temporary(cdplwc_1_NRBB),cdplwc_1_NRB[*,i]]
-endfor
 
 
-;---->START HERE
-i=0
-j=0
-int=5
-
-for j=0, n(cdpdbins[0,0,*]) do begin
-    cdpdbinsB[*,i]=cdpdbins[*,0,j]
-    cdpdbinsB[*,i+1]=cdpdbins[*,1,j]
-    cdpdbinsB[*,i+2]=cdpdbins[*,2,j]
-    cdpdbinsB[*,i+3]=cdpdbins[*,3,j]
-    cdpdbinsB[*,i+4]=cdpdbins[*,4,j]
-    
-  i=i+int
-  ;if n1(cdpdbins[0,0,*])-i lt 5. then break
-endfor
 
 
-cdplwc_1_NRB=cdplwc_1_NRBB[aStart:aEnd]
-fsspConc=fsspConc[aStart:aEnd]
-fsspLwc=fsspLwc[aStart:aEnd]
+
+
+
 ;cdpTrans=cdpTrans[aStart:aEnd]
 ;cdpDofRej=cdpDofRejB[aStart:aEnd]
 ;cdpTransRej=cdpTransRejB[aStart:aEnd]
 ;cdpAdcOver=cdpAdcOverB[aStart:aEnd]
-cdpdbinsC=make_array(28,aEnd-aStart+1.)
-cdpdbinsC[*,*]=cdpdbinsB[*,aStart:aEnd]
-cdpdbins=cdpdbinsC
+;cdpdbinsC=make_array(28,aEnd-aStart+1.)
+;cdpdbinsC[*,*]=cdpdbinsB[*,aStart:aEnd]
+
 
 
 ;SET COPE ONLY VARIABLES
@@ -644,13 +659,13 @@ cdpBinSD=[]
 s=0
 
 
-for m=0, n(cdpdbins[0,*]) do begin
+for m=double(0), n(cdpdbins[0,*]) do begin
   xa=[]
   xb=[]
   xc=[]
   xe=[]
   meanDiff=[]
-  for j=0,n(cdpdbins[*,0]) do begin
+  for j=double(0),n(cdpdbins[*,0]) do begin
     xe=[xe,(diam[j])*(cdpdbins[j,m])]
     xa=[xa,(diam[j])^2.*(cdpdbins[j,m])]
     xb=[xb,(diam[j])^3.*(cdpdbins[j,m])]
@@ -662,8 +677,8 @@ for m=0, n(cdpdbins[0,*]) do begin
   ;if finite(dEffB) eq 1 then dEff=[dEff,dEffB] else dEff=[dEff,0]
   
   dBarBB=total(xe)/total(cdpdbins[*,m])
-  dBarB=[dBarB,dBarBB]
-  ;if finite(dBarBB) eq 1 then dBarB=[dBarB,dBarBB] else dBarB=[dBarB,0]
+  ;dBarB=[dBarB,dBarBB]
+  if finite(dBarBB) eq 1 then dBarB=[dBarB,dBarBB] else dBarB=[dBarB,0]
   
   vvdB=(total(xb)/total(cdpdbins[*,m]))^(1./3.)
   vvd=[vvd,vvdB]
@@ -876,7 +891,7 @@ flightSec=dindgen(n1(lwc),start=startsec,increment=1)
 
 color=['black','firebrick','navy','dark green','magenta','coral','indian red','dodger blue','orange','olive drab','medium violet red']
 
-d={pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, $
+d={pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, twodp:twodp,$
   pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNpc:lwcNpc, twcVarE:twcVarE,$
   clearairLiq:clearairLiq, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
   kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,betaAng:betaB,$
@@ -910,15 +925,36 @@ end
 ;----------------------------------------------------------------FILTER 25HZ DATA -> 5HZ------------------------------------------------------------------
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
 function filter25, varC
-  varB=smooth(varC,5)
-
-  varFilt=[]
-
+  varLin=[]
   for i=0,n(varC[0,*]) do begin
-    varFilt=[temporary(varFilt),varB[0,i],varB[6,i],varB[11,i],varB[16,i],varB[21,i]]
+    varLin=[varLin,varc[*,i]]
   endfor
+
+  varB=smooth(varLin,5)
+
+  varFilt=varb[0:*:5]
+
+  return,varFilt
+end
+
+
+
+
+
+;---------------------------------------------------------------------------------------------------------------------------------------------------------
+;----------------------------------------------------------------FILTER 10HZ DATA -> 5HZ------------------------------------------------------------------
+;---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+function filter10, varC
+  varLin=[]
+  for i=0,n(varC[0,*]) do begin
+    varLin=[varLin,varc[*,i]]
+  endfor
+  
+  varB=smooth(varLin,2)
+
+  varFilt=varb[0:*:2]
 
   return,varFilt
 end
@@ -1009,6 +1045,7 @@ function cdpTransTime, flightDay
   
   ;PACMICE
   if flightDay eq '081816' then nclPath='/Volumes/externalHD/copeRaw/20160818_raw.nc'
+  if flightDay eq '082516' then nclPath='/Volumes/externalHD/copeRaw/20160825_raw.nc'
   
   cdpAveTransSps=loadvar('AVGTRNS_NRB', filename=nclPath)
   ;cdpTransRejSps=loadvar('REJAT_NRB', filename=nclPath)

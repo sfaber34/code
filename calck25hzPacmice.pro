@@ -8,8 +8,8 @@ pro calcK25hzPacmice
 
 
   level=600
-  kType='twc'
-  pickPlot=0
+  kType='lwc'
+  pickPlot=1
 
   case level of
     700:begin
@@ -46,6 +46,9 @@ pro calcK25hzPacmice
   betaAng=betaAng[inds]
   avyaw=avyaw[inds]
   tas=tas[inds]
+  lwc100=lwc100[inds]
+  lwc=lwc[inds]
+  twodp=twodp[inds]
   
   
   if kType eq 'lwc' then begin
@@ -62,7 +65,7 @@ pro calcK25hzPacmice
 
   if pickPlot eq 1 then begin
     x=where(abs(avroll) lt 8.6 and avpitch gt -1.8 and avpitch lt 7.2)
-    p1=plot(aias,dimensions=[1200,900])
+    p1=plot(lwc100,dimensions=[1200,900])
     ;s1=scatterplot(aias[x],/overplot,sym_color='red',symbol='.')
   endif
   
