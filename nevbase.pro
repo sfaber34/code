@@ -138,9 +138,9 @@ time=loadvar('time', filename=nclPath)
 ;pressure from rosemount sensor [mb]
 pmb=loadvar('ps_hads_a', filename=nclPath)
 
-nPoints=n(pmb[0,*])
-nPoints1=nPoints+1
-nPoints5=nPoints1*5.-1.
+
+nPoints1Pre=n1(pmb)/5.
+
 
 ;temperature from rosemount sensor [C]
 trose=loadvar('trose', filename=nclPath)
@@ -209,7 +209,7 @@ if flightday eq '0814' eq 1 then cipmod=0
 if cope eq 1 and cipmod eq 1 then begin
   cipmodconc0=loadvar('CONC0_mod_cip_IBR', filename=nclPath)
 endif else begin
-  cipmodconc0=replicate(!VALUES.F_NAN,nPoints1)
+  cipmodconc0=replicate(!VALUES.F_NAN,nPoints1Pre)
 endelse
 print,'-----------', flightDay, '-----------'
 
@@ -217,14 +217,14 @@ print,'-----------', flightDay, '-----------'
 if cope eq 1 and cipmod eq 1 then begin
   cipmodconc1=loadvar('CONC1_mod_cip_IBR', filename=nclPath)
 endif else begin
-  cipmodconc1=replicate(!VALUES.F_NAN,nPoints1)
+  cipmodconc1=replicate(!VALUES.F_NAN,nPoints1Pre)
 endelse
 
 ;CIP MOD2 CONC [/liter]
 if cope eq 1 and cipmod eq 1 then begin
   cipmodconc2=loadvar('CONC2_mod_cip_IBR', filename=nclPath)
 endif else begin
-  cipmodconc2=replicate(!VALUES.F_NAN,nPoints1)
+  cipmodconc2=replicate(!VALUES.F_NAN,nPoints1Pre)
 endelse
 
 ;nevzorov sensor temperature [C]
@@ -246,21 +246,21 @@ endelse
 if cope eq 1 and nonev1 eq 1 then begin
   lwcNev1=loadvar('nevlwc1', filename=nclPath)
 endif else begin
-  lwcNev1=replicate(!VALUES.F_NAN,nPoints1)
+  lwcNev1=replicate(!VALUES.F_NAN,nPoints1Pre)
 endelse  
 
 ;liquid water content from Nevzorov probe [g/m^3]
 if cope eq 1 and nonev1 eq 1 then begin
    lwcNev2=loadvar('nevlwc2', filename=nclPath)
 endif else begin   
-  lwcNev2=replicate(!VALUES.F_NAN,nPoints1)
+  lwcNev2=replicate(!VALUES.F_NAN,nPoints1Pre)
 endelse
 
 ;Total water content from Nevzorov probe [g/m^3]
 if cope eq 1 and nonev1 eq 1 then begin
   twcNev=loadvar('nevtwc', filename=nclPath)
 endif else begin  
-  twcNev=replicate(!VALUES.F_NAN,nPoints1)
+  twcNev=replicate(!VALUES.F_NAN,nPoints1Pre)
 endelse
 
 ;Sideslip Angle [deg]
@@ -273,7 +273,7 @@ avyawr=loadvar('avyawr', filename=nclPath)*!RADEG
 alpha=loadvar('alpha', filename=nclPath)
 
 ;Flight Time [sec]
-timeFlight=dindgen(nPoints1,start=0,increment=1)
+timeFlight=dindgen(nPoints1Pre,start=0,increment=1)
 hour=loadvar('HOUR', filename=nclPath)
 min=loadvar('MINUTE', filename=nclPath)
 sec=loadvar('SECOND', filename=nclPath)
@@ -287,10 +287,10 @@ if calcTrans eq 1 then begin
   cdpTransRej=cdpTransB[*,2]
   cdpAdcOver=cdpTransB[*,3]
 endif else begin
-  cdpTrans=replicate(!VALUES.F_NAN,nPoints1)
-  cdpDofRej=replicate(!VALUES.F_NAN,nPoints1)
-  cdpTransRej=replicate(!VALUES.F_NAN,nPoints1)
-  cdpAdcOver=replicate(!VALUES.F_NAN,nPoints1)
+  cdpTrans=replicate(!VALUES.F_NAN,nPoints1Pre)
+  cdpDofRej=replicate(!VALUES.F_NAN,nPoints1Pre)
+  cdpTransRej=replicate(!VALUES.F_NAN,nPoints1Pre)
+  cdpAdcOver=replicate(!VALUES.F_NAN,nPoints1Pre)
 endelse
 
 
@@ -425,7 +425,8 @@ cdpdbins=cdpdbinsB[*,aStart:aEnd]
 ;timeFlight=timeFlight[aStart5:aEnd5]
 
 
-
+nPoints1=n1(pmb)
+nPoints=nPoints1-1.
 
 
 
@@ -476,36 +477,25 @@ if cope eq 2 or cope eq 0 then begin
 
   case level of
     '700':begin
-      ;kLiq=(0.75332308)*(0.99547708)^aiasms+(1.2198560) ;1hz
-      kLiq=(0.841483)*(0.996200)^aiasms+(1.12379) ;5hz
-      kTot=(1.13654)*(0.989413)^aiasms+(0.309623)
+        coLiq=[-4.624e-05,1.718,1.758]
+        coTot=[15.72,-0.8012,0.3106]
      end
      '600':begin
-      ;kLiq=(0.989776)*(0.996765)^aiasms+(0.977116) ;1hz
-      kLiq=(0.982622)*(0.996785)^aiasms+(0.981679) ;5hz
-      kTot=(1.35180)*(0.974671)^aiasms+(0.651032)
+        coLiq=[-0.000356,1.305,1.797]
+        coTot=[664.9,-1.894,0.6623]
      end
      '500':begin
-      ;kLiq=(0.989940)*(0.974684)^aiasms+(1.60661) ;1hz
-      kLiq=(1.00388)*(0.974276)^aiasms+(1.60898) ;5hz
-      kTot=(1.04426)*(0.990708)^aiasms+(0.366638)
+        coLiq=[-2.192e-14,6.271,1.703]
+        coTot=[-1.102e-06,2.626,0.9771]
      end
      '400':begin
-      ;kLiq=(2.33354)*(0.954685)^aiasms+(1.67697) ;1hz
-      kLiq=(2.21180)*(0.955577)^aiasms+(1.67575) ;5hz
-      kTot=(0.981726)*(0.981146)^aiasms+(0.683709)
+        coLiq=[6.1,-0.77,1.486]
+        coTot=[3.798,-0.3249,-0.005089]
      end 
   endcase
-
-;  if (level eq '700') then kLiq=(-0.013967617)*aiasms^(0.68162048)+(2.0206156)
-;  if (level eq '600') then kLiq=(-0.00956550)*tas^(0.753178)+(2.00092)
-;  if (level eq '500') then kLiq=(-0.135222)*tas^(0.375551)+(2.43805)
-;  if (level eq '400') then kLiq=(-0.0810470)*tas^(0.436789)+(2.28769)
-;  
-;  if (level eq '700') then kTot=(-0.0258749)*aiasms^(0.711242)+(1.37937)
-;  if (level eq '600') then kTot=(-0.104706)*aiasms^(0.468563)+(1.64276)
-;  if (level eq '500') then kTot=(-0.0249307)*aiasms^(0.698422)+(1.39464)
-;  if (level eq '400') then kTot=(-0.0700741)*aiasms^(0.512351)+(1.56121)
+  
+  kLiq=coLiq[0]*aiasms^coLiq[1] + coLiq[2]
+  kTot=coTot[0]*aiasms^coTot[1] + coTot[2]
 endif
 
 
@@ -524,7 +514,7 @@ correctionTot=dindgen(nPointsFilt1,increment=0)
 smoothSignalTot=dindgen(nPointsFilt1,increment=0)
 
 rawSignalLiq=(vlwccol/vlwcref)
-rawSignalTot=(vtwccol)
+rawSignalTot=(vtwccol/vtwcref)
 
 
 correctionLiqB=[]
@@ -568,7 +558,7 @@ endfor
 
 smTot=ts_smooth(correctionTotB,5)
 
-for i=0,n(correctionTotBX)-1 do begin
+for i=0,n(correctionTotB)-1 do begin
   smoothfit=linfit([correctionTotBX[i],correctionTotBX[i+1]],[smTot[i],smTot[i+1]])
   for j=correctionTotBX[i],correctionTotBX[i+1] do begin
     smoothSignalTot[j]=rawSignalTot[j]-(smoothfit[0]+smoothfit[1]*(j))
@@ -578,25 +568,17 @@ endfor
 threshLiq=q1(smoothSignalLiq[where(smoothSignalLiq gt 0)])
 threshTot=q1(smoothSignalTot[where(smoothSignalTot gt 0)])
 
-
-
 clearairLiq=where(smoothSignalLiq lt threshliq)
 clearairTot=where(smoothSignalTot lt threshTot)
 
-selSig=rawSignalLiq[clearairLiq]
-clearairLiqSort=clearairLiq[sort(selSig)]
+selSigLiq=rawSignalLiq[clearairLiq]
+clearairLiqSort=clearairLiq[sort(selSigLiq)]
 clearairLiq=clearairLiqSort[0:n1(clearairLiq)*.95]
 
+selSigTot=rawSignalTot[clearairTot]
+clearairTotSort=clearairTot[sort(selSigTot)]
+clearairTot=clearairTotSort[0:n1(clearairTot)*.95]
 
-
-
-;signalLiq=where(clearairLiqi eq 0)
-;signalTot=where(clearairToti eq 0)
-
-
-;clearairTotsort=sort(vtwccol[clearairTot])
-;clearairTotsortsorted=clearairTot[clearairTotsort]
-;clearairTotsortsorted=clearairTotsortsorted[n_elements(clearairTotsortsorted)*.01:n_elements(clearairTotsortsorted)*.99]
 
 
 
@@ -612,25 +594,25 @@ baselineYawI=dindgen(nPoints1,start=0,increment=0)
 baselinePitchI=dindgen(nPoints1,start=0,increment=0)
 baselineI=dindgen(nPoints1,start=0,increment=0)
 
-for i=0, aSpan do begin
-  if (abs(avRoll[i]) lt 5) then begin
-    baselineRollI[i]=1
-  endif
-  if (avpitch[i] lt (mean(avpitch) + 2) and avpitch[i] gt (mean(avpitch) - 2)) then begin ;0871013
-    baselinePitchI[i]=1
-  endif
-  if (betaB[i] lt -.014 and betaB[i] gt -.026) then begin
-    BetaI[i]=1
-  endif
-  if (abs(avyawr[i]) lt .003) then begin
-    baselineYawI[i]=1
-  endif
-  if (baselineI[i] eq 1) and (baselineRollI[i] eq 1) and (baselinePitchI[i] eq 1) and (baselineYawI[i]=1) then begin
-    baselineIB[i]=1
-  endif
-endfor
-
-levelclearairLiq=where(baselineIB eq 1)
+;for i=0, aSpan do begin
+;  if (abs(avRoll[i]) lt 5) then begin
+;    baselineRollI[i]=1
+;  endif
+;  if (avpitch[i] lt (mean(avpitch) + 2) and avpitch[i] gt (mean(avpitch) - 2)) then begin ;0871013
+;    baselinePitchI[i]=1
+;  endif
+;  if (betaB[i] lt -.014 and betaB[i] gt -.026) then begin
+;    BetaI[i]=1
+;  endif
+;  if (abs(avyawr[i]) lt .003) then begin
+;    baselineYawI[i]=1
+;  endif
+;  if (baselineI[i] eq 1) and (baselineRollI[i] eq 1) and (baselinePitchI[i] eq 1) and (baselineYawI[i]=1) then begin
+;    baselineIB[i]=1
+;  endif
+;endfor
+;
+;levelclearairLiq=where(baselineIB eq 1)
 
 
 
@@ -638,9 +620,6 @@ levelclearairLiq=where(baselineIB eq 1)
 ;---------------------------------------------------------------------MOMENT CALCULATIONS---------------------------------------------------------------------
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-dEff=make_array(nPoints1)
-vvd=make_array(nPoints1)
-vmd=make_array(nPoints1)
 diff=make_array(nPoints1)
 if n_elements(cdpdbins[*,0]) eq 28 then diam=[1.5,2.5,3.5,4.5,5.5,6.5,7.5,9.,11.,13.,15.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
 if n_elements(cdpdbins[*,0]) eq 27 then diam=[1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,10.5,14.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
@@ -848,10 +827,6 @@ twcFixedLv=pTot/(1.*tas*aTot*2589.)
 twcVarE=pTot/(colETot*tas*aTot*expHeatIce)
 
 
-
-lwcErrColE=lwcVarE-lwc
-twcErrColE=twcVarE-twc
-
 iwc=twc-lwc
 
 
@@ -860,8 +835,9 @@ iwc=twc-lwc
 ;-----------------LWC-----------------
 
 ;----------CONTRIBUTIONS---------
-lwcColEUnc=(1./colEliq)
-lwcRandFluct=2d-3
+lwcColEUncU=(1./colEliq)
+lwcRandFluct=3d-3/2.
+lwcUB=lwc*lwcColEUncU+lwcRandFluct
 
 ;----------CALCULATIONS---------
 
@@ -893,7 +869,7 @@ color=['black','firebrick','navy','dark green','magenta','coral','indian red','d
 
 d={pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, twodp:twodp,$
   pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNpc:lwcNpc, twcVarE:twcVarE,$
-  clearairLiq:clearairLiq, levelclearairLiq:levelclearairLiq,timeFlight:timeFlight,$
+  clearairLiq:clearairLiq,timeFlight:timeFlight,$
   kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,betaAng:betaB,$
   aias:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNpc:twcNpc,$
   vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf,trose:trose, threshTot:threshTot,$
@@ -906,10 +882,10 @@ d={pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, twodp:twodp,$
   dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcFixedLv:lwcFixedLv,twcFixedLv:twcFixedLv,$
   twc:twc,colETot:colETot,dBarB:dBarB,colEtot2:colEtot2,coletot3:coletot3,$
   cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,cdpTrans:cdpTrans,$
-  cipmodconc2:cipmodconc2,color:color,lwcErrColE:lwcErrColE,fsspLwc:fsspLwc,$
+  cipmodconc2:cipmodconc2,color:color,fsspLwc:fsspLwc,$
   pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,$
-  cdpTransEst:cdpTransEst,iwc:iwc,lwcClearAir:lwcClearAir,$
+  cdpTransEst:cdpTransEst,iwc:iwc,lwcClearAir:lwcClearAir,lwcUB:lwcUB,$
   cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,lwcNpcClearAir:lwcNpcClearAir,$
   lwcClearAirI:lwcClearAirI,alpha:alpha,correctionLiq:correctionLiq}
 

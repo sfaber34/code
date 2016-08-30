@@ -1,7 +1,7 @@
 pro calcBinnedVals
 
 
-  suffix='cope'
+  suffix='082516400'
   
   
   restore,'saves/loopdata'+suffix+'.sav'
@@ -18,8 +18,9 @@ pro calcBinnedVals
     and cdpconc le concThresh and shift(cdpconc,6) le concThresh and shift(cdpconc,7) le concThresh and shift(cdpconc,8) le concThresh and shift(cdpconc,9) le concThresh and shift(cdpconc,10) le concThresh $
     and cdpconc le concThresh and shift(cdpconc,-1) le concThresh and shift(cdpconc,-2) le concThresh and shift(cdpconc,-3) le concThresh and shift(cdpconc,-4) le concThresh and shift(cdpconc,-5) le concThresh $
     and cdpconc le concThresh and shift(cdpconc,-6) le concThresh and shift(cdpconc,-7) le concThresh and shift(cdpconc,-8) le concThresh and shift(cdpconc,-9) le concThresh and shift(cdpconc,-10) le concThresh)
+    liqOnly=where(cdpconc le concThresh)
     
-  ;liqOnly=where(cdpconc eq 0)
+  liqOnly=where(cdpconc le concThresh and trf gt -3 and twodp lt 1)
   
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -42,7 +43,7 @@ pro calcBinnedVals
     cdptrans=cdptrans[liqonly]
     cdpacc=cdpacc[liqonly]
     lwc100=lwc100[liqonly]
-    lwcNev=lwcNev[liqonly]
+    ;lwcNev=lwcNev[liqonly]
     flightsec=flightsec[liqonly]
     pmb=pmb[liqonly]
     tas=tas[liqonly]
@@ -58,16 +59,16 @@ pro calcBinnedVals
   ;--------------------------------------------------------------------------------
   ;--------------------------------------------------------------------------------
   ;----------------------------------OPTIONS---------------------------------------
-  var=lwcnev
+  var=vmd
 
   ;STARTING LEFT VALUE
-  binstart=.01d
+  binstart=2d
 
   ;WIDTH OF BINS
-  bininc=.2
+  bininc=5d
   
   ;MAX BIN VALUE
-  binEnd=2.2d
+  binEnd=50d
   
   
   
@@ -143,6 +144,9 @@ pro calcBinnedVals
   lwcKorDiffMed=[]
   lwcKorDiffQ1=[]
   lwcKorDiffQ3=[]
+  twcCAEMed=[]
+  twcCAEQ1=[]
+  twcCAEQ3=[]
 
 
   ;--------------------------------------------------------------------------------------------------------
@@ -227,6 +231,10 @@ pro calcBinnedVals
       lwcCAEMed=[lwcCAEMed,med(abs(lwc[bins]))]
       lwcCAEq1=[lwcCAEq1,q1(abs(lwc[bins]))]
       lwcCAEq3=[lwcCAEq3,q3(abs(lwc[bins]))]
+      
+      twcCAEMed=[twcCAEMed,med(abs(twc[bins]))]
+      twcCAEq1=[twcCAEq1,q1(abs(twc[bins]))]
+      twcCAEq3=[twcCAEq3,q3(abs(twc[bins]))]
 
 
   endfor
@@ -240,7 +248,7 @@ pro calcBinnedVals
     lwc100cdplwc,lwcMean,cdpConcMean,lwcTwcMed,$
     lwc100twc,lwc100lwc,lwctwcq1,lwctwcq3,$
     color,vmdMean,vmdMed,xVar,lwcKorDiffMed,lwcKorDiffQ1,lwcKorDiffQ3,$
-    lwcCdpq1,lwcCdpq3,lwcCdpMed,cdpDBarMean,$
+    lwcCdpq1,lwcCdpq3,lwcCdpMed,cdpDBarMean,twcCAEMed,twcCAEQ1,twcCAEQ3,$
     lwcCAEMed,lwcCAEq1,lwcCAEq3,lwcKorMed,lwcKorQ1,lwcKorQ3
     
 

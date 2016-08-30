@@ -1,7 +1,7 @@
 pro loop
 
 level=400
-suffix='082516'
+suffix='082516400'
 
 savename='loopdata'+suffix+'.sav'
 
@@ -103,6 +103,7 @@ inds={starti:double(0)}
     betaAng=[]
     avyaw=[]
     twodp=[]
+    lwcUB=[]
     
     startSec=0
     
@@ -157,7 +158,6 @@ inds={starti:double(0)}
       cipmodconc1=[cipmodconc1,d.cipmodconc1]
       cipmodconc2=[cipmodconc2,d.cipmodconc2]
       lwc100=[lwc100,d.lwc100]
-      lwcErrColE=[lwcErrColE,d.lwcErrColE]
       lwcNev1=[lwcNev1,d.lwcNev1]
       lwcNev2=[lwcNev2,d.lwcNev2]
       pvmlwc=[pvmlwc,d.pvmlwc]
@@ -211,6 +211,7 @@ inds={starti:double(0)}
       betaAng=[betaAng,d.betaAng]
       avyaw=[avyaw,d.avyaw]
       twodp=[twodp,d.twodp]
+      lwcUB=[lwcUB,d.lwcUB]
       
       
       
@@ -234,12 +235,12 @@ inds={starti:double(0)}
     
 
     save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,twcVarE,colETot,correctionLiqitwc,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,aias,cdpAdcOver,threshliq,$
-      signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,lwcErrColE,ilwccol,vlwcref,twcClearAiri,$
+      signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,ilwccol,vlwcref,twcClearAiri,$
       coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,ilwcref,alpha,smLiqX,$
       lwcNev2,pvmlwc,expHeatLiq,lwcFixedLv,twcFixedLv,fsspConc,lwcNev1,fsspLwc,pliqnpc,smLiq,$
       pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
       cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,lwcClearAir,$
       cdpTrans,cdpTransEst,lwcNpc,lwcBaseline,flightSec,vlwccol,iwc,cdpTransRej,lwcNpcClearAir,lwcClearAirI,$
-      itwccol,vtwccol,itwcref,vtwcref,avroll,avpitch,betaAng,avyaw,twodp
+      itwccol,vtwccol,itwcref,vtwcref,avroll,avpitch,betaAng,avyaw,twodp,lwcUB
    
 end

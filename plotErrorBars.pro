@@ -32,8 +32,8 @@ pro ploterrorbars
   ;------------------------------INPUT ARRAYS--------------------------------------
   colorArr=['red','green','blue','black']
   colorArr='black'
-  suffixArr=['lar400k','lar500k','lar600k','lar700k']
-  suffixArr='cope'
+  suffixArr=['082516400','082516500','082516600','082516700']
+  suffixArr='082516400'
   symArr=['x','o','+','D']
   
   
@@ -52,9 +52,9 @@ pro ploterrorbars
    ;------------------------------------------------------------------------------------------
    ;--------------------------------------INPUT ARRAYS----------------------------------------
    varX=xVar
-   varA=lwcKorMed
-   varAErrUp=lwcKorQ3
-   varAErrLow=lwcKorQ1
+   varA=lwcCdpMed
+   varAErrUp=lwcCdpq1
+   varAErrLow=lwcCdpq1
    
    
    ;DISPLAY AS PERCENTILES?
