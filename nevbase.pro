@@ -12,7 +12,7 @@ if inds.starti eq 0 then startsec=0
 if inds.starti gt 0 then startsec=inds.starti
 
 ;-------MISC OPTIONS------
-calcTrans=0 ;calculate cdp vars from raw files
+calcTrans=1 ;calculate cdp vars from raw files
 cipmod=0 ;include Jason's cip calculations
 noNev1=0 ; incude Korolev's second set of Nev calculations
 
@@ -113,7 +113,7 @@ itwccol=loadvar('itwccol', filename=nclPath)
         vtwcref=vtwccolB
       endif
       
-      if mean(itwccol) gt mean(itwcref) then begin
+      if mean(itwcref) gt mean(itwccol) then begin
         itwccolB=itwccol
         itwcrefB=itwcref
         itwccol=itwcrefB
@@ -393,10 +393,10 @@ print,'->data filtered'
 
 
 
-;cdpTrans=cdpTrans[aStart:aEnd]
-;cdpDofRej=cdpDofRejB[aStart:aEnd]
-;cdpTransRej=cdpTransRejB[aStart:aEnd]
-;cdpAdcOver=cdpAdcOverB[aStart:aEnd]
+cdpTrans=cdpTrans[aStart:aEnd]
+cdpDofRej=cdpDofRej[aStart:aEnd]
+;cdpTransRej=cdpTransRej[aStart:aEnd]
+cdpAdcOver=cdpAdcOver[aStart:aEnd]
 ;cdpdbinsC=make_array(28,aEnd-aStart+1.)
 ;cdpdbinsC[*,*]=cdpdbinsB[*,aStart:aEnd]
 
@@ -537,7 +537,7 @@ selSigTot=rawSignalTot[clearairTot]
 clearairTotSort=clearairTot[sort(selSigTot)]
 clearairTot=clearairTotSort[0:n1(clearairTot)*.95]
 
-print,'->BL Calced'
+
 
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------MOMENT CALCULATIONS---------------------------------------------------------------------
@@ -858,55 +858,33 @@ function cdpTransTime, flightDay
   cdpAveTransSps=loadvar('AVGTRNS_NRB', filename=nclPath)
   ;cdpTransRejSps=loadvar('REJAT_NRB', filename=nclPath)
   cdpDofRejSps=loadvar('REJDOF_NRB', filename=nclPath) 
-  cdpAdcOver=loadvar('OVFLW_NRB', filename=nclPath) 
-  cdpAveTransSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))*!Values.d_NAN
-  cdpTransRejSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))*!Values.d_NAN
-  cdpDofRejSpsAve=dindgen(n_elements(cdpAveTransSps[0,*]))*!Values.d_NAN
-  cdpAdcOverAve=dindgen(n_elements(cdpAveTransSps[0,*]))*!Values.d_NAN
-
-
-  for i=0,n_elements(cdpAveTransSps[0,*])-1 do begin
-    cdpAveTransSpsFilt=cdpAveTransSps[*,i]
-    nonNull=where(cdpAveTransSpsFilt gt 0.)
-    if nonNull[0] ge 0 then begin
-      cdpAveTransSpsFiltB=cdpAveTransSpsFilt[nonNull]
-      cdpAveTransSpsAve[i]=mean(cdpAveTransSpsFiltB)
-    endif
-    
-
-
-    cdpDofRejSpsFilt=cdpDofRejSps[*,i]
-    nonNull=where(cdpDofRejSpsFilt gt 0.)
-    if nonNull[0] ge 0 then begin
-      cdpDofRejSpsFiltB=cdpDofRejSpsFilt[nonNull]
-      cdpDofRejSpsAve[i]=mean(cdpDofRejSpsFiltB)
-    endif
-    
-    cdptransRejSpsFilt=cdptransRejSps[*,i]
-    nonNull=where(cdptransRejSpsFilt gt 0.)
-    if nonNull[0] ge 0 then begin
-      cdptransRejSpsFiltB=cdptransRejSpsFilt[nonNull]
-      cdptransRejSpsAve[i]=mean(cdptransRejSpsFiltB)
-    endif
-
-    cdpAdcOverFilt=cdpAdcOver[*,i]
-    nonNull=where(cdpAdcOverFilt gt 0.)
-    if nonNull[0] ge 0 then begin
-      cdpAdcOverFiltB=cdpAdcOverFilt[nonNull]
-      cdpAdcOverAve[i]=mean(cdpAdcOverFiltB)
-    endif
+  cdpAdcOverSps=loadvar('OVFLW_NRB', filename=nclPath) 
+  cdpAveTrans=[]
+  cdpDofRej=[]
+  cdpAdcOver=[]
+  
+  for i=double(0),n(cdpAveTransSps[0,*]) do begin
+    cdpAveTrans=[cdpAveTrans,cdpAveTransSps[0,i],cdpAveTransSps[1,i],cdpAveTransSps[2,i],cdpAveTransSps[3,i],cdpAveTransSps[4,i]]
+    cdpDofRej=[cdpDofRej,cdpDofRejSps[0,i],cdpDofRejSps[1,i],cdpDofRejSps[2,i],cdpDofRejSps[3,i],cdpDofRejSps[4,i]]
+    cdpAdcOver=[cdpAdcOver,cdpAdcOverSps[0,i],cdpAdcOverSps[1,i],cdpAdcOverSps[2,i],cdpAdcOverSps[3,i],cdpAdcOverSps[4,i]]
   endfor
 
-  cdpAveTrans=cdpAveTransSpsAve
-  cdpDofRej=cdpDofRejSpsAve
-  ;cdpTransRej=cdptransRejSpsAve
-  cdpAdcOver=cdpAdcOverAve
 
   ;return, [[cdpAveTrans],[cdpDofRej],[cdpTransRej],[cdpAdcOver]]
   return, [[cdpAveTrans],[cdpDofRej],[dindgen(n1(cdpDofRej))*0],[cdpAdcOver]]
 end
 
 
+
+function filtliqLB,lwc,twodp,trf
+  inds=where(trf gt -3 and twodp lt 0.25 and lwc gt .0075)
+  return,inds
+end
+
+function filtliqLTB,lwc,twc,twodp,trf
+  inds=where(trf gt -3 and twodp lt 0.25 and lwc gt .0075 and twc gt .0075)
+  return,inds
+end
 
 
 

@@ -213,12 +213,12 @@ inds={starti:double(0)}
     color=d.color
     
 
-    save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,colETot,correctionLiqitwc,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,aias,cdpAdcOver,threshliq,$
-      signalTot,cdpconc,cdpacc,cdpDBarB,dEff,vvd,vmd,ilwccol,vlwcref,twcClearAiri,$
+    save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,colETot,pmb,cdplwc,clearairLiq,clearairTot,colELiq,aias,cdpAdcOver,threshliq,$
+      cdpconc,cdpacc,cdpDBarB,dEff,vvd,vmd,ilwccol,vlwcref,twcClearAiri,$
       cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,ilwcref,alpha,smLiqX,$
       lwcNev2,expHeatLiq,fsspConc,lwcNev1,fsspLwc,pliqnpc,smLiq,$
       cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
-      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,$
+      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,$
       cdpTrans,cdpTransEst,lwcNpc,flightSec,vlwccol,iwc,cdpTransRej,lwcClearAirI,$
       itwccol,vtwccol,itwcref,vtwcref,avroll,avpitch,betaAng,avyaw,twodp,lwcUB
    

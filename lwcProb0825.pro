@@ -1,9 +1,10 @@
 pro lwcProb0825
-  restore,'saves/loopdata082516.sav'
+  restore,'saves/loopdata082516400.sav'
   
-  inds=[29002:45400]
-  inds=where(lwc gt 0 and cdplwc gt 0 and trf gt -3. and twodp le 1 and cdpconc lt 200)
-  inds=where(cdpconc eq 0 and twodp eq 0)
+  ;inds=filtliqLTB(lwc,twc,twodp,trf)
+  inds=filtliqLB(lwc,twodp,trf)
+  
+  
   vlwcref=vlwcref[inds]
   vlwccol=vlwccol[inds]
   vtwcref=vtwcref[inds]
@@ -21,12 +22,17 @@ pro lwcProb0825
   tas=tas[inds]
   lwc100=lwc100[inds]
   lwc=lwc[inds]
+  twc=twc[inds]
   twodp=twodp[inds]
   vmd=vmd[inds]
   cdpconc=cdpconc[inds]
+  cdplwc=cdplwc[inds]
+  cdpTrans=cdpTrans[inds]
+  cdpdofrej=cdpdofrej[inds]
+  cdpacc=cdpacc[inds]
   
   
- p1=scatterplot(vmd,cdplwc/lwc-1.)
+ p1=scatterplot(cdplwc/lwc-1.,cdpdofrej/cdpacc)
 ;  
 ;  p1=scatterplot(pmb[lwcClearAirI],lwc[lwcClearAirI],sym_color='blue',/overplot)
 
