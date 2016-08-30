@@ -36,13 +36,9 @@ inds={starti:double(0)}
     dEff=[]
     vvd=[]
     vmd=[]
-    lwcVarE=[]
     coleliq=[]
     coletot=[]
-    twcVarE=[]
-    dBarB=[]
-    colEtot2=[]
-    colEtot3=[]
+    cdpDBarB=[]
     cipmodconc0=[]
     cipmodconc1=[]
     cipmodconc2=[]
@@ -50,13 +46,9 @@ inds={starti:double(0)}
     lwcErrColE=[]
     lwcNev1=[]
     lwcNev2=[]
-    pvmlwc=[]
     expHeatLiq=[]
-    lwcFixedLv=[]
-    twcFixedLv=[]
     fsspConc=[]
     fsspLwc=[]
-    pvmDEff=[]
     cdpTrans=[]
     cdpDofRej=[]
     tas=[]
@@ -73,8 +65,6 @@ inds={starti:double(0)}
     colELiqU=[]
     cdpTransEst=[]
     lwcNpc=[]
-    lwcNpcClearAir=[]
-    lwcBaseline=[]
     flightSec=[]
     vlwccol=[]
     ilwccol=[]
@@ -89,7 +79,6 @@ inds={starti:double(0)}
     iwc=[]
     cdpTransRej=[]
     cdpAdcOver=[]
-    lwcClearAir=[]
     twcClearAiri=[]
     pliqnpc=[]
     lwcClearAirI=[]
@@ -147,26 +136,18 @@ inds={starti:double(0)}
       vmd=[vmd,d.vmd]
       cdpconc=[cdpconc,d.cdpconc]
       cdpacc=[cdpacc,d.cdpacc]
-      lwcVarE=[lwcVarE,d.lwcVarE]
       coleliq=[coleliq,d.coleliq]
       coletot=[coletot,d.coletot]
-      twcVarE=[twcVarE,d.twcVarE]
-      dBarB=[dBarB,d.dBarB]
-      colEtot2=[coleTot2,d.coletot2]
-      colEtot3=[colEtot3,d.colEtot3]
+      cdpDBarB=[cdpDBarB,d.cdpDBarB]
       cipmodconc0=[cipmodconc0,d.cipmodconc0]
       cipmodconc1=[cipmodconc1,d.cipmodconc1]
       cipmodconc2=[cipmodconc2,d.cipmodconc2]
       lwc100=[lwc100,d.lwc100]
       lwcNev1=[lwcNev1,d.lwcNev1]
       lwcNev2=[lwcNev2,d.lwcNev2]
-      pvmlwc=[pvmlwc,d.pvmlwc]
       expHeatLiq=[expHeatLiq,d.expHeatLiq]
-      lwcFixedLv=[lwcFixedLv,d.lwcFixedLv]
-      twcFixedLv=[twcFixedLv,d.twcFixedLv]
       fsspConc=[fsspConc,d.fsspConc]
       fsspLwc=[fsspLwc,d.fsspLwc]
-      pvmDEff=[pvmDEff,d.pvmDEff]
       cdpTrans=[cdpTrans,d.cdpTrans]
       cdpDofRej=[cdpDofRej,d.cdpDofRej]
       tas=[tas,d.tas]
@@ -196,8 +177,6 @@ inds={starti:double(0)}
       iwc=[iwc,d.iwc]
       cdpTransRej=[cdpTransRej,d.cdpTransRej]
       cdpAdcOver=[cdpAdcOver,d.cdpAdcOver]
-      lwcClearAir=[lwcClearAir,d.lwcClearAir]
-      lwcNpcClearAir=[lwcNpcClearAir,d.lwcNpcClearAir]
       pliqnpc=[pliqnpc,d.pliqnpc]
       lwcClearAirI=[lwcClearAirI,d.lwcClearAirI]
       alpha=[alpha,d.alpha]
@@ -234,13 +213,13 @@ inds={starti:double(0)}
     color=d.color
     
 
-    save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,twcVarE,colETot,correctionLiqitwc,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,aias,cdpAdcOver,threshliq,$
-      signalTot,cdpconc,cdpacc,lwcVarE,dBarB,dEff,vvd,vmd,ilwccol,vlwcref,twcClearAiri,$
-      coletot2,colEtot3,cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,ilwcref,alpha,smLiqX,$
-      lwcNev2,pvmlwc,expHeatLiq,lwcFixedLv,twcFixedLv,fsspConc,lwcNev1,fsspLwc,pliqnpc,smLiq,$
-      pvmDEff,cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
-      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,lwcClearAir,$
-      cdpTrans,cdpTransEst,lwcNpc,lwcBaseline,flightSec,vlwccol,iwc,cdpTransRej,lwcNpcClearAir,lwcClearAirI,$
+    save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,colETot,correctionLiqitwc,pmb,cdplwc,clearairLiq,clearairTot,signalLiq,colELiq,aias,cdpAdcOver,threshliq,$
+      signalTot,cdpconc,cdpacc,cdpDBarB,dEff,vvd,vmd,ilwccol,vlwcref,twcClearAiri,$
+      cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,ilwcref,alpha,smLiqX,$
+      lwcNev2,expHeatLiq,fsspConc,lwcNev1,fsspLwc,pliqnpc,smLiq,$
+      cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
+      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,colELiqUP,colELiqU,$
+      cdpTrans,cdpTransEst,lwcNpc,flightSec,vlwccol,iwc,cdpTransRej,lwcClearAirI,$
       itwccol,vtwccol,itwcref,vtwcref,avroll,avpitch,betaAng,avyaw,twodp,lwcUB
    
 end

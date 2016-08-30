@@ -11,7 +11,7 @@ common inds,inds
 if inds.starti eq 0 then startsec=0
 if inds.starti gt 0 then startsec=inds.starti
 
-
+;-------MISC OPTIONS------
 calcTrans=0 ;calculate cdp vars from raw files
 cipmod=0 ;include Jason's cip calculations
 noNev1=0 ; incude Korolev's second set of Nev calculations
@@ -54,10 +54,10 @@ noNev1=0 ; incude Korolev's second set of Nev calculations
   if flightDay eq '081816' then nclPath='../data/20160818.c25.nc'
   if flightDay eq '082516' then nclPath='../data/20160825.c25.nc'
 
-
-if strmatch(nclpath,'*2013*') eq 1 then cope=1
-if strmatch(nclpath,'*2015*') eq 1 then cope=0
-if strmatch(nclpath,'*2016*') eq 1 then cope=2
+  ;----DETECT CAMPAIGN-----
+  if strmatch(nclpath,'*2013*') eq 1 then cope=1
+  if strmatch(nclpath,'*2015*') eq 1 then cope=0
+  if strmatch(nclpath,'*2016*') eq 1 then cope=2
 
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -137,22 +137,13 @@ time=loadvar('time', filename=nclPath)
 
 ;pressure from rosemount sensor [mb]
 pmb=loadvar('ps_hads_a', filename=nclPath)
-
-
-nPoints1Pre=n1(pmb)/5.
-
+nPoints1Pre=n1(pmb)/5. ;get number of points from pmb
 
 ;temperature from rosemount sensor [C]
 trose=loadvar('trose', filename=nclPath)
 
 ;pressure derived altitude [m]
 z=loadvar('z', filename=nclPath)
-
-;liquid water content from Gerber probe [g/m^3]
-pvmlwc=loadvar('pvmlwc', filename=nclPath)
-
-;liquid water content from Gerber probe [g/m^3]
-pvmDEff=loadvar('pvmre_c', filename=nclPath)
 
 ;liquid water content from lwc100 probe [g/m^3]
 lwc100=loadvar('lwc100', filename=nclPath)
@@ -294,32 +285,6 @@ endif else begin
 endelse
 
 
-;--------------------SET TIMES FOR AXIS--------------------
-
-hourst=string(hour)
-hourstsp=strsplit(hourst,'.',/extract)
-minst=string(min)
-minstsp=strsplit(minst,'.',/extract)
-secst=string(sec)
-secstsp=strsplit(secst,'.',/extract)
-
-hourstspb=SINDGEN(n_elements(hourst))
-minstspb=SINDGEN(n_elements(hourst))
-secstspb=SINDGEN(n_elements(hourst))
-
-for i=0,n_elements(hourst)-1 do begin
-  hourstspb[i]=hourstsp[i,0]
-  minstspb[i]=minstsp[i,0]
-  secstspb[i]=secstsp[i,0]
-endfor
-hourstspb=strtrim(hourstspb,1)
-minstspb=strtrim(minstspb,1)
-secstspb=strtrim(secstspb,1)
-
-timePretty=hourstspb+':'+minstspb+':'+secstspb
-
-
-
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------------------FILTER 25 HZ DATA------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -328,18 +293,19 @@ vlwccol=filter25(vlwccol)
 vtwcref=filter25(vtwcref)
 vtwccol=filter25(vtwccol)
 ilwcref=filter25(ilwcref)
+print,'->data filtered 25%'
 itwccol=filter25(itwccol)
 itwcref=filter25(itwcref)
 ilwccol=filter25(ilwccol)
 trf=filter25(trf)
 aias=filter25(aias)
+print,'->data filtered 50%'
 pmb=filter25(pmb)
 trose=filter25(trose)
 z=filter25(z)
-pvmlwc=filter25(pvmlwc)
-pvmDEff=filter25(pvmDEff)
 lwc100=filter25(lwc100)
 avpitch=filter25(avpitch)
+print,'->data filtered 75%'
 avroll=filter25(avroll)
 betaB=filter25(betaB)
 avyawr=filter25(avyawr)
@@ -357,7 +323,7 @@ twodp=filter10(twodp)
 
 
 
-
+;REDIST CDP BINS TO 2D ARRAY
 i=double(0)
 j=double(0)
 int=double(5)
@@ -380,7 +346,7 @@ endfor
 
 
 
-
+;----DETECT NEV POWER ON------
 vsig=where(vlwccol gt 2.5)
 vsig=vsig[30:n_elements(vsig)-30]
 aStart=min(vsig)
@@ -404,8 +370,6 @@ aias=aias[aStart:aEnd]
 pmb=pmb[aStart:aEnd]
 trose=trose[aStart:aEnd]
 z=z[aStart:aEnd]
-pvmlwc=pvmlwc[aStart:aEnd]
-pvmDEff=pvmDEff[aStart:aEnd]
 lwc100=lwc100[aStart:aEnd]
 cdpconc_1_NRB=cdpconc_1_NRB[aStart:aEnd]
 cdpacc=cdpacc[aStart:aEnd]
@@ -421,14 +385,11 @@ fsspConc=fsspConc[aStart:aEnd]
 fsspLwc=fsspLwc[aStart:aEnd]
 cdpdbins=cdpdbinsB[*,aStart:aEnd]
 
-;time=time[ind5]
-;timeFlight=timeFlight[aStart5:aEnd5]
-
 
 nPoints1=n1(pmb)
 nPoints=nPoints1-1.
 
-
+print,'->data filtered'
 
 
 
@@ -452,7 +413,7 @@ if cope eq 1 then begin
 endif
 
 ;CONVERT INDICATED AIRSPEED TO M/S
-aiasMs=aias*.514444
+aias=aias*.514444
 
 ;SCALE CDP TRANSITS TO MEAN TAS
 cdpTransEst=.0002/tas
@@ -464,11 +425,8 @@ cdpTransEst=.0002/tas
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 if cope eq 1 then begin
-  kLiq=(1.03672)*(0.965516)^aiasms+(1.11339)
-  
-  
-;  kLiq=(0.860351)*(0.969536)^aiasms+(1.10449)
-  kTot=(1.13654)*(0.989413)^aiasms+(0.309623)
+  kLiq=(1.03672)*(0.965516)^aias+(1.11339)
+  kTot=(1.13654)*(0.989413)^aias+(0.309623)
 endif
 
 
@@ -494,8 +452,8 @@ if cope eq 2 or cope eq 0 then begin
      end 
   endcase
   
-  kLiq=coLiq[0]*aiasms^coLiq[1] + coLiq[2]
-  kTot=coTot[0]*aiasms^coTot[1] + coTot[2]
+  kLiq=coLiq[0]*aias^coLiq[1] + coLiq[2]
+  kTot=coTot[0]*aias^coTot[1] + coTot[2]
 endif
 
 
@@ -579,56 +537,21 @@ selSigTot=rawSignalTot[clearairTot]
 clearairTotSort=clearairTot[sort(selSigTot)]
 clearairTot=clearairTotSort[0:n1(clearairTot)*.95]
 
-
-
-
-;---------------------------------------------------------------------------------------------------------------------------------------------------------------
-;---------------------------------------------------------------------MISC. POINT DETECTION---------------------------------------------------------------------
-;---------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-aSpan = nPoints
-BetaI=dindgen(nPoints1,start=0,increment=0)
-baselineIB=dindgen(nPoints1,start=0,increment=0)
-baselineRollI=dindgen(nPoints1,start=0,increment=0)
-baselineYawI=dindgen(nPoints1,start=0,increment=0)
-baselinePitchI=dindgen(nPoints1,start=0,increment=0)
-baselineI=dindgen(nPoints1,start=0,increment=0)
-
-;for i=0, aSpan do begin
-;  if (abs(avRoll[i]) lt 5) then begin
-;    baselineRollI[i]=1
-;  endif
-;  if (avpitch[i] lt (mean(avpitch) + 2) and avpitch[i] gt (mean(avpitch) - 2)) then begin ;0871013
-;    baselinePitchI[i]=1
-;  endif
-;  if (betaB[i] lt -.014 and betaB[i] gt -.026) then begin
-;    BetaI[i]=1
-;  endif
-;  if (abs(avyawr[i]) lt .003) then begin
-;    baselineYawI[i]=1
-;  endif
-;  if (baselineI[i] eq 1) and (baselineRollI[i] eq 1) and (baselinePitchI[i] eq 1) and (baselineYawI[i]=1) then begin
-;    baselineIB[i]=1
-;  endif
-;endfor
-;
-;levelclearairLiq=where(baselineIB eq 1)
-
-
+print,'->BL Calced'
 
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------MOMENT CALCULATIONS---------------------------------------------------------------------
 ;-------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 diff=make_array(nPoints1)
-if n_elements(cdpdbins[*,0]) eq 28 then diam=[1.5,2.5,3.5,4.5,5.5,6.5,7.5,9.,11.,13.,15.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
-if n_elements(cdpdbins[*,0]) eq 27 then diam=[1.5,2.5,3.5,4.5,5.5,6.5,7.5,8.5,10.5,14.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
+if n_elements(cdpdbins[*,0]) eq 28 then diam=[0.,2.5,3.5,4.5,5.5,6.5,7.5,9.,11.,13.,15.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
+if n_elements(cdpdbins[*,0]) eq 27 then diam=[0.,2.5,3.5,4.5,5.5,6.5,7.5,8.5,10.5,14.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
 
 
 dEff=[]
 vmd=[]
 vvd=[]
-dBarB=[]
+cdpDBarB=[]
 cdpBinVar=[]
 cdpBinSkew=[]
 cdpBinKert=[]
@@ -652,20 +575,16 @@ for m=double(0), n(cdpdbins[0,*]) do begin
   endfor  
   
   dEffB=total(xb)/total(xa)
-  dEff=[dEff,dEffB]
-  ;if finite(dEffB) eq 1 then dEff=[dEff,dEffB] else dEff=[dEff,0]
+  if finite(dEffB) eq 1 then dEff=[dEff,dEffB] else dEff=[dEff,0]
   
-  dBarBB=total(xe)/total(cdpdbins[*,m])
-  ;dBarB=[dBarB,dBarBB]
-  if finite(dBarBB) eq 1 then dBarB=[dBarB,dBarBB] else dBarB=[dBarB,0]
+  cdpDBarBB=total(xe)/total(cdpdbins[*,m])
+  if finite(cdpDBarBB) eq 1 then cdpDBarB=[cdpDBarB,cdpDBarBB] else cdpDBarB=[cdpDBarB,0]
   
   vvdB=(total(xb)/total(cdpdbins[*,m]))^(1./3.)
-  vvd=[vvd,vvdB]
-  ;if finite(vvdB) eq 1 then vvd=[vvd,vvdB] else vvd=[vvd,0]
+  if finite(vvdB) eq 1 then vvd=[vvd,vvdB] else vvd=[vvd,0]
   
   vmdB=total(xc)/total(xb)
-  vmd=[vmd,vmdB]
-  ;if finite(vmdB) eq 1 then vmd=[vmd,vmdB] else vmd=[vmd,0]
+  if finite(vmdB) eq 1 then vmd=[vmd,vmdB] else vmd=[vmd,0]
   
 
   gtZInd=where(cdpdbins[*,m] gt 0)
@@ -679,8 +598,8 @@ for m=double(0), n(cdpdbins[0,*]) do begin
     
   endfor
   
-  diffs=binRedist-dBarB[m]
-  
+  ;-----CALC CDP DSD STATS-----
+  diffs=binRedist-CdpDBarB[m]
   varianceB=total((diffs)^2d)/(n_elements(binRedist)-1d)
   meanAbsDeviation=total(abs(diffs))/(n_elements(binRedist))
   skewnessB=total((diffs/sqrt(varianceB))^3d)/(n_elements(binRedist))
@@ -693,7 +612,7 @@ for m=double(0), n(cdpdbins[0,*]) do begin
   cdpBinMAD=[cdpBinMAD,meanAbsDeviation]  
 endfor
 
-
+print,'->CDP Data Calced'
 
 
 ;--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -720,18 +639,6 @@ for d=0,nPoints do begin
 endfor
 
 
-colEliq3=dindgen(nPoints1,start=1,increment=0)
-for d=0,nPoints do begin
-  if vmd[d] le 15 then colEliq3[d]=(-0.236989)+0.503008*vmd[d]-0.0878596*$
-    vmd[d]^2.+0.00801374*vmd[d]^3.-0.000397548*vmd[d]^4.+1.01460e-05*vmd[d]^5.-1.04243e-07*vmd[d]^6.
-  if vmd[d] gt 13 and vmd[d] le 25 then colEliq3[d]=.9697
-  if vmd[d] gt 25 then begin
-    x1=((vmd[d]-20.)/90)^2.
-    x2=2.^(1./.26)-1.
-    colEliq3[d]=.98/(1.+x1*x2)^.26
-  endif
-endfor
-
 ;--------------------TOTAL COLLECTION EFFECIENCY--------------------
 colETot=dindgen(nPoints1,start=1,increment=0)
 for c=0,nPoints do begin
@@ -752,25 +659,6 @@ for c=0,nPoints do begin
   endif
 endfor
 
-colETot2=dindgen(nPoints1,start=1,increment=0)
-for r=0,nPoints do begin
-  if vmd[r] le 10.05 then colETot2[r]=(-0.0187892454)+0.2023209*vmd[r]-0.01937650*$
-    vmd[r]^2.+0.00090900815025*vmd[r]^3.-2.0036900614417430e-05*vmd[r]^4.+1.6638675680649695e-07*vmd[r]^5.
-  if vmd[r] gt 10.05 and vmd[r] le 33 then colETot2[r]=0.43729845*vmd[r]^(0.19240421)+0.11114933
-  if vmd[r] gt 33 then colETot2[r]=0.0010409079*vmd[r]+0.93375003
-endfor
-
-colETot3=dindgen(nPoints1,start=1,increment=0)
-for c=0,nPoints do begin
-  if vmd[c] le 50. then begin
-    colETot3[c]=-0.0576565+0.0324626*vmd[c]+0.0105399*vmd[c]^2.-0.00118195*vmd[c]^3.+5.50338e-05*vmd[c]^4.$
-      -1.32812e-06*vmd[c]^5.+1.63224e-08*vmd[c]^6.-8.08554e-11*vmd[c]^7.
-  endif    
-  if vmd[c] gt 50. and vmd[c] le 150. then begin
-     colETot3[c]=0.907000+0.00164001*vmd[c]-9.20008e-06*vmd[c]^2.+1.60003e-08*vmd[c]^3.  
-  endif
-  if vmd[c] gt 150. then colETot3[c]=1.
-endfor
 
 
 
@@ -783,6 +671,7 @@ endfor
 ;sensor surface area conversion [cm^2] -> [m^2]
 aLiq=aLiq*1d-4
 aTot=aTot*1d-4
+
 
 ;EXPENDED HEAT
 
@@ -818,13 +707,9 @@ pTot=pTotNpc - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
 
 ;LWC
 lwc=pLiq/(1.*tas*aLiq*expHeatLiq)
-lwcFixedLv=pLiq/(1.*tas*aLiq*2589.)
-lwcVarE=pLiq/(colELiq*tas*aLiq*expHeatLiq)
 
 ;TWC
 twc=pTot/(1.*tas*aTot*expHeatIce)
-twcFixedLv=pTot/(1.*tas*aTot*2589.)
-twcVarE=pTot/(colETot*tas*aTot*expHeatIce)
 
 
 iwc=twc-lwc
@@ -845,17 +730,8 @@ lwcUB=lwc*lwcColEUncU+lwcRandFluct
 
 ;--------------------FINAL BASELINE FILTERING--------------------
 
-lwcBL=lwc[clearairLiq]
-lwcBL=lwcBL[where(lwcBL gt 0.)]
-lwcBLThresh=mean(lwcBL)*1.2
-
-lwcClearAir=lwc[clearairLiq]
-lwcNpcClearAir=lwcNpc[clearairLiq]
-
 lwcClearAirI=clearairLiq+startsec
 twcClearAirI=clearairTot+startsec
-
-;lwcBaseline=where(lwc lt lwcBLThresh)+inds.starti
 
 
 flightSec=dindgen(n1(lwc),start=startsec,increment=1)
@@ -868,25 +744,25 @@ flightSec=dindgen(n1(lwc),start=startsec,increment=1)
 color=['black','firebrick','navy','dark green','magenta','coral','indian red','dodger blue','orange','olive drab','medium violet red']
 
 d={pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, twodp:twodp,$
-  pLiq:pLiq, lwcVarE:lwcVarE, lwcNev1:lwcNev1, twcNev:twcNev, lwcNpc:lwcNpc, twcVarE:twcVarE,$
+  pLiq:pLiq,lwcNev1:lwcNev1, twcNev:twcNev, lwcNpc:lwcNpc,$
   clearairLiq:clearairLiq,timeFlight:timeFlight,$
   kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,betaAng:betaB,$
-  aias:aiasMs, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNpc:twcNpc,$
+  aias:aias, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNpc:twcNpc,$
   vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf,trose:trose, threshTot:threshTot,$
-  lwc100:lwc100, cdpdbar:cdpdbar_1_NRB,lwcnev2:lwcnev2, timePretty:timePretty,cdpDofRej:cdpDofRej,$
-  avyaw:avyawr,pvmlwc:pvmlwc,cdplwc:cdplwc_1_NRB,pLiqNpc:pLiqNpc,twcClearAirI:twcClearAirI,$
+  lwc100:lwc100, cdpdbar:cdpdbar_1_NRB,lwcnev2:lwcnev2,cdpDofRej:cdpDofRej,$
+  avyaw:avyawr,cdplwc:cdplwc_1_NRB,pLiqNpc:pLiqNpc,twcClearAirI:twcClearAirI,$
   rawSignalLiq:rawSignalLiq, smoothSignalLiq:smoothSignalLiq, cdpacc:cdpacc,flightSec:flightSec,$
   rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNpc:pTotNpc,$
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,expHeatIce:expHeatIce,$
   cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,smLiq:smLiq,smLiqX:correctionLiqBX,$
-  dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcFixedLv:lwcFixedLv,twcFixedLv:twcFixedLv,$
-  twc:twc,colETot:colETot,dBarB:dBarB,colEtot2:colEtot2,coletot3:coletot3,$
+  dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,$
+  twc:twc,colETot:colETot,cdpDBarB:cdpDBarB,$
   cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,cdpTrans:cdpTrans,$
   cipmodconc2:cipmodconc2,color:color,fsspLwc:fsspLwc,$
-  pvmDEff:pvmDEff,cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
+  cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,$
-  cdpTransEst:cdpTransEst,iwc:iwc,lwcClearAir:lwcClearAir,lwcUB:lwcUB,$
-  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,lwcNpcClearAir:lwcNpcClearAir,$
+  cdpTransEst:cdpTransEst,iwc:iwc,lwcUB:lwcUB,$
+  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,$
   lwcClearAirI:lwcClearAirI,alpha:alpha,correctionLiq:correctionLiq}
 
 return,d
@@ -934,50 +810,6 @@ function filter10, varC
 
   return,varFilt
 end
-
-
-
-
-
-;---------------------------------------------------------------------------------------------------------------------------------------------------------
-;---------------------------------------------------------------------MISC. FUNCTIONS---------------------------------------------------------------------
-;---------------------------------------------------------------------------------------------------------------------------------------------------------
-
-function convertTime,hh,mm,ss
-  common t,t
-  timeindex=where(t.hour eq hh and t.min eq mm and t.sec eq ss)
-  return,timeindex
-end
-
-
-
-pro info
-  print,''
-  print,''
-  print,'-------------COPE-----------------'
-  print,'LEVELS COPE = 400, 600, 900'
-  print,'DAYS COPE = 0710, 0725, 0727, 0728, 0729, 0803, 0807, 0814, 0815, ||0709||'
-  print,''
-  print,''
-  print,'-----------LARAMIE----------------'
-  print,'LEVELS LARAMIE = 400, 500, 600, 700'
-  print,'DAYS LARAMIE = 0307, ||0304||'
-  print,''
-  print,'-------------COMMANDS-----------------'
-  print,'SUPERSCRIPT = !U *** !N'
-  print,''
-  print,''
-  print,'fu = min((VAR[*] - 450), i, /absolute)'
-  print,''
-  print,''
-  print,'endif else begin'
-  print,'.............'
-  print,'endelse'
-  print,''
-  print,''
-  print,',margin=[110,70,30,20],/device'
-end
-
 
 
 
