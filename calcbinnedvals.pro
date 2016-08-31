@@ -7,20 +7,22 @@ pro calcBinnedVals
   restore,'saves/loopdata'+suffix+'.sav'
 
   ;LIQUID ONLY POINTS OR ALL
-  liq=0
+  liq=1
 
   ;liqOnly=where(trf gt -3d and lwc gt .02 and lwc lt 1.3 and (cipmodconc0 lt .1 and finite(cipmodconc0) eq 1))
   ;liqOnly=where((cipmodconc0 lt .1 and finite(cipmodconc0) eq 1) and trf gt -3d and lwc lt 1.4 and lwc gt .01 and cdplwc gt .01 and cdpconc lt 200)
   
   concThresh=10
   
-  liqOnly=where(cdpconc le concThresh and shift(cdpconc,1) le concThresh and shift(cdpconc,2) le concThresh and shift(cdpconc,3) le concThresh and shift(cdpconc,4) le concThresh and shift(cdpconc,5) le concThresh $
-    and cdpconc le concThresh and shift(cdpconc,6) le concThresh and shift(cdpconc,7) le concThresh and shift(cdpconc,8) le concThresh and shift(cdpconc,9) le concThresh and shift(cdpconc,10) le concThresh $
-    and cdpconc le concThresh and shift(cdpconc,-1) le concThresh and shift(cdpconc,-2) le concThresh and shift(cdpconc,-3) le concThresh and shift(cdpconc,-4) le concThresh and shift(cdpconc,-5) le concThresh $
-    and cdpconc le concThresh and shift(cdpconc,-6) le concThresh and shift(cdpconc,-7) le concThresh and shift(cdpconc,-8) le concThresh and shift(cdpconc,-9) le concThresh and shift(cdpconc,-10) le concThresh)
-    liqOnly=where(cdpconc le concThresh)
-    
-  liqOnly=where(cdpconc le concThresh and trf gt -3 and twodp lt 1)
+;  liqOnly=where(cdpconc le concThresh and shift(cdpconc,1) le concThresh and shift(cdpconc,2) le concThresh and shift(cdpconc,3) le concThresh and shift(cdpconc,4) le concThresh and shift(cdpconc,5) le concThresh $
+;    and cdpconc le concThresh and shift(cdpconc,6) le concThresh and shift(cdpconc,7) le concThresh and shift(cdpconc,8) le concThresh and shift(cdpconc,9) le concThresh and shift(cdpconc,10) le concThresh $
+;    and cdpconc le concThresh and shift(cdpconc,-1) le concThresh and shift(cdpconc,-2) le concThresh and shift(cdpconc,-3) le concThresh and shift(cdpconc,-4) le concThresh and shift(cdpconc,-5) le concThresh $
+;    and cdpconc le concThresh and shift(cdpconc,-6) le concThresh and shift(cdpconc,-7) le concThresh and shift(cdpconc,-8) le concThresh and shift(cdpconc,-9) le concThresh and shift(cdpconc,-10) le concThresh)
+;    liqOnly=where(cdpconc le concThresh)
+;    
+;  liqOnly=where(cdpconc le concThresh and trf gt -3 and twodp lt 1)
+
+  liqOnly=filtliqLB(lwc,twodp,trf)
   
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -32,14 +34,11 @@ pro calcBinnedVals
     vmd=vmd[liqonly]
     cdplwc=cdplwc[liqonly]
     trf=trf[liqonly]
-    lwcVarE=lwcVarE[liqonly]
-    twcVarE=twcVarE[liqonly]
     cipmodconc0=cipmodconc0[liqonly]
     cipmodconc1=cipmodconc1[liqonly]
     cipmodconc2=cipmodconc2[liqonly]
     coleliq=coleliq[liqonly]
     coletot=coletot[liqonly]
-    lwcErrColE=lwcErrColE[liqonly]
     cdptrans=cdptrans[liqonly]
     cdpacc=cdpacc[liqonly]
     lwc100=lwc100[liqonly]
@@ -52,6 +51,8 @@ pro calcBinnedVals
     avpitch=avpitch[liqonly]
     avroll=avroll[liqonly]
     avyaw=avyaw[liqonly]
+    cdpLwcB=cdpLwcB[liqonly]
+    lwcub=lwcub[liqonly]
     ;beta=beta[liqonly]
     ;hivs=hivs[liqonly]
   endif

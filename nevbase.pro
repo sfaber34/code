@@ -545,6 +545,7 @@ clearairTot=clearairTotSort[0:n1(clearairTot)*.95]
 
 diff=make_array(nPoints1)
 if n_elements(cdpdbins[*,0]) eq 28 then diam=[0.,2.5,3.5,4.5,5.5,6.5,7.5,9.,11.,13.,15.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
+diamRedist=diam-1.
 if n_elements(cdpdbins[*,0]) eq 27 then diam=[0.,2.5,3.5,4.5,5.5,6.5,7.5,8.5,10.5,14.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
 
 
@@ -552,6 +553,7 @@ dEff=[]
 vmd=[]
 vvd=[]
 cdpDBarB=[]
+cdpLwcB=[]
 cdpBinVar=[]
 cdpBinSkew=[]
 cdpBinKert=[]
@@ -566,16 +568,19 @@ for m=double(0), n(cdpdbins[0,*]) do begin
   xb=[]
   xc=[]
   xe=[]
+  dropMass=[]
   meanDiff=[]
   for j=double(0),n(cdpdbins[*,0]) do begin
     xe=[xe,(diam[j])*(cdpdbins[j,m])]
     xa=[xa,(diam[j])^2.*(cdpdbins[j,m])]
     xb=[xb,(diam[j])^3.*(cdpdbins[j,m])]
     xc=[xc,(diam[j])^4.*(cdpdbins[j,m])]
+    dropmass=[dropmass,((4./3.)*!pi*((diamRedist[j]*1d-6)/2.)^3.*1d6)*(cdpdbins[j,m])]
   endfor  
   
   dEffB=total(xb)/total(xa)
   if finite(dEffB) eq 1 then dEff=[dEff,dEffB] else dEff=[dEff,0]
+  ;if finite(dEffB) eq 1 then stop
   
   cdpDBarBB=total(xe)/total(cdpdbins[*,m])
   if finite(cdpDBarBB) eq 1 then cdpDBarB=[cdpDBarB,cdpDBarBB] else cdpDBarB=[cdpDBarB,0]
@@ -585,6 +590,10 @@ for m=double(0), n(cdpdbins[0,*]) do begin
   
   vmdB=total(xc)/total(xb)
   if finite(vmdB) eq 1 then vmd=[vmd,vmdB] else vmd=[vmd,0]
+  
+  sVol=.3d-6*(tas[m]*(1./5.))
+  cdpLwcBB=total(dropmass)/sVol
+  if finite(cdpLwcBB) eq 1 then cdpLwcB=[cdpLwcB,cdpLwcBB] else cdpLwcB=[cdpLwcB,0]
   
 
   gtZInd=where(cdpdbins[*,m] gt 0)
@@ -762,7 +771,7 @@ d={pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, twodp:twodp,$
   cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,$
   cdpTransEst:cdpTransEst,iwc:iwc,lwcUB:lwcUB,$
-  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,$
+  cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,cdpLwcB:cdpLwcB,$
   lwcClearAirI:lwcClearAirI,alpha:alpha,correctionLiq:correctionLiq}
 
 return,d

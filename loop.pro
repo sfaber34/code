@@ -93,6 +93,7 @@ inds={starti:double(0)}
     avyaw=[]
     twodp=[]
     lwcUB=[]
+    cdpLwcB=[]
     
     startSec=0
     
@@ -191,7 +192,7 @@ inds={starti:double(0)}
       avyaw=[avyaw,d.avyaw]
       twodp=[twodp,d.twodp]
       lwcUB=[lwcUB,d.lwcUB]
-      
+      cdpLwcB=[cdpLwcB,d.cdpLwcB]
       
       
       r=r+n_elements(d.(1))
@@ -218,7 +219,7 @@ inds={starti:double(0)}
       cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,ilwcref,alpha,smLiqX,$
       lwcNev2,expHeatLiq,fsspConc,lwcNev1,fsspLwc,pliqnpc,smLiq,$
       cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
-      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,$
+      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,cdpLwcB,$
       cdpTrans,cdpTransEst,lwcNpc,flightSec,vlwccol,iwc,cdpTransRej,lwcClearAirI,$
       itwccol,vtwccol,itwcref,vtwcref,avroll,avpitch,betaAng,avyaw,twodp,lwcUB
    
