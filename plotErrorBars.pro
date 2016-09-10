@@ -6,14 +6,14 @@ pro ploterrorbars
   ;------------------------------------------USE CALCBINNEDVALS BEFOREHAND---------------------------------
   ;--------------------------------------------------------------------------------------------------------
 
-  cgcleanup
+  cu
   
   plotArr=[]
   
   ;------------------------------------------------------------------------------------------
   ;---------------------------------PLOT OPTIONS---------------------------------------------
   
-  lineWidth=1.2
+  lineWidth=2.
   xBarThick=3
   xBarStyle='-'
   yBarThick=2.
@@ -31,10 +31,10 @@ pro ploterrorbars
   ;------------------------------------------------------------------------------------------
   ;------------------------------INPUT ARRAYS--------------------------------------
   colorArr=['red','green','blue','black']
-  colorArr='black'
-  suffixArr=['082516400','082516500','082516600','082516700']
-  suffixArr='082516400'
-  symArr=['x','o','+','D']
+  ;colorArr='black'
+  suffixArr=['pac2526a','pac2526b','pac2526c','pac2526d','pac2526e']
+  ;suffixArr='pac2526'
+  symArr=['x','o','+','D','x']
   
   
   mainValsY=make_array(n1(suffixArr),500)*!values.d_nan
@@ -53,8 +53,8 @@ pro ploterrorbars
    ;--------------------------------------INPUT ARRAYS----------------------------------------
    varX=xVar
    varA=lwcCdpMed
-   varAErrUp=lwcCdpq1
-   varAErrLow=lwcCdpq1
+   varAErrUp=lwcCdpQ3
+   varAErrLow=lwcCdpQ1
    
    
    ;DISPLAY AS PERCENTILES?

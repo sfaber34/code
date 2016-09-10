@@ -51,8 +51,9 @@ noNev1=0 ; incude Korolev's second set of Nev calculations
   if flightDay eq '0307' then nclPath='../data/20160307.c25.nc'
   
   ;PACMICE
-  if flightDay eq '081816' then nclPath='../data/20160818.c25.nc'
+  if flightDay eq '081816' then nclPath='../data/20160818.c25.nc' ;Cal flight
   if flightDay eq '082516' then nclPath='../data/20160825.c25.nc'
+  if flightDay eq '082616' then nclPath='../data/20160826.c25.nc'
 
   ;----DETECT CAMPAIGN-----
   if strmatch(nclpath,'*2013*') eq 1 then cope=1
@@ -226,11 +227,16 @@ if cope eq 1 then begin
   aLiq=.317
   aTot=.502
 endif else begin
-  aLiq=loadvar('VLWCCOL_RAW', filename=nclPath, attr='SampleArea')
-  aTot=loadvar('VTWCCOL_RAW', filename=nclPath, attr='SampleArea')
+  aLiq=loadvar('vlwccol', filename=nclPath, attr='SampleArea')
+  aTot=loadvar('vtwccol', filename=nclPath, attr='SampleArea')
 endelse
 
 
+;nevzorov sensor resistances
+rLwcCol=loadvar('VLWCCOL_RAW', filename=nclPath, attr='resistance')
+rLwcRef=loadvar('VLWCREF_RAW', filename=nclPath, attr='resistance')
+rTwcCol=loadvar('VTWCCOL_RAW', filename=nclPath, attr='resistance')
+rTwcRef=loadvar('VTWCREF_RAW', filename=nclPath, attr='resistance')
 
 
 ;liquid water content from Nevzorov probe [g/m^3]
@@ -256,6 +262,7 @@ endelse
 
 ;Sideslip Angle [deg]
 betaB=loadvar('beta', filename=nclPath)
+betaB=betaB*!radeg
 
 ;Yaw [deg]
 avyawr=loadvar('avyawr', filename=nclPath)*!RADEG
@@ -545,9 +552,8 @@ clearairTot=clearairTotSort[0:n1(clearairTot)*.95]
 
 diff=make_array(nPoints1)
 if n_elements(cdpdbins[*,0]) eq 28 then diam=[0.,2.5,3.5,4.5,5.5,6.5,7.5,9.,11.,13.,15.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
-diamRedist=diam-1.
 if n_elements(cdpdbins[*,0]) eq 27 then diam=[0.,2.5,3.5,4.5,5.5,6.5,7.5,8.5,10.5,14.,17.,19.,21.,23.,25.,27.,29.,31.,33.,35.,37.,39.,41.,43.,45.,47.,49.]
-
+diamRedist=diam-2. ;Diam mod for cdpLwcB
 
 dEff=[]
 vmd=[]
@@ -732,6 +738,7 @@ iwc=twc-lwc
 lwcColEUncU=(1./colEliq)
 lwcRandFluct=3d-3/2.
 lwcUB=lwc*lwcColEUncU+lwcRandFluct
+lwcLb=lwc-3d-3/2.
 
 ;----------CALCULATIONS---------
 
@@ -755,7 +762,7 @@ color=['black','firebrick','navy','dark green','magenta','coral','indian red','d
 d={pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, twodp:twodp,$
   pLiq:pLiq,lwcNev1:lwcNev1, twcNev:twcNev, lwcNpc:lwcNpc,$
   clearairLiq:clearairLiq,timeFlight:timeFlight,$
-  kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,betaAng:betaB,$
+  kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,beta:betaB,$
   aias:aias, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNpc:twcNpc,$
   vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf,trose:trose, threshTot:threshTot,$
   lwc100:lwc100, cdpdbar:cdpdbar_1_NRB,lwcnev2:lwcnev2,cdpDofRej:cdpDofRej,$
@@ -764,10 +771,10 @@ d={pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, twodp:twodp,$
   rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNpc:pTotNpc,$
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,expHeatIce:expHeatIce,$
   cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,smLiq:smLiq,smLiqX:correctionLiqBX,$
-  dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,$
-  twc:twc,colETot:colETot,cdpDBarB:cdpDBarB,$
+  dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcLb:lwcLb,$
+  twc:twc,colETot:colETot,cdpDBarB:cdpDBarB,rLwcCol:rLwcCol,rLwcRef:rLwcRef,rTwcCol:rTwcCol,$
   cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,cdpTrans:cdpTrans,$
-  cipmodconc2:cipmodconc2,color:color,fsspLwc:fsspLwc,$
+  cipmodconc2:cipmodconc2,color:color,fsspLwc:fsspLwc,rTwcRef:rTwcRef,$
   cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,$
   cdpTransEst:cdpTransEst,iwc:iwc,lwcUB:lwcUB,$
@@ -863,6 +870,7 @@ function cdpTransTime, flightDay
   ;PACMICE
   if flightDay eq '081816' then nclPath='/Volumes/externalHD/copeRaw/20160818_raw.nc'
   if flightDay eq '082516' then nclPath='/Volumes/externalHD/copeRaw/20160825_raw.nc'
+  if flightDay eq '082616' then nclPath='/Volumes/externalHD/copeRaw/20160826_raw.nc'
   
   cdpAveTransSps=loadvar('AVGTRNS_NRB', filename=nclPath)
   ;cdpTransRejSps=loadvar('REJAT_NRB', filename=nclPath)
@@ -886,7 +894,7 @@ end
 
 
 function filtliqLB,lwc,twodp,trf
-  inds=where(trf gt -3 and twodp lt 0.25 and lwc gt .0075)
+  inds=where(trf gt -3 and twodp lt .5 and lwc gt .0075)
   return,inds
 end
 

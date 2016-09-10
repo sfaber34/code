@@ -1,7 +1,7 @@
 pro calcBinnedVals
 
 
-  suffix='082516400'
+  suffix='pac2526'
   
   
   restore,'saves/loopdata'+suffix+'.sav'
@@ -14,15 +14,16 @@ pro calcBinnedVals
   
   concThresh=10
   
-;  liqOnly=where(cdpconc le concThresh and shift(cdpconc,1) le concThresh and shift(cdpconc,2) le concThresh and shift(cdpconc,3) le concThresh and shift(cdpconc,4) le concThresh and shift(cdpconc,5) le concThresh $
+  ;liqOnly=where(cdpconc le concThresh and shift(cdpconc,1) le concThresh and shift(cdpconc,2) le concThresh and shift(cdpconc,3) le concThresh and shift(cdpconc,4) le concThresh and shift(cdpconc,5) le concThresh $
 ;    and cdpconc le concThresh and shift(cdpconc,6) le concThresh and shift(cdpconc,7) le concThresh and shift(cdpconc,8) le concThresh and shift(cdpconc,9) le concThresh and shift(cdpconc,10) le concThresh $
 ;    and cdpconc le concThresh and shift(cdpconc,-1) le concThresh and shift(cdpconc,-2) le concThresh and shift(cdpconc,-3) le concThresh and shift(cdpconc,-4) le concThresh and shift(cdpconc,-5) le concThresh $
-;    and cdpconc le concThresh and shift(cdpconc,-6) le concThresh and shift(cdpconc,-7) le concThresh and shift(cdpconc,-8) le concThresh and shift(cdpconc,-9) le concThresh and shift(cdpconc,-10) le concThresh)
-;    liqOnly=where(cdpconc le concThresh)
-;    
-;  liqOnly=where(cdpconc le concThresh and trf gt -3 and twodp lt 1)
+;    and cdpconc le concThresh and shift(cdpconc,-6) le concThresh and shift(cdpconc,-7) le concThresh and shift(cdpconc,-8) le concThresh and shift(cdpconc,-9) le concThresh and shift(cdpconc,-10) le concThresh $,
+;     and twodp lt .25 and twodp lt .25)
+    ;liqOnly=where(cdpconc le concThresh)
+   
+  liqOnly=where(twodp lt 1. and trf gt -3. and lwc gt .01 and cdpconc lt 200 and vmd gt 8 and vmd lt 28)
 
-  liqOnly=filtliqLB(lwc,twodp,trf)
+  ;liqOnly=filtliqLB(lwc,twodp,trf)
   
   if liq eq 1 then begin
     lwc=lwc[liqonly]
@@ -53,23 +54,24 @@ pro calcBinnedVals
     avyaw=avyaw[liqonly]
     cdpLwcB=cdpLwcB[liqonly]
     lwcub=lwcub[liqonly]
-    ;beta=beta[liqonly]
+    lwclb=lwclb[liqonly]
+    beta=beta[liqonly]
     ;hivs=hivs[liqonly]
   endif
 
   ;--------------------------------------------------------------------------------
   ;--------------------------------------------------------------------------------
   ;----------------------------------OPTIONS---------------------------------------
-  var=vmd
+  var=cdplwc
 
   ;STARTING LEFT VALUE
-  binstart=2d
+  binstart=0d
 
   ;WIDTH OF BINS
-  bininc=5d
+  bininc=.2
   
   ;MAX BIN VALUE
-  binEnd=50d
+  binEnd=1.4d
   
   
   
@@ -148,6 +150,8 @@ pro calcBinnedVals
   twcCAEMed=[]
   twcCAEQ1=[]
   twcCAEQ3=[]
+  lwcCdpLb=[]
+  lwcCdpUb=[]
 
 
   ;--------------------------------------------------------------------------------------------------------
@@ -176,16 +180,15 @@ pro calcBinnedVals
     
     ;----------LWC V CDP------------
     lwcCdpMed=[lwcCdpMed,med(cdpLwc[bins])/med(lwc[bins])-1.]
+    lwcCdpUb=[lwcCdpUb,med(cdpLwc[bins])/med(lwcub[bins])-1.]
+    lwcCdpLb=[lwcCdpLb,med(cdpLwc[bins])/med(lwclb[bins])-1.]
     lwcCdpQ1=[lwcCdpQ1,(q1(cdpLwc[bins]/lwc[bins])-1.)]
     lwcCdpQ3=[lwcCdpQ3,(q3(cdpLwc[bins]/lwc[bins])-1.)]
 
     coleControlTwc=[coleControlTwc,mean(lwc[bins])/mean(twc[bins])]
     coleControlLwc=[coleControlLwc,mean(twc[bins])/mean(lwc[bins])]
-    colevarTwc=[colevarTwc,mean(lwcVarE[bins])/mean(twc[bins])]
-    colevarLwc=[colevarLwc,mean(twcVarE[bins])/mean(lwc[bins])]
 
     lwc100lwc=[lwc100lwc,mean(lwc[bins])/mean(lwc100[bins])]
-    lwc100twc=[lwc100twc,mean(twcVarE[bins])/mean(lwc100[bins])]
     lwc100cdplwc=[lwc100cdplwc,mean(cdplwc[bins])/mean(lwc100[bins])]
     
     vmdMean=[vmdMean,mean(vmd[bins])]
@@ -229,9 +232,9 @@ pro calcBinnedVals
 ;    lwcCAEStdDev=[lwcCAEStdDev,stddev(lwcnpc[matched])]
 
 
-      lwcCAEMed=[lwcCAEMed,med(abs(lwc[bins]))]
-      lwcCAEq1=[lwcCAEq1,q1(abs(lwc[bins]))]
-      lwcCAEq3=[lwcCAEq3,q3(abs(lwc[bins]))]
+      lwcCAEMed=[lwcCAEMed,med(lwc[bins])]
+      lwcCAEq1=[lwcCAEq1,q1(lwc[bins])]
+      lwcCAEq3=[lwcCAEq3,q3(lwc[bins])]
       
       twcCAEMed=[twcCAEMed,med(abs(twc[bins]))]
       twcCAEq1=[twcCAEq1,q1(abs(twc[bins]))]
@@ -244,8 +247,8 @@ pro calcBinnedVals
   xVarMean=xVarMean[0:n1(xVarMean,-2)]
   xVar=xVarMean
 
-  save,filename='saves/'+saveName,coleControlLwc,coleControlTwc,$
-    colevarLwc,colevarTwc,pmbMed,$
+  save,filename='saves/'+saveName+'e',coleControlLwc,coleControlTwc,$
+    colevarLwc,colevarTwc,pmbMed,lwcCdpUb,lwcCdpLb,$
     lwc100cdplwc,lwcMean,cdpConcMean,lwcTwcMed,$
     lwc100twc,lwc100lwc,lwctwcq1,lwctwcq3,$
     color,vmdMean,vmdMed,xVar,lwcKorDiffMed,lwcKorDiffQ1,lwcKorDiffQ3,$

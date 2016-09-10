@@ -1,7 +1,12 @@
 pro loop
 
 level=400
-suffix='082516400'
+suffix='pac2526'
+;flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
+;flight=['1124','1217','0120','0125','0307']
+flight=['082516','082616']
+;flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815']
+;flight='081816'
 
 savename='loopdata'+suffix+'.sav'
 
@@ -89,22 +94,17 @@ inds={starti:double(0)}
     smLiqX=[]
     avroll=[]
     avpitch=[]
-    betaAng=[]
+    beta=[]
     avyaw=[]
     twodp=[]
     lwcUB=[]
     cdpLwcB=[]
+    lwcLB=[]
     
     startSec=0
     
     nPoints=146852d
 
-
-    ;flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
-    flight=['1124','1217','0120','0125','0307']
-    flight='082516'
-    ;flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815']
-    ;flight='081816'
    
    cdpBinN=make_array(28,nPoints)
    cdpBinN[*,*]=!values.d_nan
@@ -188,10 +188,11 @@ inds={starti:double(0)}
       smLiqX=[smLiqX,d.smLiqX]
       avroll=[avroll,d.avroll]
       avpitch=[avpitch,d.avpitch]
-      betaAng=[betaAng,d.betaAng]
+      beta=[beta,d.beta]
       avyaw=[avyaw,d.avyaw]
       twodp=[twodp,d.twodp]
       lwcUB=[lwcUB,d.lwcUB]
+      lwcLB=[lwcLB,d.lwcLB]
       cdpLwcB=[cdpLwcB,d.cdpLwcB]
       
       
@@ -212,15 +213,20 @@ inds={starti:double(0)}
     cdpBinN=cdpBinNB
     
     color=d.color
+    rLwcCol=d.rLwcCol
+    rLwcRef=d.rLwcRef
+    rTwcCol=d.rTwcCol
+    rTwcRef=d.rTwcRef
     
 
     save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,colETot,pmb,cdplwc,clearairLiq,clearairTot,colELiq,aias,cdpAdcOver,threshliq,$
       cdpconc,cdpacc,cdpDBarB,dEff,vvd,vmd,ilwccol,vlwcref,twcClearAiri,$
       cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,ilwcref,alpha,smLiqX,$
-      lwcNev2,expHeatLiq,fsspConc,lwcNev1,fsspLwc,pliqnpc,smLiq,$
+      lwcNev2,expHeatLiq,fsspConc,lwcNev1,fsspLwc,pliqnpc,smLiq,lwcLB,$
       cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
       cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,cdpLwcB,$
       cdpTrans,cdpTransEst,lwcNpc,flightSec,vlwccol,iwc,cdpTransRej,lwcClearAirI,$
-      itwccol,vtwccol,itwcref,vtwcref,avroll,avpitch,betaAng,avyaw,twodp,lwcUB
+      itwccol,vtwccol,itwcref,vtwcref,avroll,avpitch,beta,avyaw,twodp,lwcUB,$
+      rLwcCol,rLwcRef,rTwcCol,rTwcRef
    
 end
