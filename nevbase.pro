@@ -12,9 +12,12 @@ if inds.starti eq 0 then startsec=0
 if inds.starti gt 0 then startsec=inds.starti
 
 ;-------MISC OPTIONS------
-calcTrans=1 ;calculate cdp vars from raw files
+calcTrans=0 ;calculate cdp vars from raw files
 cipmod=0 ;include Jason's cip calculations
 noNev1=0 ; incude Korolev's second set of Nev calculations
+useLarK=0
+useDen=0
+useFixedK=0
 
 ;---------------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------------FILEPATHS---------------------------------------------------------------------
@@ -54,6 +57,12 @@ noNev1=0 ; incude Korolev's second set of Nev calculations
   if flightDay eq '081816' then nclPath='../data/20160818.c25.nc' ;Cal flight
   if flightDay eq '082516' then nclPath='../data/20160825.c25.nc'
   if flightDay eq '082616' then nclPath='../data/20160826.c25.nc'
+  if flightDay eq '090416' then nclPath='../data/20160904.c25.nc'
+  if flightDay eq '090916' then nclPath='../data/20160909.c25.nc'
+  if flightDay eq '091016' then nclPath='../data/20160910.c25.nc'  
+  if flightDay eq '091316' then nclPath='../data/20160913.c25.nc'
+  if flightDay eq '091616' then nclPath='../data/20160916.c25.nc'
+  if flightDay eq '092316' then nclPath='../data/20160923.c25.nc'
 
   ;----DETECT CAMPAIGN-----
   if strmatch(nclpath,'*2013*') eq 1 then cope=1
@@ -93,33 +102,57 @@ itwccol=loadvar('itwccol', filename=nclPath)
 
 ;------------LWC COL/REF SIGNALS ARE BACKWARDS FOR A FEW LAR FLIGHTS---------------------
 
-      if mean(vlwccol) lt mean(vlwcref) then begin
-        vlwccolB=vlwccol
-        vlwcrefB=vlwcref
-        vlwccol=vlwcrefB
-        vlwcref=vlwccolB
-      endif
-      
-      if mean(ilwccol) lt mean(ilwcref) then begin
-        ilwccolB=ilwccol
-        ilwcrefB=ilwcref
-        ilwccol=ilwcrefB
-        ilwcref=ilwccolB
-      endif
-      
-      if mean(vtwccol) gt mean(vtwcref) then begin
-        vtwccolB=vtwccol
-        vtwcrefB=vtwcref
-        vtwccol=vtwcrefB
-        vtwcref=vtwccolB
-      endif
-      
-      if mean(itwcref) gt mean(itwccol) then begin
-        itwccolB=itwccol
-        itwcrefB=itwcref
-        itwccol=itwcrefB
-        itwcref=itwccolB
-      endif
+;      if mean(vlwccol) lt mean(vlwcref) then begin
+;        vlwccolB=vlwccol
+;        vlwcrefB=vlwcref
+;        vlwccol=vlwcrefB
+;        vlwcref=vlwccolB
+;      endif
+;      
+;      if mean(ilwccol) lt mean(ilwcref) then begin
+;        ilwccolB=ilwccol
+;        ilwcrefB=ilwcref
+;        ilwccol=ilwcrefB
+;        ilwcref=ilwccolB
+;      endif
+;      
+;      if mean(vtwccol) gt mean(vtwcref) then begin
+;        vtwccolB=vtwccol
+;        vtwcrefB=vtwcref
+;        vtwccol=vtwcrefB
+;        vtwcref=vtwccolB
+;      endif
+;      
+;      if mean(itwcref) gt mean(itwccol) then begin
+;        itwccolB=itwccol
+;        itwcrefB=itwcref
+;        itwccol=itwcrefB
+;        itwcref=itwccolB
+;      endif
+
+
+if flightday eq '0304' or flightday eq '0307' then begin
+  vlwccolB=vlwccol
+  vlwcrefB=vlwcref
+  vlwccol=vlwcrefB
+  vlwcref=vlwccolB
+
+  ilwccolB=ilwccol
+  ilwcrefB=ilwcref
+  ilwccol=ilwcrefB
+  ilwcref=ilwccolB
+  
+  vtwccolB=vtwccol
+  vtwcrefB=vtwcref
+  vtwccol=vtwcrefB
+  vtwcref=vtwccolB
+  
+  itwccolB=itwccol
+  itwcrefB=itwcref
+  itwccol=itwcrefB
+  itwcref=itwccolB
+endif
+
 
 ;------------------------------------------------------------------------
 
@@ -174,8 +207,12 @@ avpitch=loadvar('avpitch', filename=nclPath)
 avroll=loadvar('avroll', filename=nclPath)
 
 ;2DP concentration [liter-1]
-twodp=loadvar('twodp', filename=nclPath)
-;twodp=dindgen(n1(pmb))*!values.d_nan
+
+if flightDay eq '091016' or flightDay eq '091316' or flightDay eq '0304' or flightDay eq '1124' or flightDay eq '1217' or flightDay eq '0120' or flightDay eq '0125' or flightDay eq '0307' then begin
+  twodp=dindgen(n1(pmb))*!values.d_nan
+endif else begin
+  twodp=loadvar('twodp', filename=nclPath)
+endelse
 
 if cope eq 1 then begin
   ;FSSP total concentration
@@ -438,31 +475,72 @@ endif
 
 
 
-if cope eq 2 or cope eq 0 then begin
+if cope eq 2 or cope eq 0 then begin  
+  ;----POLY2 FITS-----;
+  kLiq700=(6.251e-06)*aias^2. + (-0.002757)*aias + (1.851)
+  kLiq600=(-3.409e-06)*aias^2. + (-0.001221)*aias + (1.808)
+  kLiq500=(-7.119e-05)*aias^2. + (0.01001)*aias + (1.339)
+  kLiq400=(2.381e-05)*aias^2. + (-0.005848)*aias + (2.011)
 
+  
+  
   case level of
     '700':begin
-        coLiq=[-4.624e-05,1.718,1.758]
-        coTot=[15.72,-0.8012,0.3106]
-     end
-     '600':begin
-        coLiq=[-0.000356,1.305,1.797]
-        coTot=[664.9,-1.894,0.6623]
-     end
-     '500':begin
-        coLiq=[-2.192e-14,6.271,1.703]
-        coTot=[-1.102e-06,2.626,0.9771]
-     end
-     '400':begin
-        coLiq=[6.1,-0.77,1.486]
-        coTot=[3.798,-0.3249,-0.005089]
-     end 
+      coLiq=[6.251e-06,-0.002757,1.851]
+      coTot=[15.72,-0.8012,0.3106]
+    end
+    '600':begin
+      coLiq=[-3.409e-06,-0.001221,1.808]
+      coTot=[664.9,-1.894,0.6623]
+    end
+    '500':begin
+      coLiq=[-7.119e-05,0.01001,1.339]
+      coTot=[-1.102e-06,2.626,0.9771]
+    end
+    '400':begin
+      coLiq=[2.381e-05,-0.005848,2.011]
+      coTot=[3.798,-0.3249,-0.005089]
+    end
   endcase
-  
-  kLiq=coLiq[0]*aias^coLiq[1] + coLiq[2]
-  kTot=coTot[0]*aias^coTot[1] + coTot[2]
+
+  kLiq=coLiq[0]*aias^2. + coLiq[1]*aias + coLiq[2]
+  kTot=coTot[0]*aias^2. + coTot[1]*aias + coTot[2]
 endif
 
+if useLarK eq 1 then begin
+  ;----POLY2 FITS-----;
+
+  kLiq700=(1.046e-05)*aias^2. + (-0.004067)*aias + (2.002)
+  kLiq600=(7.592e-06)*aias^2. + (-0.003641)*aias + (1.984)
+  kLiq500=(4.429e-05)*aias^2. + (-0.0104)*aias + (2.282)
+  kLiq400=(1.584e-05)*aias^2. + (-0.006102)*aias + (2.119) 
+  
+  
+  case level of
+    '700':begin
+      coLiq=[1.046e-05,-0.004067,2.002]
+      coTot=[15.72,-0.8012,0.3106]
+    end
+    '600':begin
+      coLiq=[7.592e-06,-0.003641,1.984]
+      coTot=[664.9,-1.894,0.6623]
+    end
+    '500':begin
+      coLiq=[4.429e-05,-0.0104,2.282]
+      coTot=[-1.102e-06,2.626,0.9771]
+    end
+    '400':begin
+      coLiq=[1.584e-05,-0.006102,2.119]
+      coTot=[3.798,-0.3249,-0.005089]
+    end
+  endcase
+
+  kLiq=coLiq[0]*aias^2. + coLiq[1]*aias + coLiq[2]
+  kTot=coTot[0]*aias^2. + coTot[1]*aias + coTot[2]
+endif
+
+
+kTot=5.565e-05*aias^2. + (-0.01345)*aias + 1.545
 
 
 ;------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -698,21 +776,66 @@ expHeatLiq=(nevTemp-trf)*4.218+lw*1d-3
 expHeatIce=expHeatLiq
 
 
+
+;coef=[1.882,-8.271e-05,-0.001867] ;400,600,700
+;kLiqSurf = (coef[0]) + coef[1]*pmb + coef[2]*aias
+
+
+
+coef=[1.859,0.0002357,-0.00331,-3.853e-07,1.346e-06,4.08e-06];400,600,700
+;coef=[1.491,0.00112,-0.001329,-1.116e-06,2.319e-06,-1.22e-05] ;500,600,700
+;coef=[2.136,-0.001427,-1.054e-05,1.181e-06,2.395e-06,-2.037e-05] ;400,500,600
+if useLarK eq 1 then coef=[2.238,-0.0003147,-0.007652,9.983e-08,2.815e-06,2.037e-05 ] ;For LAR
+
+den=pmb*1d2/(287.*(trf+273.15))
+kLiqSurf = (coef[0]) + coef[1]*pmb + coef[2]*aias + coef[3]*pmb^2. + coef[4]*pmb*aias + coef[5]*aias^2.
+if useLarK eq 1 then begin
+  
+  coef=[2.13,-0.0003407,-0.004702,8.686e-08,3.34e-06 ] ;For LAR
+  kLiqSurf = (coef[0]) + coef[1]*pmb + coef[2]*aias + coef[3]*pmb^2. + coef[4]*pmb*aias
+endif
+
+
+coefTwc=[1.425,-0.0001851,-0.005842,-1.343e-08,-2.728e-06,1.842e-05];400,600,700
+kTotSurf = (coefTwc[0]) + coefTwc[1]*pmb + coefTwc[2]*aias + coefTwc[3]*pmb^2. + coefTwc[4]*pmb*aias + coefTwc[5]*aias^2.
+
+
+
 ;--------------------POWER CALCULATIONS--------------------
 pLiq=vlwccol*ilwccol-kLiq*vlwcref*ilwcref
 pLiqNpc=pLiq
 lwcNpc=pLiq/(1d*tas*aLiq*expHeatLiq)
 
+pLiq700=vlwccol*ilwccol-kLiq700*vlwcref*ilwcref
+pLiq600=vlwccol*ilwccol-kLiq600*vlwcref*ilwcref
+pLiq500=vlwccol*ilwccol-kLiq500*vlwcref*ilwcref
+pLiq400=vlwccol*ilwccol-kLiq400*vlwcref*ilwcref
+
+lwc700=pLiq700/(1d*tas*aLiq*expHeatLiq)
+lwc600=pLiq600/(1d*tas*aLiq*expHeatLiq)
+lwc500=pLiq500/(1d*tas*aLiq*expHeatLiq)
+lwc400=pLiq400/(1d*tas*aLiq*expHeatLiq)
+
+
+pLiqSurf=vlwccol*ilwccol-kLiqSurf*vlwcref*ilwcref
+
+
+
 pTot=vtwccol*itwccol-kTot*vtwcref*itwcref
 pTotNpc=pTot
 twcNpc=pTot/(1d*tas*aTot*expHeatIce)
 
-
+pTotSurf=vtwccol*itwccol-kTotSurf*vtwcref*itwcref
 
 ;--------------------POWER PRESSURE CORRECTION--------------------
 
-linPresCorLiq=ladfit(pmb[clearairLiq],pLiqNpc[clearairLiq])
-pLiq=pLiqNpc - ( linPresCorLiq[1]*pmb + linPresCorLiq[0] )
+linPresCorLiq=ladfit(pmb[clearairLiq],pLiqSurf[clearairLiq])
+pLiq=pLiqSurf - ( linPresCorLiq[1]*pmb + linPresCorLiq[0] )
+
+if useDen eq 1 then begin
+  linPresCorLiq=ladfit(den[clearairLiq],pLiqNpc[clearairLiq])
+  pLiq=pLiqNpc - ( linPresCorLiq[1]*den + linPresCorLiq[0] )
+endif
 
 linPresCorTot=ladfit(pmb[clearairTot],pTotNpc[clearairTot])
 pTot=pTotNpc - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
@@ -723,9 +846,13 @@ pTot=pTotNpc - ( linPresCorTot[1]*pmb + linPresCorTot[0] )
 ;LWC
 lwc=pLiq/(1.*tas*aLiq*expHeatLiq)
 
+lwcSurf=pLiqSurf/(1.*tas*aLiq*expHeatLiq)
+
+
 ;TWC
 twc=pTot/(1.*tas*aTot*expHeatIce)
 
+twcSurf=pTotSurf/(1.*tas*aTot*expHeatIce)
 
 iwc=twc-lwc
 
@@ -761,7 +888,7 @@ color=['black','firebrick','navy','dark green','magenta','coral','indian red','d
 
 d={pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, twodp:twodp,$
   pLiq:pLiq,lwcNev1:lwcNev1, twcNev:twcNev, lwcNpc:lwcNpc,$
-  clearairLiq:clearairLiq,timeFlight:timeFlight,$
+  clearairLiq:clearairLiq,timeFlight:timeFlight,pLiqSurf:pLiqSurf,$
   kLiq:kLiq,threshLiq:threshLiq, clearairTot:clearairTot,beta:betaB,$
   aias:aias, tas:tas,vlwcref:vlwcref, ilwcref:ilwcref, twcNpc:twcNpc,$
   vlwccol:vlwccol, ilwccol:ilwccol, cdpconc:cdpconc_1_NRB, trf:trf,trose:trose, threshTot:threshTot,$
@@ -771,15 +898,16 @@ d={pmb:pmb, time:time, avroll:avroll, avpitch:avpitch, twodp:twodp,$
   rawSignalTot:rawSignalTot, smoothSignalTot:smoothSignalTot, pTot:pTot,pTotNpc:pTotNpc,$
   vtwccol:vtwccol,itwccol:itwccol,vtwcref:vtwcref,itwcref:itwcref,aTot:aTot,expHeatIce:expHeatIce,$
   cdpdbins:cdpdbins,lwc:lwc,expHeatLiq:expHeatLiq,smLiq:smLiq,smLiqX:correctionLiqBX,$
-  dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcLb:lwcLb,$
+  dEff:dEff,vvd:vvd,vmd:vmd,coleliq:coleliq,lwcLb:lwcLb,twcSurf:twcSurf,$
   twc:twc,colETot:colETot,cdpDBarB:cdpDBarB,rLwcCol:rLwcCol,rLwcRef:rLwcRef,rTwcCol:rTwcCol,$
   cipmodconc0:cipmodconc0,cipmodconc1:cipmodconc1,fsspConc:fsspConc,cdpTrans:cdpTrans,$
   cipmodconc2:cipmodconc2,color:color,fsspLwc:fsspLwc,rTwcRef:rTwcRef,$
   cdpBinVar:cdpBinVar,cdpBinSkew:cdpBinSkew,cdpBinKert:cdpBinKert,$
   cdpBinBimod:cdpBinBimod,cdpBinMAD:cdpBinMAD,cdpBinSD:cdpBinSD,$
-  cdpTransEst:cdpTransEst,iwc:iwc,lwcUB:lwcUB,$
+  cdpTransEst:cdpTransEst,iwc:iwc,lwcUB:lwcUB,lwcSurf:lwcSurf,den:den,$
   cdpTransRej:cdpTransRej,cdpAdcOver:cdpAdcOver,cdpLwcB:cdpLwcB,$
-  lwcClearAirI:lwcClearAirI,alpha:alpha,correctionLiq:correctionLiq}
+  lwcClearAirI:lwcClearAirI,alpha:alpha,correctionLiq:correctionLiq,$
+  lwc700:lwc700,lwc600:lwc600,lwc500:lwc500,lwc400:lwc400}
 
 return,d
 
@@ -794,9 +922,13 @@ end
 ;---------------------------------------------------------------------------------------------------------------------------------------------------------
 
 function filter25, varC
-  varLin=[]
+  varLin=make_array(n1(varC[*,0])*n1(varC[0,*]))*!values.d_nan
+  k=double(0)
   for i=0,n(varC[0,*]) do begin
-    varLin=[varLin,varc[*,i]]
+    for j=0,n(varC[*,0]) do begin
+      varLin[k]=varC[j,i]
+      k++
+    endfor
   endfor
 
   varB=smooth(varLin,5)
@@ -871,6 +1003,12 @@ function cdpTransTime, flightDay
   if flightDay eq '081816' then nclPath='/Volumes/externalHD/copeRaw/20160818_raw.nc'
   if flightDay eq '082516' then nclPath='/Volumes/externalHD/copeRaw/20160825_raw.nc'
   if flightDay eq '082616' then nclPath='/Volumes/externalHD/copeRaw/20160826_raw.nc'
+  if flightDay eq '090416' then nclPath='/Volumes/externalHD/copeRaw/20160904_raw.nc'  
+  if flightDay eq '090916' then nclPath='/Volumes/externalHD/copeRaw/20160909_raw.nc'
+  if flightDay eq '091016' then nclPath='/Volumes/externalHD/copeRaw/20160910_raw.nc'
+  if flightDay eq '091316' then nclPath='/Volumes/externalHD/copeRaw/20160913_raw.nc'
+  if flightDay eq '091616' then nclPath='/Volumes/externalHD/copeRaw/20160916_raw.nc'
+  if flightDay eq '092316' then nclPath='/Volumes/externalHD/copeRaw/20160923_raw.nc'
   
   cdpAveTransSps=loadvar('AVGTRNS_NRB', filename=nclPath)
   ;cdpTransRejSps=loadvar('REJAT_NRB', filename=nclPath)

@@ -1,12 +1,12 @@
 pro loop
 
-level=400
-suffix='pac2526'
+level=600
+suffix='cals'
 ;flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815','0817a','0817b']
 ;flight=['1124','1217','0120','0125','0307']
-flight=['082516','082616']
+flight=['0304','081816','1124','1217','0120','0125','0307','082516','082616','090416','090916','091016','091316','091616','092316']
 ;flight=['0710','0718','0725','0727','0728','0729','0802','0803','0806','0807','0814','0815']
-;flight='081816'
+flight=['0304','081816']
 
 savename='loopdata'+suffix+'.sav'
 
@@ -70,6 +70,7 @@ inds={starti:double(0)}
     colELiqU=[]
     cdpTransEst=[]
     lwcNpc=[]
+    twcNpc=[]
     flightSec=[]
     vlwccol=[]
     ilwccol=[]
@@ -100,10 +101,21 @@ inds={starti:double(0)}
     lwcUB=[]
     cdpLwcB=[]
     lwcLB=[]
+    lwcSurf=[]
+    pLiqSurf=[]
+    twcSurf=[]
+    flightDayN=[]
+    den=[]
+    mins=[]
+    lwc700=[]
+    lwc600=[]
+    lwc500=[]
+    lwc400=[]
+    flightCount=0
     
     startSec=0
     
-    nPoints=146852d
+    nPoints=6d6
 
    
    cdpBinN=make_array(28,nPoints)
@@ -130,6 +142,7 @@ inds={starti:double(0)}
       cdplwc=[cdplwc,d.cdplwc]
       twc=[twc,d.twc]
       trf=[trf,d.trf]
+      lwcSurf=[lwcSurf,d.lwcSurf]
       
       clearairTot=[clearairTot,d.clearairTot]
       dEff=[dEff,d.dEff]
@@ -163,6 +176,11 @@ inds={starti:double(0)}
       
       cdpTransEst=[cdpTransEst,d.cdpTransEst]
       lwcNpc=[lwcNpc,d.lwcNpc]
+      lwc700=[lwc700,d.lwc700]
+      lwc600=[lwc600,d.lwc600]
+      lwc500=[lwc500,d.lwc500]
+      lwc400=[lwc400,d.lwc400]
+      twcNpc=[twcNpc,d.twcNpc]
       flightSec=[flightSec,d.flightSec]
       clearairLiq=[clearairLiq,d.clearairLiq]
       vlwccol=[vlwccol,d.vlwccol]
@@ -194,7 +212,13 @@ inds={starti:double(0)}
       lwcUB=[lwcUB,d.lwcUB]
       lwcLB=[lwcLB,d.lwcLB]
       cdpLwcB=[cdpLwcB,d.cdpLwcB]
+      pLiqSurf=[pLiqSurf,d.pLiqSurf]
+      twcSurf=[twcSurf,d.twcSurf]
+      den=[den,d.den]
+      mins=[mins,dindgen(n1(pmb),start=1,increment=1)/5./60.]
       
+      flightDayN=[flightDayN,replicate(flightCount,n1(d.pmb))]
+      flightCount++
       
       r=r+n_elements(d.(1))
       inds.starti=inds.starti+n1(d.(1)) 
@@ -211,6 +235,7 @@ inds={starti:double(0)}
     endfor
     
     cdpBinN=cdpBinNB
+ ;   cdpBinN=0
     
     color=d.color
     rLwcCol=d.rLwcCol
@@ -222,11 +247,12 @@ inds={starti:double(0)}
     save,filename='saves/'+savename,lwc,twc,cdpdbar,trf,colETot,pmb,cdplwc,clearairLiq,clearairTot,colELiq,aias,cdpAdcOver,threshliq,$
       cdpconc,cdpacc,cdpDBarB,dEff,vvd,vmd,ilwccol,vlwcref,twcClearAiri,$
       cipmodconc0,cipmodconc1,cipmodconc2,lwc100,color,ilwcref,alpha,smLiqX,$
-      lwcNev2,expHeatLiq,fsspConc,lwcNev1,fsspLwc,pliqnpc,smLiq,lwcLB,$
+      lwcNev2,expHeatLiq,fsspConc,lwcNev1,fsspLwc,pliqnpc,smLiq,lwcLB,den,$
       cdpTrans,cdpDofRej,tas,cdpBinSecSum,cdpBinN,cdpBinVar,smoothSignalLiq,$
-      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,cdpLwcB,$
-      cdpTrans,cdpTransEst,lwcNpc,flightSec,vlwccol,iwc,cdpTransRej,lwcClearAirI,$
+      cdpBinSkew,cdpBinKert,cdpBinBimod,cdpBinMAD,cdpBinSD,cdpLwcB,mins,$
+      cdpTrans,cdpTransEst,lwcNpc,twcNpc,flightSec,vlwccol,iwc,cdpTransRej,lwcClearAirI,$
       itwccol,vtwccol,itwcref,vtwcref,avroll,avpitch,beta,avyaw,twodp,lwcUB,$
-      rLwcCol,rLwcRef,rTwcCol,rTwcRef
+      rLwcCol,rLwcRef,rTwcCol,rTwcRef,lwcSurf,pLiqSurf,twcSurf,flightDayN,$
+      lwc700,lwc600,lwc500,lwc400
    
 end

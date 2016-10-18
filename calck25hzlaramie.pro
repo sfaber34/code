@@ -7,7 +7,7 @@ pro calcK25hzLaramie
   restore,'saves/loopdata'+suffix+'.sav'
 
 
-  level=700
+  level=600
   kType='twc'
   pickPlot=0
 
@@ -41,6 +41,7 @@ pro calcK25hzLaramie
   itwccol=itwccol[inds]
   aias=aias[inds]
   pmb=pmb[inds]
+  trf=trf[inds]
   avroll=avroll[inds]
   avpitch=avpitch[inds]
   betaAng=betaAng[inds]
@@ -48,17 +49,18 @@ pro calcK25hzLaramie
   tas=tas[inds]
 
 
-  if kType eq 'lwc' then begin
-    ColP=vlwccol*ilwccol
-    RefP=vlwcRef*ilwcRef
-  endif else begin
-    ColP=vtwccol*itwccol
-    RefP=vtwcRef*itwcRef
-  endelse
-
-  k=ColP/Refp
-
-  p1=scatterplot(aias,k,dimensions=[900,740],sym_filled=1,sym_size=1.2,sym_transparency=65,sym_color='black')
+;  if kType eq 'lwc' then begin
+;    ColP=vlwccol*ilwccol
+;    RefP=vlwcRef*ilwcRef
+;  endif else begin
+;    ColP=vtwccol*itwccol
+;    RefP=vtwcRef*itwcRef
+;  endelse
+;
+;  k=ColP/Refp
+;  
+;  
+;  p1=scatterplot(aias,k,dimensions=[900,740],sym_filled=1,sym_size=1.2,sym_transparency=65,sym_color='black')
 
   if pickPlot eq 1 then begin
     x=where(avroll lt -1.7726989 and avroll gt -4.7847276)
@@ -81,7 +83,7 @@ pro calcK25hzLaramie
       as2=[1580,1880]
       as3=[2350,2650]
       as4=[3550,3850] ;Bad LWC group
-      as5=[4200,4500]
+      ;as5=[4200,4500]
       
       ;W/ bad LWC group
 ;      as1=[580,880]
@@ -101,7 +103,7 @@ pro calcK25hzLaramie
       as2=[1880,2180]
       ;as3=[4500,4800]
       as3=[2530,2830]
-      as4=[5980,6280]
+      ;as4=[5980,6280]
     end
   endcase
 
@@ -136,6 +138,7 @@ pro calcK25hzLaramie
   avroll=avroll[filtinds]
   avpitch=avpitch[filtinds]
   tas=tas[filtinds]
+  trf=trf[filtinds]
 
 
   if kType eq 'lwc' then begin
@@ -148,7 +151,10 @@ pro calcK25hzLaramie
 
   k=ColP/RefP
 
-
+  den=pmb*1d2/(287.*(trf+273.15))
+  writename=strcompress('/Users/spencerfaber/Documents/MATLAB/files/Lar600twc.csv')
+  write_csv,writename,pmb,aias,k
+  
   p1=scatterplot(aias,k,dimensions=[900,740],sym_filled=1,sym_size=1.2,sym_transparency=65,sym_color='blue',/overplot)
   ;p1=scatterplot(aias,refp,dimensions=[900,740],sym_filled=1,sym_size=1.2,sym_transparency=65,sym_color='blue',/overplot)
   ;  p1.xrange=[62,96]

@@ -1,14 +1,14 @@
 pro calcK25hzPacmice
 
   
-  cu
+
 
   suffix='081816'
   restore,'saves/loopdata'+suffix+'.sav'
 
   level=600
   kType='lwc'
-  pickPlot=1
+  pickPlot=0
 
   case level of
     700:begin
@@ -56,6 +56,7 @@ pro calcK25hzPacmice
     x=where(abs(avroll) lt 8.6 and avpitch gt -1.8 and avpitch lt 7.2)
     xs=dindgen(n1(aias))
     p1=plot(xs/5.,aias,dimensions=[1200,900])
+    p2=plot(lwc,dimensions=[1200,900])
     ;s1=scatterplot(aias[x],/overplot,sym_color='red',symbol='.')
     stop
   endif
@@ -81,7 +82,7 @@ pro calcK25hzPacmice
       as1=[450,750]
       as2=[1600,1900]
       as3=[2200,2500]
-      as4=[3800,4100]
+      as4=[3120,3420]
     end
     400:begin
       as1=[500,800]
@@ -122,22 +123,24 @@ pro calcK25hzPacmice
     ColP=vlwccol*ilwccol
     RefP=vlwcRef*ilwcRef
     
-    ColPR=vlwccol^2./rLwcCol
-    RefPR=vlwcRef^2./rLwcRef
+;    ColPR=vlwccol^2./rLwcCol
+;    RefPR=vlwcRef^2./rLwcRef
   endif else begin
     ColP=vtwccol*itwccol
     RefP=vtwcRef*itwcRef
     
-    ColPR=vtwccol^2./rTwcCol
-    RefPR=vtwcRef^2./rTwcRef
+;    ColPR=vtwccol^2./rTwcCol
+;    RefPR=vtwcRef^2./rTwcRef
   endelse
   
   k=ColP/Refp
-  kR=ColPR/RefpR
+  ;kR=ColPR/RefpR
 
+  writename=strcompress('/Users/spencerfaber/Documents/MATLAB/files/pac600BadGroup.csv')
+  write_csv,writename,pmb,aias,k
 
-  p1=scatterplot(aias,k,dimensions=[900,740],sym_filled=1,sym_size=1.2,sym_transparency=65,sym_color='blue',/overplot)
-  p2=scatterplot(aias,kR,dimensions=[900,740],sym_filled=0,sym_size=1.2,sym_transparency=65,sym_color='red',/overplot)
+  p1=scatterplot(aias,k,dimensions=[900,740],sym_filled=1,sym_size=1.2,sym_transparency=65,sym_color='red')
+  ;p2=scatterplot(aias,kR,dimensions=[900,740],sym_filled=0,sym_size=1.2,sym_transparency=65,sym_color='red',/overplot)
   bounds=p1.xrange
 ;  l1=linfit(aias,ColP)
 ;  l2=linfit(aias,REfP)

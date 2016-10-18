@@ -13,16 +13,16 @@ pro ploterrorbars
   ;------------------------------------------------------------------------------------------
   ;---------------------------------PLOT OPTIONS---------------------------------------------
   
-  lineWidth=2.
+  lineWidth=7
   xBarThick=3
   xBarStyle='-'
   yBarThick=2.
   
   
-  barTrans=20
-  symTrans=6
-  symSize=2.4
-  symThick=4
+  barTrans=40
+  symTrans=20
+  symSize=1.9
+  symThick=3
   
   ;------------------------------------------------------------------------------------------
   ;------------------------------------------------------------------------------------------
@@ -30,11 +30,15 @@ pro ploterrorbars
   
   ;------------------------------------------------------------------------------------------
   ;------------------------------INPUT ARRAYS--------------------------------------
-  colorArr=['red','green','blue','black']
+  colorArr=['black','red','blue','green','purple']
   ;colorArr='black'
-  suffixArr=['pac2526a','pac2526b','pac2526c','pac2526d','pac2526e']
-  ;suffixArr='pac2526'
-  symArr=['x','o','+','D','x']
+  suffixArr=['bydayLar700','bydayLar600','bydayLar500','bydayLar400','bydayLar400Surf']
+  suffixArr=['bydayPac700','bydayPac600','bydayPac500','bydayPac400','bydayPac400Surf']
+  suffixArr=['Lar700','Lar600','Lar500','Lar400','Lar400Surf']
+  suffixArr=['Pac700','Pac600','Pac500','Pac400','Pac400Surf']
+  suffixArr=['Lar600','Pac600']
+  
+  symArr=['+','x','+','D','s']
   
   
   mainValsY=make_array(n1(suffixArr),500)*!values.d_nan
@@ -51,18 +55,18 @@ pro ploterrorbars
    
    ;------------------------------------------------------------------------------------------
    ;--------------------------------------INPUT ARRAYS----------------------------------------
-   varX=xVar
-   varA=lwcCdpMed
-   varAErrUp=lwcCdpQ3
-   varAErrLow=lwcCdpQ1
+   varX=xvar
+   varA=lwccaemed
+   varAErrUp=lwccaeq3
+   varAErrLow=lwccaeq1
    
    
    ;DISPLAY AS PERCENTILES?
    percent=0
    if percent eq 1 then begin
-    varA=varA*100.
-    varAErrUp=varAErrUp*100.
-    varAErrLow=varAErrLow*100.
+    varA=varA*10.
+    varAErrUp=varAErrUp*10.
+    varAErrLow=varAErrLow*10.
    endif
    
    ;------------------------------------------------------------------------------------------
@@ -70,7 +74,7 @@ pro ploterrorbars
    
     
     for i=0,n_elements(varA)-1 do begin
-      p90=plot([varX[i],varX[i]],[varAErrLow[i],varA[i]],thick=yBarThick,color=colorSet,transparency=barTrans,/overplot,dimensions=[800,680])
+      p90=plot([varX[i],varX[i]],[varAErrLow[i],varA[i]],thick=yBarThick,color=colorSet,transparency=barTrans,/overplot,dimensions=[1000,800])
       p91=plot([varX[i]-lineWidth,varX[i]+lineWidth],[varAErrLow[i],varAErrLow[i]],thick=xBarThick,color=colorSet,linestyle=xBarStyle,transparency=barTrans,/overplot)
 
       p92=plot([varX[i],varX[i]],[varA[i],varAErrUp[i]],thick=yBarThick,color=colorSet,transparency=barTrans,/overplot)
@@ -91,12 +95,14 @@ pro ploterrorbars
       plotArr=[temporary(plotArr),p1]
   endfor
   
-  p1.font_size=22
-  ;p1.xrange=[0,16]
-  ;p1.yrange=[-100,20]
- ; p1.xmajor=9
-;  p1.xtitle='Flight Level mb'
-;  p1.ytitle='Absolute Median Clear Air Uncertainty g m!u-3!n'
+;  p1.xrange=[450,630]
+;  p1.yrange=[-.022,.02]
+  zeroPlot=plot(p1.xrange,[0,0],'--',thick=2,/overplot)
+  p1.font_size=20
+  ;p1.xrange=[-1,max(xvar)+1]
+  ;p1.xminor=0
+  ;p1.xtickname=['','030416','081816','112415','121715','012015','012515','030715','082516','082616','090416','090916','091016','091316','091616','092316','']
+  ;p1.xtext_orientation=90
   
   ;l1=legend(target=plotArr,auto_text_color=1,font_size=22,shadow=0,/device)
   
